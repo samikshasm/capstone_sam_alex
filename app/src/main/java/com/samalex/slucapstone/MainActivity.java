@@ -10,13 +10,16 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class MainActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private String userIDMA;
     private String text;
     private EditText textbox;
-    private int counter = 1;
-    private String counterStr;
+    private String time;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,11 +35,13 @@ public class MainActivity extends AppCompatActivity {
         saveDB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                counter ++;
-                counterStr = Integer.toString(counter);
-                text = textbox.getText().toString();
-                Toast.makeText(MainActivity.this, text,
+                long currentDateTime = System.currentTimeMillis();
+                Date currentDate = new Date(currentDateTime);
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                time = dateFormat.format(currentDate);
+                Toast.makeText(MainActivity.this, time,
                         Toast.LENGTH_SHORT).show();
+                text = textbox.getText().toString();
                 writeToDB(text);
             }
         });
@@ -46,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void writeToDB(String text1) {
-        DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child(counterStr);
+        DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child(time);
         mRef.setValue(text1);
 
     }
