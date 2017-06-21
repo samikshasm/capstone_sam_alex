@@ -73,6 +73,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
     private FirebaseAuth mAuth;
+    private String UserID;
 
 
     @Override
@@ -232,10 +233,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(LoginActivity.this, "Authentication success.",
-                                    Toast.LENGTH_SHORT).show();
+                            UserID = task.getResult().getUser().getUid();
+
+                           // Toast.makeText(LoginActivity.this, "us",
+                             //       Toast.LENGTH_SHORT).show();
+
 
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.putExtra("User ID", UserID);
                             startActivity(intent);
                             finish();
                         } else {
