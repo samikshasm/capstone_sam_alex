@@ -1,1 +1,7 @@
 # capstone_sam_alex
+
+This week, we mainly focused on putting together a presentation and a demo that would meet all the requirements for Deliverable 1. One of the biggest components that we put together this week were wireframes. Alex sketched out all the apps and screens by hand, which were then digitized and used in the presentation. We will be using components of the digitized screens while building the app. All of the UI is basically done - we just have to put the .png files inside Android Studio as we start creating fragments. 
+
+We changed the authentication method slightly by making the usernames unique strings instead of the emails of SLU students. Additionally, we were able to get one of the .png files from the UI sketches and use that as a button. Once the user clicks the button, we were able to log the location and time into the database. The ability to do this will help us in a couple weeks when we create the screens because the code will be almost similar for the action of "pressing the button and logging to the database".
+
+The coming week, we will be finalizing the login screen (to make sure that the user stays signed in) and start working on the timer. The first step will be to figure out how to log location every x minutes into the databse. We will also try to meet with Dr. Shacham this week so that we can show her our progress and get some feedback in terms of the functionality of the app. 
