@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "931206697482",
+    "firebase_url": "https://slu-capstone-f622b.firebaseio.com",
+    "project_id": "slu-capstone-f622b",
+    "storage_bucket": "slu-capstone-f622b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:931206697482:android:b1bfd1fe47e6cdfd",
+        "android_client_info": {
+          "package_name": "com.samalex.slucapstone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "931206697482-oabh74hvb2pl1lag8e9jc5aasf2e4v45.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlpDfajASGL9heHl5tZgSRyghO3Bp2yvk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

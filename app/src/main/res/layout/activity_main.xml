@@ -14,17 +14,6 @@
         android:id="@+id/main_activity_container"
         >
 
-        <EditText
-            android:id="@+id/text"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="Type here" />
-
-        <Button
-            android:id="@+id/saveDB"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Save to DB" />
 
         <TextView
             android:id="@+id/latitude_text"
@@ -44,8 +33,26 @@
             android:layout_marginTop="@dimen/text_margin"
             android:textIsSelectable="true"
             android:textSize="@dimen/lat_long_text_size" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageButton
+                android:id="@+id/saveDB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:src="@drawable/app_icon_small"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
+
+        </RelativeLayout>
+
+
 
     </android.support.design.widget.TextInputLayout>
+
+
 
 </android.support.constraint.ConstraintLayout>
 

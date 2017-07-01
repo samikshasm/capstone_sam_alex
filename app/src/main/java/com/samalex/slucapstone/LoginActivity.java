@@ -3,6 +3,7 @@ package com.samalex.slucapstone;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -119,10 +120,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (!mayRequestContacts()) {
             return;
         }
-
         getLoaderManager().initLoader(0, null, this);
     }
-
     private boolean mayRequestContacts() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
@@ -175,14 +174,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 /*
         boolean cancel = false;
         View focusView = null;
-
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
         }
-
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
             mEmailView.setError(getString(R.string.error_field_required));
@@ -193,7 +190,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             focusView = mEmailView;
             cancel = true;
         }
-
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -215,11 +211,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             return;
         }
 
-        mProgressView.setVisibility(View.VISIBLE);
+        //mProgressView.setVisibility(View.VISIBLE);
+
+        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
+                R.style.AppTheme_Dark_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Authenticating...");
+        progressDialog.show();
 
         if (TextUtils.isEmpty(password)) {
             Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
-            mProgressView.setVisibility(View.GONE);
+            //mProgressView.setVisibility(View.GONE);
+            progressDialog.dismiss();
             return;
         }
 
@@ -227,7 +230,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        mProgressView.setVisibility(View.GONE);
+                        //mProgressView.setVisibility(View.GONE);
+                        progressDialog.dismiss();
 
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
@@ -235,8 +239,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             FirebaseUser user = mAuth.getCurrentUser();
                             UserID = task.getResult().getUser().getUid();
 
-                           // Toast.makeText(LoginActivity.this, "us",
-                             //       Toast.LENGTH_SHORT).show();
+                            // Toast.makeText(LoginActivity.this, "us",
+                            //       Toast.LENGTH_SHORT).show();
 
 
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -258,7 +262,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         //TODO: Replace this with your own logic
         return email.contains("@");
     }
-
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
         return password.length() > 4;
@@ -326,7 +329,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             cursor.moveToNext();
         }
 
-      //  addEmailsToAutoComplete(emails);
+        //  addEmailsToAutoComplete(emails);
     }
 
     @Override
@@ -339,7 +342,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(LoginActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
         mEmailView.setAdapter(adapter);
     }*/
 
@@ -428,4 +430,3 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
 
 }
-

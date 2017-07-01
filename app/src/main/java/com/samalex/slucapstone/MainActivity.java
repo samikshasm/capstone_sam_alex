@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,8 +73,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        textbox = (EditText) findViewById(R.id.text);
-        Button saveDB = (Button) findViewById(R.id.saveDB);
+        //textbox = (EditText) findViewById(R.id.text);
+        ImageButton saveDB = (ImageButton) findViewById(R.id.saveDB);
         saveDB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,9 +82,9 @@ public class MainActivity extends AppCompatActivity {
                 Date currentDate = new Date(currentDateTime);
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 time = dateFormat.format(currentDate);
-                Toast.makeText(MainActivity.this, time,
-                        Toast.LENGTH_SHORT).show();
-                text = textbox.getText().toString();
+                /*Toast.makeText(MainActivity.this, time,
+                        Toast.LENGTH_SHORT).show();*/
+                text = mLatitudeText.getText()+","+mLongitudeText.getText();
                 writeToDB(text);
             }
         });
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void writeToDB(String text1) {
-        DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child(counterStr);
+        DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child(time);
         mRef.setValue(text1);
 
     }
