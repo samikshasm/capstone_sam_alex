@@ -1,15 +1,21 @@
 package com.samalex.slucapstone;
 
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -33,6 +39,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RunnableFuture;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static android.support.v4.content.PermissionChecker.PERMISSION_GRANTED;
 
@@ -52,12 +64,15 @@ public class MainActivity extends AppCompatActivity {
     private TextView mLatitudeText;
     private TextView mLongitudeText;
     private String time;
-
+    private Date currentDate;
+    private String currentUserFromLA;
+    private Integer mId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         mLatitudeLabel = getResources().getString(R.string.latitude_label);
@@ -68,29 +83,60 @@ public class MainActivity extends AppCompatActivity {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         userIDMA = getIntent().getStringExtra("User ID");
+
         Toast.makeText(MainActivity.this, userIDMA,
                 Toast.LENGTH_SHORT).show();
 
 
+       /* Button signOut = (Button) findViewById(R.id.sign_out_button);
+        signOut.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View view) {
+                currentUserFromLA = "signed out";
+                Toast.makeText(MainActivity.this, currentUserFromLA,
+                        Toast.LENGTH_SHORT).show();
+                Intent switchToLogin = new Intent(MainActivity.this, LoginActivity.class);
+                switchToLogin.putExtra("sign out", currentUserFromLA);
+                startActivity(switchToLogin);
+                finish();
+            }
+        });*/
 
-        //textbox = (EditText) findViewById(R.id.text);
+
         ImageButton saveDB = (ImageButton) findViewById(R.id.saveDB);
         saveDB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 long currentDateTime = System.currentTimeMillis();
-                Date currentDate = new Date(currentDateTime);
+                currentDate = new Date(currentDateTime);
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 time = dateFormat.format(currentDate);
-                /*Toast.makeText(MainActivity.this, time,
-                        Toast.LENGTH_SHORT).show();*/
                 text = mLatitudeText.getText()+","+mLongitudeText.getText();
-                writeToDB(text);
+                writeToDB();
             }
         });
 
         //allows data collection in the absence of wifi
         //  FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
+       /* NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.app_icon_small)
+                        .setContentTitle("My notification")
+                        .setContentText("Hello World!");
+        Intent resultIntent = new Intent(MainActivity.this, Main2Activity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(MainActivity.this);
+        stackBuilder.addParentStack(Main2Activity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        mBuilder.setFullScreenIntent(resultPendingIntent, true);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(mId, mBuilder.build());*/
     }
 
     @Override
@@ -104,10 +150,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void writeToDB(String text1) {
-        DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child(time);
-        mRef.setValue(text1);
-
+    public void writeToDB() {
+        Timer location_timer = new Timer();
+        TimerTask task = new TimerTask() {
+            public void run() {
+                DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child(time);
+                mRef.setValue(text);
+            }
+        };
+        location_timer.scheduleAtFixedRate(task, currentDate, 100);
     }
 
 

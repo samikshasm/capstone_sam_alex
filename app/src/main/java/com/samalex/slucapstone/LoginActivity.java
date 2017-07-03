@@ -75,6 +75,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mLoginFormView;
     private FirebaseAuth mAuth;
     private String UserID;
+    private Intent intent;
+    private String currentUserBool;
+    private FirebaseUser currentUser;
 
 
     @Override
@@ -90,9 +93,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 */
+
+        intent = new Intent(LoginActivity.this, MainActivity.class);
+
         mEmailView = (EditText) findViewById(R.id.email);
 
-        mPasswordView = (EditText) findViewById(R.id.password);
+     /*   mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -102,7 +108,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
                 return false;
             }
-        });
+        });*/
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -114,6 +120,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        currentUserBool = getIntent().getStringExtra("sign out");
+        Toast.makeText(LoginActivity.this, "this is the login activity",
+                Toast.LENGTH_SHORT).show();
+        if (currentUserBool == "signed out" ){
+            setContentView(R.layout.activity_login);
+            mAuth.signOut();
+            currentUserBool = "signed in";
+        }
+        else{
+            onStart();
+        }
     }
 
    /* private void populateAutoComplete() {
@@ -170,7 +188,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Reset errors.
         mEmailView.setError(null);
-        mPasswordView.setError(null);
+       // mPasswordView.setError(null);
 /*
         boolean cancel = false;
         View focusView = null;
@@ -203,9 +221,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         } */
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
-
+        String email = mEmailView.getText().toString() + "@gmail.com";
+        //String password = mPasswordView.getText().toString();
+        String password = "123456";
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
             return;
@@ -219,12 +237,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 
-        if (TextUtils.isEmpty(password)) {
+       /* if (TextUtils.isEmpty(password)) {
             Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
             //mProgressView.setVisibility(View.GONE);
             progressDialog.dismiss();
             return;
-        }
+        }*/
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -237,14 +255,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            currentUserBool = "signed in";
                             UserID = task.getResult().getUser().getUid();
 
                             // Toast.makeText(LoginActivity.this, "us",
                             //       Toast.LENGTH_SHORT).show();
 
 
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             intent.putExtra("User ID", UserID);
+                            intent.putExtra("Sign in Boolean", currentUserBool);
                             startActivity(intent);
                             finish();
                         } else {
@@ -417,12 +436,21 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        currentUser = mAuth.getInstance().getCurrentUser();
+
         if (currentUser != null){
-            Toast.makeText(getApplicationContext(), "User is signed in",
+            currentUserBool = "signed in";
+            UserID = currentUser.getUid();
+            Toast.makeText(getApplicationContext(), UserID,
                     Toast.LENGTH_SHORT).show();
+            intent.putExtra("User ID", UserID);
+            //intent.putExtra("Sign in Boolean", currentUser);
+            startActivity(intent);
+            finish();
+
         }
         else {
+            currentUserBool = "signed out";
             Toast.makeText(getApplicationContext(), "User is signed out.",
                     Toast.LENGTH_SHORT).show();
         }
