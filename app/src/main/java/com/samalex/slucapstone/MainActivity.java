@@ -1,29 +1,41 @@
 package com.samalex.slucapstone;
 
+import android.*;
+import android.Manifest;
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
+import android.os.CountDownTimer;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,18 +44,15 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.vision.text.Text;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RunnableFuture;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.v4.content.PermissionChecker.PERMISSION_GRANTED;
@@ -59,106 +68,306 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     protected Location mLastLocation;
-    private String mLatitudeLabel;
-    private String mLongitudeLabel;
-    private TextView mLatitudeText;
-    private TextView mLongitudeText;
-    private String time;
-    private Date currentDate;
+    private Button mStartUpdatesButton;
+    private Button mStopUpdatesButton;
     private String currentUserFromLA;
-    private Integer mId;
+    private long timeCountInMilliSeconds = 1 * 60000;
+    private enum TimerStatus {
+        STARTED,
+        STOPPED
+    }
+    private TimerStatus timerStatus = TimerStatus.STOPPED;
+    private ProgressBar progressBarCircle;
+    private TextView editTextMinute;
+    private TextView textViewTime;
+    private ImageView imageViewReset;
+    private ImageView imageViewStartStop;
+    private CountDownTimer countDownTimer;
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
+    private int mId= 1;
+    private Integer counterInt = 0;
+    private TextView test;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        mLatitudeLabel = getResources().getString(R.string.latitude_label);
-        mLongitudeLabel = getResources().getString(R.string.longitude_label);
-        mLatitudeText = (TextView) findViewById(R.id.latitude_text);
-        mLongitudeText = (TextView) findViewById(R.id.longitude_text);
+        progressBarCircle = (ProgressBar) findViewById(R.id.progressBarCircle);
+        editTextMinute = (TextView) findViewById(R.id.editTextMinute);
+        textViewTime = (TextView) findViewById(R.id.textViewTime);
+        imageViewReset = (ImageView) findViewById(R.id.imageViewReset);
+        imageViewStartStop = (ImageView) findViewById(R.id.imageViewStartStop);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         userIDMA = getIntent().getStringExtra("User ID");
 
-        Toast.makeText(MainActivity.this, userIDMA,
-                Toast.LENGTH_SHORT).show();
-
-
-       /* Button signOut = (Button) findViewById(R.id.sign_out_button);
+        Button signOut = (Button) findViewById(R.id.sign_out_button);
         signOut.setOnClickListener(new View.OnClickListener() {
-            public void onClick (View view) {
+            public void onClick(View view) {
                 currentUserFromLA = "signed out";
-                Toast.makeText(MainActivity.this, currentUserFromLA,
-                        Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "main activity: "+currentUserFromLA,
+                //     Toast.LENGTH_SHORT).show();
                 Intent switchToLogin = new Intent(MainActivity.this, LoginActivity.class);
                 switchToLogin.putExtra("sign out", currentUserFromLA);
                 startActivity(switchToLogin);
                 finish();
             }
-        });*/
+        });
 
 
-        ImageButton saveDB = (ImageButton) findViewById(R.id.saveDB);
-        saveDB.setOnClickListener(new View.OnClickListener() {
+        mStartUpdatesButton = (Button) findViewById(R.id.start_updates_button);
+        mStopUpdatesButton = (Button) findViewById(R.id.stop_updates_button);
+
+        updateUI();
+
+        int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED){
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)){
+
+            }else{
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+        }
+
+
+        mStartUpdatesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                long currentDateTime = System.currentTimeMillis();
-                currentDate = new Date(currentDateTime);
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                time = dateFormat.format(currentDate);
-                text = mLatitudeText.getText()+","+mLongitudeText.getText();
-                writeToDB();
+                Intent intent = new Intent(MainActivity.this, BackgroundLocationService.class);
+                intent.putExtra("User ID", userIDMA);
+                startService(intent);
+
+                updateUI();
+
             }
         });
 
-        //allows data collection in the absence of wifi
-        //  FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        long currentDateTime = System.currentTimeMillis() + 30 * 1000;
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent resultIntent = new Intent(this, TimerReceiver.class);
+        PendingIntent pIntent = PendingIntent.getBroadcast(MainActivity.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //need to cancel alarm at some point
+        alarmManager.set(AlarmManager.RTC_WAKEUP, currentDateTime, pIntent);
 
-       /* NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.app_icon_small)
-                        .setContentTitle("My notification")
-                        .setContentText("Hello World!");
-        Intent resultIntent = new Intent(MainActivity.this, Main2Activity.class);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(MainActivity.this);
-        stackBuilder.addParentStack(Main2Activity.class);
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-        mBuilder.setContentIntent(resultPendingIntent);
-        mBuilder.setFullScreenIntent(resultPendingIntent, true);
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(mId, mBuilder.build());*/
+
+        mStopUpdatesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, BackgroundLocationService.class);
+                stopService(intent);
+
+                updateUI();
+            }
+        });
+
+        imageViewReset.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.imageViewReset:
+                        reset();
+                        break;
+                    case R.id.imageViewStartStop:
+                        startStop();
+                        break;
+                }
+            }
+        });
+
+        imageViewStartStop.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.imageViewReset:
+                        reset();
+                        break;
+                    case R.id.imageViewStartStop:
+                        startStop();
+                        break;
+                }
+            }
+        });
+
+    }
+
+    private void reset() {
+        stopCountDownTimer();
+        startCountDownTimer();
+    }
+
+    private void startStop() {
+        if (timerStatus == TimerStatus.STOPPED) {
+
+            // call to initialize the timer values
+            setTimerValues();
+            // call to initialize the progress bar values
+            setProgressBarValues();
+            // showing the reset icon
+            imageViewReset.setVisibility(View.VISIBLE);
+            // changing play icon to stop icon
+            imageViewStartStop.setImageResource(R.drawable.icon_stop);
+            // making edit text not editable
+            editTextMinute.setEnabled(false);
+            // changing the timer status to started
+            timerStatus = TimerStatus.STARTED;
+            // call to start the count down timer
+            startCountDownTimer();
+
+        } else {
+
+            // hiding the reset icon
+            imageViewReset.setVisibility(View.GONE);
+            // changing stop icon to start icon
+            imageViewStartStop.setImageResource(R.drawable.icon_start);
+            // making edit text editable
+            editTextMinute.setEnabled(true);
+            // changing the timer status to stopped
+            timerStatus = TimerStatus.STOPPED;
+            stopCountDownTimer();
+
+        }
+
+    }
+
+    /**
+     * method to initialize the values for count down timer
+     */
+    private void setTimerValues() {
+        int time = 0;
+        if (!editTextMinute.getText().toString().isEmpty()) {
+            // fetching value from edit text and type cast to integer
+            time = Integer.parseInt(editTextMinute.getText().toString().trim());
+        } else {
+            // toast message to fill edit text
+            Toast.makeText(getApplicationContext(), getString(R.string.message_minutes), Toast.LENGTH_LONG).show();
+        }
+        // assigning values after converting to milliseconds
+        timeCountInMilliSeconds = time * 20 * 1000;
+    }
+
+    /**
+     * method to start count down timer
+     */
+    private void startCountDownTimer() {
+
+        countDownTimer = new CountDownTimer(timeCountInMilliSeconds, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+                textViewTime.setText(hmsTimeFormatter(millisUntilFinished));
+
+                progressBarCircle.setProgress((int) (millisUntilFinished / 1000));
+
+            }
+
+            @Override
+            public void onFinish() {
+
+                textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds));
+                // call to initialize the progress bar values
+                setProgressBarValues();
+                // hiding the reset icon
+                imageViewReset.setVisibility(View.GONE);
+                // changing stop icon to start icon
+                imageViewStartStop.setImageResource(R.drawable.icon_start);
+                // making edit text editable
+                editTextMinute.setEnabled(true);
+                // changing the timer status to stopped
+                timerStatus = TimerStatus.STOPPED;
+                //Toast.makeText(MainActivity.this, "timer has stopped", Toast.LENGTH_SHORT).show();
+
+            }
+
+        }.start();
+        countDownTimer.start();
+    }
+
+    /**
+     * method to stop count down timer
+     */
+    private void stopCountDownTimer() {
+        countDownTimer.cancel();
+    }
+
+    /**
+     * method to set circular progress bar values
+     */
+    private void setProgressBarValues() {
+
+        progressBarCircle.setMax((int) timeCountInMilliSeconds / 1000);
+        progressBarCircle.setProgress((int) timeCountInMilliSeconds / 1000);
+    }
+
+    /**
+     * method to convert millisecond to time format
+     *
+     * @param milliSeconds
+     * @return HH:mm:ss time formatted string
+     */
+    private String hmsTimeFormatter(long milliSeconds) {
+
+        String hms = String.format("%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(milliSeconds),
+                TimeUnit.MILLISECONDS.toMinutes(milliSeconds) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(milliSeconds)),
+                TimeUnit.MILLISECONDS.toSeconds(milliSeconds) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliSeconds)));
+
+        return hms;
+
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id = item.getItemId();
+        if(id == R.id.action_settings){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void updateUI(){
+        if (Utils.isMyServiceRunning(this, BackgroundLocationService.class)){
+            mStartUpdatesButton.setEnabled(false);
+            mStopUpdatesButton.setEnabled(true);
+        }else{
+            mStartUpdatesButton.setEnabled(true);
+            mStopUpdatesButton.setEnabled(false);
+        }
     }
 
     @Override
     public void onStart(){
         super.onStart();
 
-        if(!checkPermissions()){
+        //insertDummyLocationWrapper();
+        if (!checkPermissions()) {
             requestPermissions();
         }else{
             getLastLocation();
         }
-    }
 
-    public void writeToDB() {
-        Timer location_timer = new Timer();
-        TimerTask task = new TimerTask() {
-            public void run() {
-                DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child(time);
-                mRef.setValue(text);
+        Integer notificationString = getIntent().getIntExtra("notificationBool", 0);
+        //counterInt++;
+       // Toast.makeText(this, counterInt, Toast.LENGTH_SHORT).show();
+        //if (counterInt > 3) {
+            if (notificationString == 100) {
+                setContentView(R.layout.activity_main2);
             }
-        };
-        location_timer.scheduleAtFixedRate(task, currentDate, 100);
+        //}
+
     }
 
 
@@ -170,8 +379,6 @@ public class MainActivity extends AppCompatActivity {
                 if (task.isSuccessful() && task.getResult() != null){
                     mLastLocation = task.getResult();
 
-                    mLatitudeText.setText(String.format(Locale.ENGLISH, "%s: %f", mLatitudeLabel, mLastLocation.getLatitude()));
-                    mLongitudeText.setText(String.format(Locale.ENGLISH, "%s: %f", mLongitudeLabel, mLastLocation.getLongitude()));
                 }else{
                     Log.w(TAG, "getLastLocation:exception", task.getException());
                     showSnackbar(getString(R.string.no_location_detected));
@@ -245,7 +452,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission granted.
-                getLastLocation();
             } else {
                 // Permission denied.
 
@@ -276,5 +482,35 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    /*private void insertDummyLocationWrapper(){
+        int hasLocationPermission = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+        if (hasLocationPermission != PackageManager.PERMISSION_GRANTED){
+            if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                showMessageOKCancel("You need to allow access to Location",
+                        new DialogInterface.OnClickListener(){
+                            @Override
+                            public void onClick(DialogInterface dialog, int which){
+                                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        REQUEST_CODE_ASK_PERMISSIONS);
+                            }
+                        });
+                return;
+            }
+            requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_CODE_ASK_PERMISSIONS);
+            return;
+        }
+        insertDummyLocationWrapper();
+    }
+
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener){
+        new AlertDialog.Builder(MainActivity.this)
+                .setMessage(message)
+                .setPositiveButton("Ok", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }*/
 
 }

@@ -96,7 +96,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         intent = new Intent(LoginActivity.this, MainActivity.class);
 
-        mEmailView = (EditText) findViewById(R.id.email);
+
 
      /*   mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -110,28 +110,36 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });*/
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
+
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
         currentUserBool = getIntent().getStringExtra("sign out");
-        Toast.makeText(LoginActivity.this, "this is the login activity",
-                Toast.LENGTH_SHORT).show();
-        if (currentUserBool == "signed out" ){
-            setContentView(R.layout.activity_login);
-            mAuth.signOut();
-            currentUserBool = "signed in";
+        //Toast.makeText(LoginActivity.this, "this is the login activity",
+        //Toast.LENGTH_SHORT).show();
+        if (currentUserBool != null){
+            if (currentUserBool.equals("signed out" )){
+                setContentView(R.layout.activity_login);
+                mAuth.signOut();
+                currentUserBool = "signed in";
+                //Toast.makeText(LoginActivity.this, "testing", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                onStart();
+            }
         }
-        else{
-            onStart();
-        }
+
+        mEmailView = (EditText) findViewById(R.id.email);
+
+        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptLogin();
+                //Toast.makeText(LoginActivity.this, "attempting login", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
    /* private void populateAutoComplete() {
@@ -182,13 +190,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
+        //Toast.makeText(LoginActivity.this, "calling attemptLogin()", Toast.LENGTH_SHORT).show();
         if (mAuthTask != null) {
             return;
         }
 
         // Reset errors.
         mEmailView.setError(null);
-       // mPasswordView.setError(null);
+        // mPasswordView.setError(null);
 /*
         boolean cancel = false;
         View focusView = null;
@@ -222,6 +231,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString() + "@gmail.com";
+        //Toast.makeText(LoginActivity.this, email, Toast.LENGTH_SHORT).show();
         //String password = mPasswordView.getText().toString();
         String password = "123456";
         if (TextUtils.isEmpty(email)) {
@@ -436,13 +446,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
+
+        //Toast.makeText(LoginActivity.this, "testing onStart", Toast.LENGTH_SHORT).show();
         currentUser = mAuth.getInstance().getCurrentUser();
 
         if (currentUser != null){
-            currentUserBool = "signed in";
+            //currentUserBool = "signed in";
             UserID = currentUser.getUid();
-            Toast.makeText(getApplicationContext(), UserID,
-                    Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), UserID,
+            //        Toast.LENGTH_SHORT).show();
             intent.putExtra("User ID", UserID);
             //intent.putExtra("Sign in Boolean", currentUser);
             startActivity(intent);
@@ -450,9 +462,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         }
         else {
-            currentUserBool = "signed out";
-            Toast.makeText(getApplicationContext(), "User is signed out.",
-                    Toast.LENGTH_SHORT).show();
+            //currentUserBool = "signed out";
+            //Toast.makeText(getApplicationContext(), "User is signed out.",
+            //        Toast.LENGTH_SHORT).show();
         }
     }
 
