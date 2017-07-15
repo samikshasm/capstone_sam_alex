@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -34,35 +35,36 @@ public class NotificationService extends Service {
         Log.e("We are in notification", "yay");
         int NOTIFICATION_ID = 12345;
 
-        counter = counter + 1;
+       // counter = counter + 1;
 
         Intent yesIntent = new Intent(this, MainActivity.class);
         yesIntent.putExtra("notificationBool",100);
         PendingIntent yesIntent1 = PendingIntent.getActivity(this, 0, yesIntent, PendingIntent.FLAG_ONE_SHOT);
 
-       /* Intent noIntent = new Intent(this, MainActivity.class);
+        Intent noIntent = new Intent(this, MainActivity.class);
         noIntent.putExtra("notificationBool",200);
-        PendingIntent noIntent1 = PendingIntent.getActivity(this, 0, noIntent, PendingIntent.FLAG_UPDATE_CURRENT);*/
+        PendingIntent noIntent1 = PendingIntent.getActivity(this, 0, noIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // cancel intent
-        Intent cancelIntent = new Intent(this, TimerReceiver.class);
+       /* Intent cancelIntent = new Intent(this, TimerReceiver.class);
         Bundle extras = new Bundle();
         extras.putInt("notification_id", NOTIFICATION_ID);
         cancelIntent.putExtras(extras);
         PendingIntent pendingCancelIntent =
-                PendingIntent.getBroadcast(this, NOTIFICATION_ID, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT) ;
+                PendingIntent.getBroadcast(this, NOTIFICATION_ID, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT) ;*/
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.app_icon_small)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.app_icon_small))
                 .setContentTitle("Boozymeter")
                 .setContentText("It's been 30 minutes! Have you had a drink?")
                 .addAction(0, "Yes", yesIntent1)
-                .addAction(0, "No", pendingCancelIntent)
+                .addAction(0, "No", noIntent1)
                 .setFullScreenIntent(yesIntent1, true)
                 //.setFullScreenIntent(noIntent1, true)
                 .setAutoCancel(true);
 
-        builder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
+       // builder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
 
         //builder.setContentIntent(yesIntent);
         NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

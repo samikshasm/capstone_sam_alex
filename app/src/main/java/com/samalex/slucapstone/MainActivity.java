@@ -87,7 +87,14 @@ public class MainActivity extends AppCompatActivity {
     final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
     private int mId= 1;
     private Integer counterInt = 0;
-    private TextView test;
+    private Integer notificationInt =0;
+    private AlarmManager alarmManager;
+    private Intent resultIntent;
+    private PendingIntent pIntent;
+    private Integer numberDrinks = 0;
+    private Boolean notificationPops = false;
+    private String time;
+    private DatabaseReference mRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,10 +105,29 @@ public class MainActivity extends AppCompatActivity {
         progressBarCircle = (ProgressBar) findViewById(R.id.progressBarCircle);
         editTextMinute = (TextView) findViewById(R.id.editTextMinute);
         textViewTime = (TextView) findViewById(R.id.textViewTime);
-        imageViewReset = (ImageView) findViewById(R.id.imageViewReset);
+       // imageViewReset = (ImageView) findViewById(R.id.imageViewReset);
         imageViewStartStop = (ImageView) findViewById(R.id.imageViewStartStop);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        /*notificationInt = getIntent().getIntExtra("notificationBool", 0);
+
+        if (notificationInt == 100) {
+            //    stopCountDownTimer();
+            //   alarmManager.cancel(pIntent);
+       ///     Toast.makeText(MainActivity.this, notificationInt.toString(), Toast.LENGTH_SHORT).show();
+            notificationInt = 0;
+            counterInt = 0;
+            if (notificationPops == true) {
+                Toast.makeText(MainActivity.this, notificationInt.toString(), Toast.LENGTH_SHORT).show();
+                Intent switchToMain2 = new Intent(MainActivity.this, Main2Activity.class);
+                switchToMain2.putExtra("switchToMain2", notificationPops);
+                startActivity(switchToMain2);
+                finish();
+                notificationPops = false;
+            }
+
+        } */
 
         userIDMA = getIntent().getStringExtra("User ID");
 
@@ -149,12 +175,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        long currentDateTime = System.currentTimeMillis() + 30 * 1000;
+       /* long currentDateTime = System.currentTimeMillis() + 5 * 1000;
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent resultIntent = new Intent(this, TimerReceiver.class);
         PendingIntent pIntent = PendingIntent.getBroadcast(MainActivity.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         //need to cancel alarm at some point
-        alarmManager.set(AlarmManager.RTC_WAKEUP, currentDateTime, pIntent);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, currentDateTime, pIntent);*/
 
 
         mStopUpdatesButton.setOnClickListener(new View.OnClickListener() {
@@ -167,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        imageViewReset.setOnClickListener(new View.OnClickListener(){
+       /* imageViewReset.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 switch (view.getId()) {
@@ -179,11 +205,29 @@ public class MainActivity extends AppCompatActivity {
                         break;
                 }
             }
-        });
+        });*/
 
         imageViewStartStop.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                numberDrinks++;
+                editTextMinute.setText(""+numberDrinks);
+                writeNumDrinksToDB(""+numberDrinks);
+
+                setTimerValues();
+                setProgressBarValues();
+                if (mId == 1) {
+                    startCountDownTimer();
+                    mId = 2;
+                }
+                if (mId == 2) {
+                    counterInt = 0;
+                    notificationInt =0;
+                    reset();
+                }
+
+              //  startStop();
+                /*
                 switch (view.getId()) {
                     case R.id.imageViewReset:
                         reset();
@@ -191,19 +235,50 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.imageViewStartStop:
                         startStop();
                         break;
-                }
+                }*/
             }
         });
 
     }
 
+    public void getTime() {
+        long currentDateTime = System.currentTimeMillis();
+        Date currentDate = new Date(currentDateTime);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        time = dateFormat.format(currentDate);
+    }
+    public void writeNumDrinksToDB(String text1) {
+        getTime();
+        mRef = mDatabase.child("Users").child(userIDMA).child("Number of Drinks");
+        mRef.setValue(text1);
+
+    }
     private void reset() {
         stopCountDownTimer();
         startCountDownTimer();
+
     }
 
     private void startStop() {
-        if (timerStatus == TimerStatus.STOPPED) {
+
+        imageViewStartStop.setImageResource(R.drawable.icon_start);
+
+        setTimerValues();
+        setProgressBarValues();
+        startCountDownTimer();
+
+
+        /*if (timerStatus == TimerStatus.STOPPED) {
+            setTimerValues();
+            setProgressBarValues();
+            timerStatus = TimerStatus.STARTED;
+            startCountDownTimer();
+        }
+        else {
+            timerStatus = TimerStatus.STOPPED;
+            stopCountDownTimer();
+        }*/
+        /*if (timerStatus == TimerStatus.STOPPED) {
 
             // call to initialize the timer values
             setTimerValues();
@@ -230,9 +305,10 @@ public class MainActivity extends AppCompatActivity {
             editTextMinute.setEnabled(true);
             // changing the timer status to stopped
             timerStatus = TimerStatus.STOPPED;
+
             stopCountDownTimer();
 
-        }
+        }*/
 
     }
 
@@ -240,16 +316,16 @@ public class MainActivity extends AppCompatActivity {
      * method to initialize the values for count down timer
      */
     private void setTimerValues() {
-        int time = 0;
-        if (!editTextMinute.getText().toString().isEmpty()) {
+        int time = 20;
+       /* if (!editTextMinute.getText().toString().isEmpty()) {
             // fetching value from edit text and type cast to integer
             time = Integer.parseInt(editTextMinute.getText().toString().trim());
         } else {
             // toast message to fill edit text
             Toast.makeText(getApplicationContext(), getString(R.string.message_minutes), Toast.LENGTH_LONG).show();
-        }
+        }*/
         // assigning values after converting to milliseconds
-        timeCountInMilliSeconds = time * 20 * 1000;
+        timeCountInMilliSeconds = time * 1000;
     }
 
     /**
@@ -262,7 +338,6 @@ public class MainActivity extends AppCompatActivity {
             public void onTick(long millisUntilFinished) {
 
                 textViewTime.setText(hmsTimeFormatter(millisUntilFinished));
-
                 progressBarCircle.setProgress((int) (millisUntilFinished / 1000));
 
             }
@@ -274,26 +349,49 @@ public class MainActivity extends AppCompatActivity {
                 // call to initialize the progress bar values
                 setProgressBarValues();
                 // hiding the reset icon
-                imageViewReset.setVisibility(View.GONE);
+                //imageViewReset.setVisibility(View.GONE);
                 // changing stop icon to start icon
-                imageViewStartStop.setImageResource(R.drawable.icon_start);
+                //imageViewStartStop.setImageResource(R.drawable.icon_start);
                 // making edit text editable
-                editTextMinute.setEnabled(true);
+                //editTextMinute.setEnabled(true);
                 // changing the timer status to stopped
-                timerStatus = TimerStatus.STOPPED;
-                //Toast.makeText(MainActivity.this, "timer has stopped", Toast.LENGTH_SHORT).show();
+                //timerStatus = TimerStatus.STOPPED;
 
+
+                if (counterInt < 4) {
+                    long currentDateTime = System.currentTimeMillis() + 1 * 1000;
+                    alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                    resultIntent = new Intent(MainActivity.this, TimerReceiver.class);
+                    pIntent = PendingIntent.getBroadcast(MainActivity.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        //need to cancel alarm at some point
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, currentDateTime, pIntent);
+                    notificationPops = true;
+                    reset();
+                }
+
+                else {
+                    notificationPops = false;
+                    stopCountDownTimer();
+                   // alarmManager.cancel(pIntent);
+                   // notificationInt = 0;
+                    //counterInt = 0;
+                }
             }
 
         }.start();
         countDownTimer.start();
+        counterInt++;
+
+
     }
 
     /**
      * method to stop count down timer
      */
-    private void stopCountDownTimer() {
+    public void stopCountDownTimer() {
+
         countDownTimer.cancel();
+
     }
 
     /**
@@ -358,16 +456,6 @@ public class MainActivity extends AppCompatActivity {
         }else{
             getLastLocation();
         }
-
-        Integer notificationString = getIntent().getIntExtra("notificationBool", 0);
-        //counterInt++;
-       // Toast.makeText(this, counterInt, Toast.LENGTH_SHORT).show();
-        //if (counterInt > 3) {
-            if (notificationString == 100) {
-                setContentView(R.layout.activity_main2);
-            }
-        //}
-
     }
 
 
