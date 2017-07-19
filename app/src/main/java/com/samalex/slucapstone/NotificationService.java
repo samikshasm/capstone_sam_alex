@@ -37,8 +37,13 @@ public class NotificationService extends Service {
 
        // counter = counter + 1;
 
-        Intent yesIntent = new Intent(this, MainActivity.class);
+        String userIDMA = intent.getStringExtra("User ID");
+        String initialTimeStr = intent.getStringExtra("initial time");
+
+        Intent yesIntent = new Intent(this, Main2Activity.class);
         yesIntent.putExtra("notificationBool",100);
+        yesIntent.putExtra("User ID", userIDMA);
+        yesIntent.putExtra("initial time", initialTimeStr);
         PendingIntent yesIntent1 = PendingIntent.getActivity(this, 0, yesIntent, PendingIntent.FLAG_ONE_SHOT);
 
         Intent noIntent = new Intent(this, MainActivity.class);
@@ -64,7 +69,7 @@ public class NotificationService extends Service {
                 //.setFullScreenIntent(noIntent1, true)
                 .setAutoCancel(true);
 
-       // builder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
+        //builder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
 
         //builder.setContentIntent(yesIntent);
         NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

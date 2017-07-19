@@ -6,15 +6,21 @@ import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -72,11 +78,6 @@ public class MainActivity extends AppCompatActivity {
     private Button mStopUpdatesButton;
     private String currentUserFromLA;
     private long timeCountInMilliSeconds = 1 * 60000;
-    private enum TimerStatus {
-        STARTED,
-        STOPPED
-    }
-    private TimerStatus timerStatus = TimerStatus.STOPPED;
     private ProgressBar progressBarCircle;
     private TextView editTextMinute;
     private TextView textViewTime;
@@ -85,52 +86,82 @@ public class MainActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
-    private int mId= 1;
+    private String mId;
     private Integer counterInt = 0;
     private Integer notificationInt =0;
     private AlarmManager alarmManager;
     private Intent resultIntent;
     private PendingIntent pIntent;
     private Integer numberDrinks = 0;
-    private Boolean notificationPops = false;
+    private Integer notificationPops = 4;
     private String time;
-    private DatabaseReference mRef;
+    private long futureTimeDate;
+    private Button btn_start,btn_cancel;
+    private TextView tv_timer;
+    String date_time;
+    Calendar calendar;
+    SimpleDateFormat simpleDateFormat;
+    EditText et_hours;
+    SharedPreferences mpref;
+    SharedPreferences.Editor mEditor;
+    private long initialTime;
+    private String initialTimeStr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        //initialize UI stuff
         progressBarCircle = (ProgressBar) findViewById(R.id.progressBarCircle);
         editTextMinute = (TextView) findViewById(R.id.editTextMinute);
         textViewTime = (TextView) findViewById(R.id.textViewTime);
-       // imageViewReset = (ImageView) findViewById(R.id.imageViewReset);
         imageViewStartStop = (ImageView) findViewById(R.id.imageViewStartStop);
 
+        //initialize location something
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        /*notificationInt = getIntent().getIntExtra("notificationBool", 0);
-
-        if (notificationInt == 100) {
-            //    stopCountDownTimer();
-            //   alarmManager.cancel(pIntent);
-       ///     Toast.makeText(MainActivity.this, notificationInt.toString(), Toast.LENGTH_SHORT).show();
-            notificationInt = 0;
-            counterInt = 0;
-            if (notificationPops == true) {
-                Toast.makeText(MainActivity.this, notificationInt.toString(), Toast.LENGTH_SHORT).show();
-                Intent switchToMain2 = new Intent(MainActivity.this, Main2Activity.class);
-                switchToMain2.putExtra("switchToMain2", notificationPops);
-                startActivity(switchToMain2);
-                finish();
-                notificationPops = false;
-            }
-
-        } */
-
+        //getIntents
+        mId = getIntent().getStringExtra("coming from start");
+        Toast.makeText(this, ""+mId, Toast.LENGTH_SHORT).show();
         userIDMA = getIntent().getStringExtra("User ID");
 
+
+        //two different ways of coming into the main activity
+            //came from start activity
+        if (mId != null) {
+            if (mId.equals("start")) {
+                initialTime = System.currentTimeMillis();
+                initialTimeStr = Long.toString(initialTime);
+                Toast.makeText(this, ""+initialTime, Toast.LENGTH_SHORT).show();
+
+                createAlarms(initialTime);
+
+                mId = "come from qs";
+            }
+            //coming from notification
+            else if (mId.equals("come from qs")) {
+                Toast.makeText(this, ""+userIDMA, Toast.LENGTH_SHORT).show();
+                long notificationTime = System.currentTimeMillis();
+                Toast.makeText(this, "notifc"+notificationTime, Toast.LENGTH_SHORT).show();
+                cancelAlarm(1);
+                cancelAlarm(2);
+                cancelAlarm(3);
+                cancelAlarm(4);
+
+                //reset counter here!!@@!#fdidaj;fuadsfjadlsfj;klsadjf
+
+
+                createAlarms(notificationTime);
+            }
+        }
+
+        //if counter is greater than 4: stop Location updates and cancel alarms and switch to start activity
+
+        //sign out button
         Button signOut = (Button) findViewById(R.id.sign_out_button);
         signOut.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -162,7 +193,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
         mStartUpdatesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -175,12 +205,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-       /* long currentDateTime = System.currentTimeMillis() + 5 * 1000;
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Intent resultIntent = new Intent(this, TimerReceiver.class);
-        PendingIntent pIntent = PendingIntent.getBroadcast(MainActivity.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        //need to cancel alarm at some point
-        alarmManager.set(AlarmManager.RTC_WAKEUP, currentDateTime, pIntent);*/
 
 
         mStopUpdatesButton.setOnClickListener(new View.OnClickListener() {
@@ -193,66 +217,56 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-       /* imageViewReset.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                switch (view.getId()) {
-                    case R.id.imageViewReset:
-                        reset();
-                        break;
-                    case R.id.imageViewStartStop:
-                        startStop();
-                        break;
-                }
-            }
-        });*/
-
+       // numberDrinks = getIntent().getIntExtra("number of drinks",0);
         imageViewStartStop.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                numberDrinks++;
-                editTextMinute.setText(""+numberDrinks);
-                writeNumDrinksToDB(""+numberDrinks);
-
-                setTimerValues();
-                setProgressBarValues();
-                if (mId == 1) {
-                    startCountDownTimer();
-                    mId = 2;
-                }
-                if (mId == 2) {
-                    counterInt = 0;
-                    notificationInt =0;
-                    reset();
-                }
-
-              //  startStop();
-                /*
-                switch (view.getId()) {
-                    case R.id.imageViewReset:
-                        reset();
-                        break;
-                    case R.id.imageViewStartStop:
-                        startStop();
-                        break;
-                }*/
+                Intent switchToMain2Activity = new Intent(MainActivity.this, Main2Activity.class);
+                switchToMain2Activity.putExtra("User ID", userIDMA);
+                switchToMain2Activity.putExtra("initial time", initialTimeStr);
+                startActivity(switchToMain2Activity);
+                finish();
+                //setTimerValues();
+                //setProgressBarValues();
             }
         });
 
     }
 
-    public void getTime() {
-        long currentDateTime = System.currentTimeMillis();
-        Date currentDate = new Date(currentDateTime);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        time = dateFormat.format(currentDate);
-    }
-    public void writeNumDrinksToDB(String text1) {
-        getTime();
-        mRef = mDatabase.child("Users").child(userIDMA).child("Number of Drinks");
-        mRef.setValue(text1);
+    public void createAlarms(long currentTime) {
+        long thirty = currentTime + 0;
+        startAlarm(thirty, 1);
 
+        long sixty = currentTime + 40000;
+        startAlarm(sixty, 2);
+
+        long ninety = currentTime + 50000;
+        startAlarm(ninety,3);
+
+        long one20 = currentTime + 60000;
+        startAlarm(one20, 4);
     }
+
+    public void startAlarm(long time, int broadcastID) {
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        resultIntent = new Intent(MainActivity.this, TimerReceiver.class);
+        resultIntent.putExtra("User ID", userIDMA);
+        resultIntent.putExtra("initial time", initialTimeStr);
+
+        //pass counterInt (STRINGGGGGG) to Notification SErvicea
+
+        pIntent = PendingIntent.getBroadcast(MainActivity.this, broadcastID, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, time, pIntent);
+    }
+
+    public void cancelAlarm(int broadcastID) {
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        resultIntent = new Intent(MainActivity.this, TimerReceiver.class);
+        pIntent = PendingIntent.getBroadcast(MainActivity.this, broadcastID, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.cancel(pIntent);
+        pIntent.cancel();
+    }
+
     private void reset() {
         stopCountDownTimer();
         startCountDownTimer();
@@ -279,7 +293,6 @@ public class MainActivity extends AppCompatActivity {
             stopCountDownTimer();
         }*/
         /*if (timerStatus == TimerStatus.STOPPED) {
-
             // call to initialize the timer values
             setTimerValues();
             // call to initialize the progress bar values
@@ -294,9 +307,7 @@ public class MainActivity extends AppCompatActivity {
             timerStatus = TimerStatus.STARTED;
             // call to start the count down timer
             startCountDownTimer();
-
         } else {
-
             // hiding the reset icon
             imageViewReset.setVisibility(View.GONE);
             // changing stop icon to start icon
@@ -305,9 +316,7 @@ public class MainActivity extends AppCompatActivity {
             editTextMinute.setEnabled(true);
             // changing the timer status to stopped
             timerStatus = TimerStatus.STOPPED;
-
             stopCountDownTimer();
-
         }*/
 
     }
@@ -336,7 +345,8 @@ public class MainActivity extends AppCompatActivity {
         countDownTimer = new CountDownTimer(timeCountInMilliSeconds, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-
+                //long timeRemaining = futureTimeDate - System.currentTimeMillis();
+                //Toast.makeText(MainActivity.this, ""+timeRemaining+ ","+ millisUntilFinished, Toast.LENGTH_SHORT).show();
                 textViewTime.setText(hmsTimeFormatter(millisUntilFinished));
                 progressBarCircle.setProgress((int) (millisUntilFinished / 1000));
 
@@ -357,23 +367,50 @@ public class MainActivity extends AppCompatActivity {
                 // changing the timer status to stopped
                 //timerStatus = TimerStatus.STOPPED;
 
-
                 if (counterInt < 4) {
-                    long currentDateTime = System.currentTimeMillis() + 1 * 1000;
+                    /*
+                    long currentDateTime = System.currentTimeMillis();
                     alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
                     resultIntent = new Intent(MainActivity.this, TimerReceiver.class);
+                    resultIntent.putExtra("number of drinks", numberDrinks);
                     pIntent = PendingIntent.getBroadcast(MainActivity.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                        //need to cancel alarm at some point
+                    need to cancel alarm at some point
                     alarmManager.set(AlarmManager.RTC_WAKEUP, currentDateTime, pIntent);
-                    notificationPops = true;
+                    notificationPops = true;*/
+
+                    Intent yesIntent = new Intent(MainActivity.this, Main2Activity.class);
+                    //yesIntent.putExtra("notificationBool",100);
+                   // yesIntent.putExtra("number of drinks", numberDrinks);
+                    PendingIntent yesIntent1 = PendingIntent.getActivity(MainActivity.this, 0, yesIntent, PendingIntent.FLAG_ONE_SHOT);
+
+
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this)
+                            .setSmallIcon(R.drawable.app_icon_small)
+                            .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.app_icon_small))
+                            .setContentTitle("Boozymeter")
+                            .setContentText("It's been 30 minutes! Have you had a drink?")
+                            .addAction(0, "Yes", yesIntent1)
+                            .setFullScreenIntent(yesIntent1, true)
+                            //.setFullScreenIntent(noIntent1, true)
+                            .setAutoCancel(true);
+
+                    // builder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
+
+                    int NOTIFICATION_ID = 12345;
+
+                    //builder.setContentIntent(yesIntent);
+                    NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    nManager.notify(NOTIFICATION_ID, builder.build());
+
+                    notificationPops--;
                     reset();
                 }
 
                 else {
-                    notificationPops = false;
+                    notificationPops = 4;
                     stopCountDownTimer();
-                   // alarmManager.cancel(pIntent);
-                   // notificationInt = 0;
+                    // alarmManager.cancel(pIntent);
+                    // notificationInt = 0;
                     //counterInt = 0;
                 }
             }
@@ -456,6 +493,26 @@ public class MainActivity extends AppCompatActivity {
         }else{
             getLastLocation();
         }
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+       // AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        //PendingIntent pIntent = PendingIntent.getBroadcast(MainActivity.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+       /* if (counter < 4) {
+            for (int i= 0; i < 4-notificationPops; i++) {
+                futureTimeDate = System.currentTimeMillis() + 5 * 1000;
+                Intent resultIntent = new Intent(this, TimerReceiver.class);
+                //need to cancel alarm at some point
+                alarmManager.set(AlarmManager.RTC_WAKEUP, futureTimeDate, pIntent);
+            }
+        }
+        else {
+            alarmManager.cancel(pIntent);
+            counter = 0;
+        }*/
     }
 
 
@@ -542,16 +599,6 @@ public class MainActivity extends AppCompatActivity {
                 // Permission granted.
             } else {
                 // Permission denied.
-
-                // Notify the user via a SnackBar that they have rejected a core permission for the
-                // app, which makes the Activity useless. In a real app, core permissions would
-                // typically be best requested during a welcome-screen flow.
-
-                // Additionally, it is important to remember that a permission might have been
-                // rejected without asking the user for permission (device policy or "Never ask
-                // again" prompts). Therefore, a user interface affordance is typically implemented
-                // when permissions are denied. Otherwise, your app could appear unresponsive to
-                // touches or interactions which have required permissions.
                 showSnackbar(R.string.permission_denied_explanation, R.string.settings,
                         new View.OnClickListener() {
                             @Override
@@ -570,35 +617,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-    /*private void insertDummyLocationWrapper(){
-        int hasLocationPermission = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
-        if (hasLocationPermission != PackageManager.PERMISSION_GRANTED){
-            if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                showMessageOKCancel("You need to allow access to Location",
-                        new DialogInterface.OnClickListener(){
-                            @Override
-                            public void onClick(DialogInterface dialog, int which){
-                                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                        REQUEST_CODE_ASK_PERMISSIONS);
-                            }
-                        });
-                return;
-            }
-            requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_CODE_ASK_PERMISSIONS);
-            return;
-        }
-        insertDummyLocationWrapper();
-    }
-
-    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener){
-        new AlertDialog.Builder(MainActivity.this)
-                .setMessage(message)
-                .setPositiveButton("Ok", okListener)
-                .setNegativeButton("Cancel", null)
-                .create()
-                .show();
-    }*/
 
 }
