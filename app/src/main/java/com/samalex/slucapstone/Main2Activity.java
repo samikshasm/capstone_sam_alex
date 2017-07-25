@@ -1,6 +1,7 @@
 package com.samalex.slucapstone;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -27,6 +28,8 @@ public class Main2Activity extends AppCompatActivity{
     private Integer numberDrinks = 0;
     private String userIDMA;
     private String initialTimeStr;
+    private String counterStr;
+    private Integer counterInt;
     private String time;
     private DatabaseReference mDatabase;
     @Override
@@ -36,7 +39,7 @@ public class Main2Activity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
-       // mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
    /*     currentUserBool = getIntent().getBooleanExtra("switchToMain2", false);
@@ -45,10 +48,7 @@ public class Main2Activity extends AppCompatActivity{
             currentUserBool = false;
         }*/
 
-      /*  Toast.makeText(Main2Activity.this, ""+numberDrinks, Toast.LENGTH_SHORT).show();
-        numberDrinks++;
-        String numberOfDrinks = numberDrinks.toString();
-        writeNumDrinksToDB(numberOfDrinks);*/
+
 
         Button goToMainActivity = (Button) findViewById(R.id.goToMainActivity);
         goToMainActivity.setOnClickListener(new View.OnClickListener() {
@@ -58,11 +58,16 @@ public class Main2Activity extends AppCompatActivity{
             }
         });
 
-        numberDrinks = getIntent().getIntExtra("number of drinks", 0);
         userIDMA = getIntent().getStringExtra("User ID");
         initialTimeStr = getIntent().getStringExtra("initial time");
 
+        numberDrinks++;
+
+        Toast.makeText(Main2Activity.this, ""+numberDrinks, Toast.LENGTH_SHORT).show();
+        String numberOfDrinks = numberDrinks.toString();
+        writeNumDrinksToDB(numberOfDrinks);
     }
+
 
     public void switchToMainActivity(View view){
         Intent switchToMainActivity = new Intent (Main2Activity.this, MainActivity.class);
@@ -82,9 +87,22 @@ public class Main2Activity extends AppCompatActivity{
     }
     public void writeNumDrinksToDB(String text1) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Number of Drinks");
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(time).child("Number of Drinks");
         mRef.setValue(text1);
 
+    }
+
+    private void storeNumDrinks (Integer integer) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putInt("numDrinks", integer);
+        mEditor.apply();
+    }
+
+    private Integer getNumDrinks () {
+        SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
+        Integer numberDrinks = mSharedPreferences.getInt("numDrinks",0);
+        return numberDrinks;
     }
 }
 

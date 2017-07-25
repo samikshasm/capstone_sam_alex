@@ -22,7 +22,7 @@ import android.widget.Toast;
 public class NotificationService extends Service {
 
 
-    private Integer counter=0;
+    private Integer counterInt=0;
 
     @Nullable
     @Override
@@ -35,7 +35,7 @@ public class NotificationService extends Service {
         Log.e("We are in notification", "yay");
         int NOTIFICATION_ID = 12345;
 
-       // counter = counter + 1;
+
 
         String userIDMA = intent.getStringExtra("User ID");
         String initialTimeStr = intent.getStringExtra("initial time");
@@ -65,8 +65,8 @@ public class NotificationService extends Service {
                 .setContentText("It's been 30 minutes! Have you had a drink?")
                 .addAction(0, "Yes", yesIntent1)
                 .addAction(0, "No", noIntent1)
-                .setFullScreenIntent(yesIntent1, true)
-                //.setFullScreenIntent(noIntent1, true)
+                //.setFullScreenIntent(yesIntent1, true)
+                .setFullScreenIntent(noIntent1, true)
                 .setAutoCancel(true);
 
         //builder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });

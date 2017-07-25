@@ -20,6 +20,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -106,14 +107,30 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences.Editor mEditor;
     private long initialTime;
     private String initialTimeStr;
+    private Handler handler = new Handler();
+    private Intent intent;
+    public static final String MY_ACTION = "hello";
+    private String last_activity;
+    private String startActivity1;
 
+    public static final String startActivity = "main";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+        Toast.makeText(this, "onCreate", Toast.LENGTH_SHORT).show();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+
+
+/*        if (startActivity1.equals("start")) {
+            Intent goToStart = new Intent(MainActivity.this, StartActivity.class);
+            goToStart.putExtra("Start Activity", startActivity);
+            startActivity(goToStart);
+            finish();
+        }*/
 
         //initialize UI stuff
         progressBarCircle = (ProgressBar) findViewById(R.id.progressBarCircle);
@@ -126,42 +143,39 @@ public class MainActivity extends AppCompatActivity {
 
         //getIntents
         mId = getIntent().getStringExtra("coming from start");
-        Toast.makeText(this, ""+mId, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, ""+mId, Toast.LENGTH_SHORT).show();
         userIDMA = getIntent().getStringExtra("User ID");
+        startActivity1 = getIntent().getStringExtra("Start Activity");
+        startActivity1 = "main";
+        storeScreen(startActivity1);
+
 
 
         //two different ways of coming into the main activity
-            //came from start activity
+        //came from start activity
         if (mId != null) {
             if (mId.equals("start")) {
                 initialTime = System.currentTimeMillis();
                 initialTimeStr = Long.toString(initialTime);
-                Toast.makeText(this, ""+initialTime, Toast.LENGTH_SHORT).show();
-
                 createAlarms(initialTime);
-
+ //               createMorningAlarm();
+                startUIUpdateService();
                 mId = "come from qs";
             }
+
             //coming from notification
             else if (mId.equals("come from qs")) {
-                Toast.makeText(this, ""+userIDMA, Toast.LENGTH_SHORT).show();
                 long notificationTime = System.currentTimeMillis();
-                Toast.makeText(this, "notifc"+notificationTime, Toast.LENGTH_SHORT).show();
                 cancelAlarm(1);
                 cancelAlarm(2);
                 cancelAlarm(3);
                 cancelAlarm(4);
-
-                //reset counter here!!@@!#fdidaj;fuadsfjadlsfj;klsadjf
-
-
+                stopUIUpdateService();
+                startUIUpdateService();
                 createAlarms(notificationTime);
             }
         }
 
-        //if counter is greater than 4: stop Location updates and cancel alarms and switch to start activity
-
-        //sign out button
         Button signOut = (Button) findViewById(R.id.sign_out_button);
         signOut.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -174,6 +188,19 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        Button goToStart = (Button) findViewById(R.id.go_to_start);
+        View.OnClickListener handler1 = new View.OnClickListener() {
+            public void onClick(View view) {
+                stopUIUpdateService();
+                startActivity1 = "start";
+                storeScreen(startActivity1);
+                Intent goToStart = new Intent(MainActivity.this, StartActivity.class);
+                goToStart.putExtra("Start Activity", startActivity);
+                startActivity(goToStart);
+                finish();            }
+        };
+        goToStart.setOnClickListener(handler1);
 
 
         mStartUpdatesButton = (Button) findViewById(R.id.start_updates_button);
@@ -217,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-       // numberDrinks = getIntent().getIntExtra("number of drinks",0);
+        // numberDrinks = getIntent().getIntExtra("number of drinks",0);
         imageViewStartStop.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -233,203 +260,116 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+  /*  private void createMorningAlarm () {
+        Calendar morningCal = Calendar.getInstance();
+        morningCal.setTimeInMillis(System.currentTimeMillis());
+        morningCal.set(Calendar.HOUR_OF_DAY, 21);
+        morningCal.set(Calendar.MINUTE, 48);
+
+        Intent alertIntent = new Intent(this, TimerReceiver.class);
+        AlarmManager morningAlarmMan = (AlarmManager) getSystemService(ALARM_SERVICE);
+        resultIntent.putExtra("broadcast Int", "5");
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 5, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        morningAlarmMan.setRepeating(AlarmManager.RTC_WAKEUP, morningCal.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+    } */
+
+    private void storeScreen (String string) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putString("currentScreen", string);
+        mEditor.apply();
+    }
+
+    private String getScreen () {
+        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
+        String selectedScreen = mSharedPreferences.getString("currentScreen","none");
+        return selectedScreen;
+    }
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            testUpdateUI(intent);
+        }
+    };
+
+    public void startUIUpdateService(){
+        startService(new Intent(this, BroadcastService.class));
+        registerReceiver(broadcastReceiver,new IntentFilter(BroadcastService.BROADCAST_ACTION));
+    }
+
+    public void stopUIUpdateService(){
+        stopService(new Intent(this, BroadcastService.class));
+        //unregisterReceiver(broadcastReceiver);
+    }
+
+
+    private void testUpdateUI(Intent intent){
+        String secondsStr = intent.getStringExtra("milliseconds");
+        int seconds = Integer.parseInt(secondsStr);
+        int minutes = seconds / 60;
+        int seconds2 = seconds % 60;
+        String hms = String.format("%02d:%02d",minutes, seconds2);
+        textViewTime.setText(hms);
+        progressBarCircle.setMax(1800);
+        progressBarCircle.setProgress(seconds);
+
+    }
+
     public void createAlarms(long currentTime) {
-        long thirty = currentTime + 0;
+        long thirty = currentTime + 10000;
         startAlarm(thirty, 1);
 
-        long sixty = currentTime + 40000;
+        long sixty = currentTime + 20000;
         startAlarm(sixty, 2);
 
-        long ninety = currentTime + 50000;
+        long ninety = currentTime + 30000;
         startAlarm(ninety,3);
 
-        long one20 = currentTime + 60000;
-        startAlarm(one20, 4);
+        long one = currentTime + 40000;
+        startAlarm(one, 4);
     }
 
     public void startAlarm(long time, int broadcastID) {
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        resultIntent = new Intent(MainActivity.this, TimerReceiver.class);
-        resultIntent.putExtra("User ID", userIDMA);
-        resultIntent.putExtra("initial time", initialTimeStr);
+            alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            resultIntent = new Intent(MainActivity.this, TimerReceiver.class);
+            resultIntent.putExtra("User ID", userIDMA);
+            resultIntent.putExtra("initial time", initialTimeStr);
+            resultIntent.putExtra("broadcast Int", ""+broadcastID);
+            pIntent = PendingIntent.getBroadcast(MainActivity.this, broadcastID, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, time, pIntent);
 
-        //pass counterInt (STRINGGGGGG) to Notification SErvicea
 
-        pIntent = PendingIntent.getBroadcast(MainActivity.this, broadcastID, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, time, pIntent);
     }
 
     public void cancelAlarm(int broadcastID) {
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        resultIntent = new Intent(MainActivity.this, TimerReceiver.class);
-        pIntent = PendingIntent.getBroadcast(MainActivity.this, broadcastID, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.cancel(pIntent);
-        pIntent.cancel();
-    }
-
-    private void reset() {
-        stopCountDownTimer();
-        startCountDownTimer();
+            alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            resultIntent = new Intent(MainActivity.this, TimerReceiver.class);
+            pIntent = PendingIntent.getBroadcast(MainActivity.this, broadcastID, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            alarmManager.cancel(pIntent);
+            pIntent.cancel();
 
     }
 
-    private void startStop() {
-
-        imageViewStartStop.setImageResource(R.drawable.icon_start);
-
-        setTimerValues();
-        setProgressBarValues();
-        startCountDownTimer();
 
 
-        /*if (timerStatus == TimerStatus.STOPPED) {
-            setTimerValues();
-            setProgressBarValues();
-            timerStatus = TimerStatus.STARTED;
-            startCountDownTimer();
+    @Override
+    public void onResume() {
+        startUIUpdateService();
+        Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
+        SharedPreferences mSharedPreferences1 = getSharedPreferences("screen", MODE_PRIVATE);
+        String selectedScreen = mSharedPreferences1.getString("currentScreen","none");
+        if (selectedScreen.equals("start")) {
+            stopUIUpdateService();
+            Intent goToStart = new Intent(MainActivity.this, StartActivity.class);
+            goToStart.putExtra("Start Activity", startActivity);
+            startActivity(goToStart);
+            finish();
         }
-        else {
-            timerStatus = TimerStatus.STOPPED;
-            stopCountDownTimer();
-        }*/
-        /*if (timerStatus == TimerStatus.STOPPED) {
-            // call to initialize the timer values
-            setTimerValues();
-            // call to initialize the progress bar values
-            setProgressBarValues();
-            // showing the reset icon
-            imageViewReset.setVisibility(View.VISIBLE);
-            // changing play icon to stop icon
-            imageViewStartStop.setImageResource(R.drawable.icon_stop);
-            // making edit text not editable
-            editTextMinute.setEnabled(false);
-            // changing the timer status to started
-            timerStatus = TimerStatus.STARTED;
-            // call to start the count down timer
-            startCountDownTimer();
-        } else {
-            // hiding the reset icon
-            imageViewReset.setVisibility(View.GONE);
-            // changing stop icon to start icon
-            imageViewStartStop.setImageResource(R.drawable.icon_start);
-            // making edit text editable
-            editTextMinute.setEnabled(true);
-            // changing the timer status to stopped
-            timerStatus = TimerStatus.STOPPED;
-            stopCountDownTimer();
-        }*/
 
+        super.onResume();
     }
 
-    /**
-     * method to initialize the values for count down timer
-     */
-    private void setTimerValues() {
-        int time = 20;
-       /* if (!editTextMinute.getText().toString().isEmpty()) {
-            // fetching value from edit text and type cast to integer
-            time = Integer.parseInt(editTextMinute.getText().toString().trim());
-        } else {
-            // toast message to fill edit text
-            Toast.makeText(getApplicationContext(), getString(R.string.message_minutes), Toast.LENGTH_LONG).show();
-        }*/
-        // assigning values after converting to milliseconds
-        timeCountInMilliSeconds = time * 1000;
-    }
-
-    /**
-     * method to start count down timer
-     */
-    private void startCountDownTimer() {
-
-        countDownTimer = new CountDownTimer(timeCountInMilliSeconds, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                //long timeRemaining = futureTimeDate - System.currentTimeMillis();
-                //Toast.makeText(MainActivity.this, ""+timeRemaining+ ","+ millisUntilFinished, Toast.LENGTH_SHORT).show();
-                textViewTime.setText(hmsTimeFormatter(millisUntilFinished));
-                progressBarCircle.setProgress((int) (millisUntilFinished / 1000));
-
-            }
-
-            @Override
-            public void onFinish() {
-
-                textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds));
-                // call to initialize the progress bar values
-                setProgressBarValues();
-                // hiding the reset icon
-                //imageViewReset.setVisibility(View.GONE);
-                // changing stop icon to start icon
-                //imageViewStartStop.setImageResource(R.drawable.icon_start);
-                // making edit text editable
-                //editTextMinute.setEnabled(true);
-                // changing the timer status to stopped
-                //timerStatus = TimerStatus.STOPPED;
-
-                if (counterInt < 4) {
-                    /*
-                    long currentDateTime = System.currentTimeMillis();
-                    alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-                    resultIntent = new Intent(MainActivity.this, TimerReceiver.class);
-                    resultIntent.putExtra("number of drinks", numberDrinks);
-                    pIntent = PendingIntent.getBroadcast(MainActivity.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    need to cancel alarm at some point
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, currentDateTime, pIntent);
-                    notificationPops = true;*/
-
-                    Intent yesIntent = new Intent(MainActivity.this, Main2Activity.class);
-                    //yesIntent.putExtra("notificationBool",100);
-                   // yesIntent.putExtra("number of drinks", numberDrinks);
-                    PendingIntent yesIntent1 = PendingIntent.getActivity(MainActivity.this, 0, yesIntent, PendingIntent.FLAG_ONE_SHOT);
-
-
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this)
-                            .setSmallIcon(R.drawable.app_icon_small)
-                            .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.app_icon_small))
-                            .setContentTitle("Boozymeter")
-                            .setContentText("It's been 30 minutes! Have you had a drink?")
-                            .addAction(0, "Yes", yesIntent1)
-                            .setFullScreenIntent(yesIntent1, true)
-                            //.setFullScreenIntent(noIntent1, true)
-                            .setAutoCancel(true);
-
-                    // builder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
-
-                    int NOTIFICATION_ID = 12345;
-
-                    //builder.setContentIntent(yesIntent);
-                    NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                    nManager.notify(NOTIFICATION_ID, builder.build());
-
-                    notificationPops--;
-                    reset();
-                }
-
-                else {
-                    notificationPops = 4;
-                    stopCountDownTimer();
-                    // alarmManager.cancel(pIntent);
-                    // notificationInt = 0;
-                    //counterInt = 0;
-                }
-            }
-
-        }.start();
-        countDownTimer.start();
-        counterInt++;
-
-
-    }
-
-    /**
-     * method to stop count down timer
-     */
-    public void stopCountDownTimer() {
-
-        countDownTimer.cancel();
-
-    }
 
     /**
      * method to set circular progress bar values
@@ -496,24 +436,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-       // AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        //PendingIntent pIntent = PendingIntent.getBroadcast(MainActivity.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-       /* if (counter < 4) {
-            for (int i= 0; i < 4-notificationPops; i++) {
-                futureTimeDate = System.currentTimeMillis() + 5 * 1000;
-                Intent resultIntent = new Intent(this, TimerReceiver.class);
-                //need to cancel alarm at some point
-                alarmManager.set(AlarmManager.RTC_WAKEUP, futureTimeDate, pIntent);
-            }
-        }
-        else {
-            alarmManager.cancel(pIntent);
-            counter = 0;
-        }*/
-    }
 
 
     @SuppressWarnings("MissingPermission")

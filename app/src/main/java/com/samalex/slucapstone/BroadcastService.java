@@ -1,63 +1,63 @@
 package com.samalex.slucapstone;
 
-/**
- * Created by AlexL on 7/17/2017.
- */
-
 import android.app.Service;
 import android.content.Intent;
-import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.sql.Date;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Created by AlexL on 7/19/2017.
+ */
+
 public class BroadcastService extends Service {
-
-    private final static String TAG = "BroadcastService";
-
-    public static final String COUNTDOWN_BR = "your_package_name.countdown_br";
-    Intent bi = new Intent(COUNTDOWN_BR);
-
-    CountDownTimer cdt = null;
+    private static final String TAG = "BroadcastService";
+    private final Handler handler = new Handler();
+    public static final String BROADCAST_ACTION = "com.samalex.slucapstone.displayevent";
+    Intent intent;
+    long milliSeconds = 1800;
 
     @Override
-    public void onCreate() {
+    public void onCreate(){
         super.onCreate();
-
-        Log.i(TAG, "Starting timer...");
-
-        cdt = new CountDownTimer(30000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-                Log.i(TAG, "Countdown seconds remaining: " + millisUntilFinished / 1000);
-                bi.putExtra("countdown", millisUntilFinished);
-                sendBroadcast(bi);
-            }
-
-            @Override
-            public void onFinish() {
-                Log.i(TAG, "Timer finished");
-            }
-        };
-
-        cdt.start();
+        intent = new Intent(BROADCAST_ACTION);
     }
 
     @Override
-    public void onDestroy() {
+    public int onStartCommand(Intent intent, int flags, int startId){
+        handler.removeCallbacks(sendUpdatesToUI);
+        handler.postDelayed(sendUpdatesToUI, 1000);
+        return START_NOT_STICKY;
+    }
 
-        cdt.cancel();
-        Log.i(TAG, "Timer cancelled");
-        super.onDestroy();
+    private Runnable sendUpdatesToUI = new Runnable(){
+        public void run(){
+            DisplayLoggingInfo();
+            handler.postDelayed(this, 1000);
+        }
+    };
+
+    private void DisplayLoggingInfo(){
+        if(milliSeconds < 0){
+            milliSeconds = 1800;
+        }
+        Log.d(TAG, "entered DisplayLoggingInfo");
+        long millis = milliSeconds--;
+        intent.putExtra("milliseconds", String.valueOf(millis));
+        sendBroadcast(intent);
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    @Override
-    public IBinder onBind(Intent arg0) {
+    public IBinder onBind(Intent intent){
         return null;
+    }
+
+    @Override
+    public void onDestroy(){
+        handler.removeCallbacks(sendUpdatesToUI);
+        super.onDestroy();
     }
 }

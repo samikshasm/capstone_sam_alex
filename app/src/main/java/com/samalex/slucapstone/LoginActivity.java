@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -54,6 +55,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
+    private String lastActivity;
+
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -89,13 +92,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_login);
         // Set up the login form.
-
-        //autocompletes the email address --- cool but lets start with the basics
-        /*
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
-*/
-
         intent = new Intent(LoginActivity.this, StartActivity.class);
 
 
@@ -132,6 +128,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         }
 
+        Toast.makeText(this, "omg hayyyy in the login", Toast.LENGTH_SHORT).show();
+
         mEmailView = (EditText) findViewById(R.id.email);
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
@@ -142,6 +140,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 //Toast.makeText(LoginActivity.this, "attempting login", Toast.LENGTH_SHORT).show();
             }
         });
+
+
     }
 
    /* private void populateAutoComplete() {
@@ -469,6 +469,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             //        Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
 }

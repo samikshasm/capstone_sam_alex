@@ -3,6 +3,7 @@ package com.samalex.slucapstone;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
@@ -56,20 +57,18 @@ public class LocationUpdates extends IntentService {
                 time = dateFormat.format(currentDate);
                 text = latitude + "," + longitude;
 
-                writeToDB(text);
-                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                NotificationCompat.Builder noti = new NotificationCompat.Builder(this);
-                noti.setContentTitle("Fused Location");
-                noti.setContentText(location.getLatitude() + "," + location.getLongitude()+","+test);
-                noti.setSmallIcon(R.mipmap.ic_launcher);
+                SharedPreferences mSharedPreferences1 = getSharedPreferences("screen", MODE_PRIVATE);
+                String selectedScreen = mSharedPreferences1.getString("currentScreen","none");
 
-                notificationManager.notify(1234, noti.build());
+                if (selectedScreen.equals("main")) {
+                    writeToDB(text);
+                }
             }
         }
     }
 
     public void writeToDB(String text1) {
-        DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child(time);
+        DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child("Location").child(time);
         mRef.setValue(text1);
 
     }
