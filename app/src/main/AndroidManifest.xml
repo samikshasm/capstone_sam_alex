@@ -49,6 +49,11 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
+        <activity android:name=".MorningQS">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
         <service android:name=".LocationUpdates"/>
         <service android:name=".BackgroundLocationService"/>
         <service android:name=".BroadcastService"/>
@@ -56,6 +61,7 @@
         <service android:name=".NotificationService"
             android:enabled="true">
         </service>
+        <receiver android:name=".ButtonReceiver"/>
     </application>
 
 </manifest>

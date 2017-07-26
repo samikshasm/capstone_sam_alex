@@ -1,5 +1,7 @@
 package com.samalex.slucapstone;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -48,8 +50,6 @@ public class Main2Activity extends AppCompatActivity{
             currentUserBool = false;
         }*/
 
-
-
         Button goToMainActivity = (Button) findViewById(R.id.goToMainActivity);
         goToMainActivity.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -66,6 +66,12 @@ public class Main2Activity extends AppCompatActivity{
         Toast.makeText(Main2Activity.this, ""+numberDrinks, Toast.LENGTH_SHORT).show();
         String numberOfDrinks = numberDrinks.toString();
         writeNumDrinksToDB(numberOfDrinks);
+
+        String broadcastID = getIntent().getStringExtra("broadcast Int");
+        int notificationId = Integer.parseInt(broadcastID);
+
+        NotificationManager manager = (NotificationManager) Main2Activity.this.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.cancel(notificationId);
     }
 
 
@@ -105,4 +111,3 @@ public class Main2Activity extends AppCompatActivity{
         return numberDrinks;
     }
 }
-

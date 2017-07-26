@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
     private String mId;
     private Integer counterInt = 0;
-    private Integer notificationInt =0;
+    private Integer notificationInt = 0;
     private AlarmManager alarmManager;
     private Intent resultIntent;
     private PendingIntent pIntent;
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
     private Integer notificationPops = 4;
     private String time;
     private long futureTimeDate;
-    private Button btn_start,btn_cancel;
+    private Button btn_start, btn_cancel;
     private TextView tv_timer;
     String date_time;
     Calendar calendar;
@@ -114,13 +114,14 @@ public class MainActivity extends AppCompatActivity {
     private String startActivity1;
 
     public static final String startActivity = "main";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        Toast.makeText(this, "onCreate", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "onCreate", Toast.LENGTH_SHORT).show();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
@@ -150,7 +151,6 @@ public class MainActivity extends AppCompatActivity {
         storeScreen(startActivity1);
 
 
-
         //two different ways of coming into the main activity
         //came from start activity
         if (mId != null) {
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                 initialTime = System.currentTimeMillis();
                 initialTimeStr = Long.toString(initialTime);
                 createAlarms(initialTime);
- //               createMorningAlarm();
+                createMorningAlarm();
                 startUIUpdateService();
                 mId = "come from qs";
             }
@@ -198,7 +198,8 @@ public class MainActivity extends AppCompatActivity {
                 Intent goToStart = new Intent(MainActivity.this, StartActivity.class);
                 goToStart.putExtra("Start Activity", startActivity);
                 startActivity(goToStart);
-                finish();            }
+                finish();
+            }
         };
         goToStart.setOnClickListener(handler1);
 
@@ -210,15 +211,18 @@ public class MainActivity extends AppCompatActivity {
 
         int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED){
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)){
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
 
-            }else{
+            } else {
                 ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
         }
+
+
+       // startLocationUpdates();
 
         mStartUpdatesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,7 +237,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
         mStopUpdatesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -245,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // numberDrinks = getIntent().getIntExtra("number of drinks",0);
-        imageViewStartStop.setOnClickListener(new View.OnClickListener(){
+        imageViewStartStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent switchToMain2Activity = new Intent(MainActivity.this, Main2Activity.class);
@@ -260,29 +263,37 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-  /*  private void createMorningAlarm () {
+    private void startLocationUpdates() {
+        Intent locationIntent = new Intent(MainActivity.this, BackgroundLocationService.class);
+        locationIntent.putExtra("User ID", userIDMA);
+        startService(locationIntent);
+    }
+
+    private void createMorningAlarm () {
         Calendar morningCal = Calendar.getInstance();
-        morningCal.setTimeInMillis(System.currentTimeMillis());
-        morningCal.set(Calendar.HOUR_OF_DAY, 21);
-        morningCal.set(Calendar.MINUTE, 48);
+        int day = morningCal.get(Calendar.DAY_OF_WEEK);
+        morningCal.set(Calendar.HOUR, 22);
+        morningCal.set(Calendar.MINUTE, 05);
 
         Intent alertIntent = new Intent(this, TimerReceiver.class);
         AlarmManager morningAlarmMan = (AlarmManager) getSystemService(ALARM_SERVICE);
-        resultIntent.putExtra("broadcast Int", "5");
+        alertIntent.putExtra("broadcast Int", "5");
+        alertIntent.putExtra("User ID", userIDMA);
+        alertIntent.putExtra("initial time", initialTimeStr);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 5, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        morningAlarmMan.setRepeating(AlarmManager.RTC_WAKEUP, morningCal.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-    } */
+        morningAlarmMan.set(AlarmManager.RTC_WAKEUP, morningCal.getTimeInMillis(), pendingIntent);
+    }
 
-    private void storeScreen (String string) {
+    private void storeScreen(String string) {
         SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.putString("currentScreen", string);
         mEditor.apply();
     }
 
-    private String getScreen () {
+    private String getScreen() {
         SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
-        String selectedScreen = mSharedPreferences.getString("currentScreen","none");
+        String selectedScreen = mSharedPreferences.getString("currentScreen", "none");
         return selectedScreen;
     }
 
@@ -293,23 +304,23 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    public void startUIUpdateService(){
+    public void startUIUpdateService() {
         startService(new Intent(this, BroadcastService.class));
-        registerReceiver(broadcastReceiver,new IntentFilter(BroadcastService.BROADCAST_ACTION));
+        registerReceiver(broadcastReceiver, new IntentFilter(BroadcastService.BROADCAST_ACTION));
     }
 
-    public void stopUIUpdateService(){
+    public void stopUIUpdateService() {
         stopService(new Intent(this, BroadcastService.class));
         //unregisterReceiver(broadcastReceiver);
     }
 
 
-    private void testUpdateUI(Intent intent){
+    private void testUpdateUI(Intent intent) {
         String secondsStr = intent.getStringExtra("milliseconds");
         int seconds = Integer.parseInt(secondsStr);
         int minutes = seconds / 60;
         int seconds2 = seconds % 60;
-        String hms = String.format("%02d:%02d",minutes, seconds2);
+        String hms = String.format("%02d:%02d", minutes, seconds2);
         textViewTime.setText(hms);
         progressBarCircle.setMax(1800);
         progressBarCircle.setProgress(seconds);
@@ -324,43 +335,46 @@ public class MainActivity extends AppCompatActivity {
         startAlarm(sixty, 2);
 
         long ninety = currentTime + 30000;
-        startAlarm(ninety,3);
+        startAlarm(ninety, 3);
 
         long one = currentTime + 40000;
         startAlarm(one, 4);
     }
 
     public void startAlarm(long time, int broadcastID) {
-            alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-            resultIntent = new Intent(MainActivity.this, TimerReceiver.class);
-            resultIntent.putExtra("User ID", userIDMA);
-            resultIntent.putExtra("initial time", initialTimeStr);
-            resultIntent.putExtra("broadcast Int", ""+broadcastID);
-            pIntent = PendingIntent.getBroadcast(MainActivity.this, broadcastID, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            alarmManager.set(AlarmManager.RTC_WAKEUP, time, pIntent);
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        resultIntent = new Intent(MainActivity.this, TimerReceiver.class);
+        resultIntent.putExtra("User ID", userIDMA);
+        resultIntent.putExtra("initial time", initialTimeStr);
+        resultIntent.putExtra("broadcast Int", "" + broadcastID);
+        pIntent = PendingIntent.getBroadcast(MainActivity.this, broadcastID, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, time, pIntent);
 
 
     }
 
     public void cancelAlarm(int broadcastID) {
-            alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-            resultIntent = new Intent(MainActivity.this, TimerReceiver.class);
-            pIntent = PendingIntent.getBroadcast(MainActivity.this, broadcastID, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            alarmManager.cancel(pIntent);
-            pIntent.cancel();
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        resultIntent = new Intent(MainActivity.this, TimerReceiver.class);
+        pIntent = PendingIntent.getBroadcast(MainActivity.this, broadcastID, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.cancel(pIntent);
+        pIntent.cancel();
 
     }
-
 
 
     @Override
     public void onResume() {
         startUIUpdateService();
-        Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
         SharedPreferences mSharedPreferences1 = getSharedPreferences("screen", MODE_PRIVATE);
-        String selectedScreen = mSharedPreferences1.getString("currentScreen","none");
+        String selectedScreen = mSharedPreferences1.getString("currentScreen", "none");
         if (selectedScreen.equals("start")) {
+            Intent intent = new Intent(MainActivity.this, BackgroundLocationService.class);
+            stopService(intent);
+
             stopUIUpdateService();
+            unregisterReceiver(broadcastReceiver);
             Intent goToStart = new Intent(MainActivity.this, StartActivity.class);
             goToStart.putExtra("Start Activity", startActivity);
             startActivity(goToStart);
@@ -399,54 +413,53 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.action_settings){
+        if (id == R.id.action_settings) {
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void updateUI(){
-        if (Utils.isMyServiceRunning(this, BackgroundLocationService.class)){
+    private void updateUI() {
+        if (Utils.isMyServiceRunning(this, BackgroundLocationService.class)) {
             mStartUpdatesButton.setEnabled(false);
             mStopUpdatesButton.setEnabled(true);
-        }else{
+        } else {
             mStartUpdatesButton.setEnabled(true);
             mStopUpdatesButton.setEnabled(false);
         }
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
 
         //insertDummyLocationWrapper();
         if (!checkPermissions()) {
             requestPermissions();
-        }else{
+        } else {
             getLastLocation();
         }
 
     }
 
 
-
     @SuppressWarnings("MissingPermission")
-    private void getLastLocation(){
-        mFusedLocationClient.getLastLocation().addOnCompleteListener(this, new OnCompleteListener<Location>(){
+    private void getLastLocation() {
+        mFusedLocationClient.getLastLocation().addOnCompleteListener(this, new OnCompleteListener<Location>() {
             @Override
-            public void onComplete(@NonNull Task<Location> task){
-                if (task.isSuccessful() && task.getResult() != null){
+            public void onComplete(@NonNull Task<Location> task) {
+                if (task.isSuccessful() && task.getResult() != null) {
                     mLastLocation = task.getResult();
 
-                }else{
+                } else {
                     Log.w(TAG, "getLastLocation:exception", task.getException());
                     showSnackbar(getString(R.string.no_location_detected));
                 }
@@ -454,18 +467,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void showSnackbar(final String text){
+    private void showSnackbar(final String text) {
         View container = findViewById(R.id.main_activity_container);
-        if (container != null){
+        if (container != null) {
             Snackbar.make(container, text, Snackbar.LENGTH_LONG).show();
         }
     }
 
-    private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener){
-        Snackbar.make(findViewById(android.R.id.content), getString(mainTextStringId), Snackbar.LENGTH_INDEFINITE).setAction(getString(actionStringId),listener).show();
+    private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
+        Snackbar.make(findViewById(android.R.id.content), getString(mainTextStringId), Snackbar.LENGTH_INDEFINITE).setAction(getString(actionStringId), listener).show();
     }
 
-    private boolean checkPermissions(){
+    private boolean checkPermissions() {
         int permissionState = ActivityCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION);
         return permissionState == PackageManager.PERMISSION_GRANTED;
@@ -539,5 +552,4 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 }

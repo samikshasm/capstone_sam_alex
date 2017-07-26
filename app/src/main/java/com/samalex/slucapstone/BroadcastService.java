@@ -58,6 +58,7 @@ public class BroadcastService extends Service {
     @Override
     public void onDestroy(){
         handler.removeCallbacks(sendUpdatesToUI);
+        //handler.postDelayed(sendUpdatesToUI, 1000);
         super.onDestroy();
     }
 }

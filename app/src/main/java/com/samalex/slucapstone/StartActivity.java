@@ -60,23 +60,15 @@ public class StartActivity extends AppCompatActivity {
 
         SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
         String selectedScreen = mSharedPreferences.getString("currentScreen","none");
-            if (selectedScreen.equals("main")) {
-                Intent switchToMain = new Intent(StartActivity.this, MainActivity.class);
-                switchToMain.putExtra("User ID", userIDMA);
-                startActivity(switchToMain);
-                finish();
-            }
-
-   /*         else if (selectedScreen.equals("morningQS")){
-                Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
-                switchToMorning.putExtra("User ID", userIDMA);
-                startActivity(switchToMorning);
-                finish();
-            }
-   */
+        if (selectedScreen.equals("main")) {
+            Intent switchToMain = new Intent(StartActivity.this, MainActivity.class);
+            switchToMain.putExtra("User ID", userIDMA);
+            startActivity(switchToMain);
+            finish();
+        }
 
 
-        Toast.makeText(this, selectedScreen, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, selectedScreen, Toast.LENGTH_SHORT).show();
 
         startActivity = getIntent().getStringExtra("Start Activity");
         if (startActivity != null){
@@ -88,5 +80,18 @@ public class StartActivity extends AppCompatActivity {
 
 
     }
+/*
+    @Override
+    public void onResume(){
+        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
+        String selectedScreen = mSharedPreferences.getString("currentScreen","none");
+        if (selectedScreen.equals("morningQS")){
+            Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
+            switchToMorning.putExtra("User ID", userIDMA);
+            startActivity(switchToMorning);
+            finish();
+        }
+        super.onResume();
+    }*/
 
 }
