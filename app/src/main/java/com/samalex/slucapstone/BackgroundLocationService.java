@@ -3,6 +3,7 @@ package com.samalex.slucapstone;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Bundle;
@@ -41,7 +42,6 @@ public class BackgroundLocationService extends Service implements GoogleApiClien
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i(TAG,"onCreate()");
 
         mIntentService = new Intent(this,LocationUpdates.class);
         mPendingIntent = PendingIntent.getService(this, 1, mIntentService, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -59,15 +59,14 @@ public class BackgroundLocationService extends Service implements GoogleApiClien
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        userID = intent.getStringExtra("User ID");
+        SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
+        userID = mSharedPreferences.getString("user ID", "none");
 
         if(mGoogleApiClient.isConnected()) {
-            Log.i(TAG+" onStartCommand", "GoogleApiClient Connected");
             return START_STICKY;
         }
 
         if(!mGoogleApiClient.isConnected() || !mGoogleApiClient.isConnecting()){
-            Log.i(TAG+" onStartCommand", "GoogleApiClient not Connected");
             mGoogleApiClient.connect();
         }
 
@@ -75,7 +74,6 @@ public class BackgroundLocationService extends Service implements GoogleApiClien
     }
 
     protected synchronized void buildGoogleApiClient() {
-        Log.i(TAG, "Building GoogleApiClient");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -85,7 +83,6 @@ public class BackgroundLocationService extends Service implements GoogleApiClien
     }
 
     protected void createLocationRequest() {
-        Log.i(TAG, "createLocationRequest()");
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
@@ -93,14 +90,12 @@ public class BackgroundLocationService extends Service implements GoogleApiClien
     }
 
     protected void startLocationUpdates() {
-        Log.i(TAG, "Started Location Updates");
 
         //LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, mPendingIntent);
     }
 
     protected void stopLocationUpdates() {
-        Log.i(TAG,"Stopped Location Updates");
 
         //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, mPendingIntent);
@@ -108,7 +103,6 @@ public class BackgroundLocationService extends Service implements GoogleApiClien
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        Log.i(TAG, "Connected to GoogleApiClient");
 
         startLocationUpdates();
     }
@@ -122,13 +116,11 @@ public class BackgroundLocationService extends Service implements GoogleApiClien
 
     @Override
     public void onConnectionSuspended(int cause) {
-        Log.i(TAG, "Connection suspended");
         mGoogleApiClient.connect();
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
 
     @Override

@@ -43,13 +43,6 @@ public class Main2Activity extends AppCompatActivity{
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-
-   /*     currentUserBool = getIntent().getBooleanExtra("switchToMain2", false);
-        if (currentUserBool == true) {
-            setContentView(R.layout.activity_main2);
-            currentUserBool = false;
-        }*/
-
         Button goToMainActivity = (Button) findViewById(R.id.goToMainActivity);
         goToMainActivity.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -58,8 +51,11 @@ public class Main2Activity extends AppCompatActivity{
             }
         });
 
-        userIDMA = getIntent().getStringExtra("User ID");
-        initialTimeStr = getIntent().getStringExtra("initial time");
+      //  userIDMA = getIntent().getStringExtra("User ID");
+        SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
+        userIDMA = mSharedPreferences.getString("user ID", "none");
+
+        //initialTimeStr = getIntent().getStringExtra("initial time");
 
         numberDrinks++;
 
@@ -68,10 +64,14 @@ public class Main2Activity extends AppCompatActivity{
         writeNumDrinksToDB(numberOfDrinks);
 
         String broadcastID = getIntent().getStringExtra("broadcast Int");
-        int notificationId = Integer.parseInt(broadcastID);
+        if (broadcastID!= null) {
+            int notificationId = Integer.parseInt(broadcastID);
+            Toast.makeText(this, broadcastID, Toast.LENGTH_SHORT).show();
 
-        NotificationManager manager = (NotificationManager) Main2Activity.this.getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.cancel(notificationId);
+            NotificationManager manager = (NotificationManager) Main2Activity.this.getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.cancel(notificationId);
+        }
+
     }
 
 
@@ -79,7 +79,7 @@ public class Main2Activity extends AppCompatActivity{
         Intent switchToMainActivity = new Intent (Main2Activity.this, MainActivity.class);
         //switchToMainActivity.putExtra("number of drinks", numberDrinks);
         switchToMainActivity.putExtra("coming from start", "come from qs");
-        switchToMainActivity.putExtra("User ID", userIDMA);
+        //switchToMainActivity.putExtra("User ID", userIDMA);
         switchToMainActivity.putExtra("initial time", initialTimeStr);
         startActivity(switchToMainActivity);
         finish();

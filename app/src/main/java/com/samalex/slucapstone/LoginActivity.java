@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
@@ -128,7 +129,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         }
 
-        Toast.makeText(this, "omg hayyyy in the login", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "omg hayyyy in the login", Toast.LENGTH_SHORT).show();
 
         mEmailView = (EditText) findViewById(R.id.email);
 
@@ -142,6 +143,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
 
 
+    }
+
+    private void storeUserID(String string) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putString("user ID", string);
+        mEditor.apply();
+    }
+
+    private String getScreen() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
+        String selectedScreen = mSharedPreferences.getString("user ID", "none");
+        return selectedScreen;
     }
 
    /* private void populateAutoComplete() {
@@ -184,6 +198,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         }
     } */
+
 
 
     /**
@@ -269,11 +284,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             FirebaseUser user = mAuth.getCurrentUser();
                             currentUserBool = "signed in";
                             UserID = task.getResult().getUser().getUid();
+                            storeUserID(UserID);
 
                             // Toast.makeText(LoginActivity.this, "us",
                             //       Toast.LENGTH_SHORT).show();
 
-
+                            Log.e("User ID Login", UserID);
                             intent.putExtra("User ID", UserID);
                             intent.putExtra("Sign in Boolean", currentUserBool);
                             startActivity(intent);

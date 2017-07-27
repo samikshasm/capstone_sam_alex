@@ -37,7 +37,7 @@ public class NotificationService extends Service {
         int NOTIFICATION_ID;
 
 
-        String userIDMA = intent.getStringExtra("User ID");
+        //String userIDMA = intent.getStringExtra("User ID");
         String initialTimeStr = intent.getStringExtra("initial time");
         String broadcastId = intent.getStringExtra("broadcast Int");
         NOTIFICATION_ID = Integer.parseInt(broadcastId);
@@ -45,13 +45,13 @@ public class NotificationService extends Service {
         if (NOTIFICATION_ID != 5) {
 
             Intent mainIntent = new Intent(this, MainActivity.class);
-            mainIntent.putExtra("User ID", userIDMA);
+           // mainIntent.putExtra("User ID", userIDMA);
             mainIntent.putExtra("broadcast Int", broadcastId);
             PendingIntent mainPI = PendingIntent.getActivity(this, 0, mainIntent, PendingIntent.FLAG_ONE_SHOT);
 
             Intent yesIntent = new Intent(this, Main2Activity.class);
             yesIntent.putExtra("notificationBool", 100);
-            yesIntent.putExtra("User ID", userIDMA);
+            //yesIntent.putExtra("User ID", userIDMA);
             yesIntent.putExtra("initial time", initialTimeStr);
             yesIntent.putExtra("broadcast Int", broadcastId);
             PendingIntent yesIntent1 = PendingIntent.getActivity(this, 0, yesIntent, PendingIntent.FLAG_ONE_SHOT);
@@ -62,7 +62,7 @@ public class NotificationService extends Service {
             PendingIntent noIntent1 = PendingIntent.getBroadcast(this, 0, noIntent, PendingIntent.FLAG_ONE_SHOT);
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                    .setSmallIcon(R.drawable.app_icon_small)
+                    .setSmallIcon(R.drawable.small_statusbar_icon)
                     .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.app_icon_small))
                     .setContentTitle("Boozymeter")
                     .setContentText("It's been 30 minutes! Have you had a drink?")
@@ -83,7 +83,7 @@ public class NotificationService extends Service {
             Intent morningIntent = new Intent(this, MorningQS.class);
             PendingIntent morningIntent1 = PendingIntent.getActivity(this, 0, morningIntent, PendingIntent.FLAG_ONE_SHOT);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                    .setSmallIcon(R.drawable.app_icon_small)
+                    .setSmallIcon(R.drawable.small_statusbar_icon)
                     .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.app_icon_small))
                     .setContentTitle("Boozymeter")
                     .setContentText("Time for morning questionnaire")

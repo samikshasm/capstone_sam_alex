@@ -141,11 +141,29 @@ public class MainActivity extends AppCompatActivity {
 
         //initialize location something
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+        }
 
         //getIntents
         mId = getIntent().getStringExtra("coming from start");
         //Toast.makeText(this, ""+mId, Toast.LENGTH_SHORT).show();
-        userIDMA = getIntent().getStringExtra("User ID");
+        /*userIDMA = getIntent().getStringExtra("User ID");
+        if(userIDMA != null) {
+            Log.e("User ID Main", userIDMA);
+        }*/
+
+        SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
+        userIDMA = mSharedPreferences.getString("user ID", "none");
+
         startActivity1 = getIntent().getStringExtra("Start Activity");
         startActivity1 = "main";
         storeScreen(startActivity1);
@@ -160,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
                 createAlarms(initialTime);
                 createMorningAlarm();
                 startUIUpdateService();
+                startLocationUpdates(userIDMA);
                 mId = "come from qs";
             }
 
@@ -182,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
                 currentUserFromLA = "signed out";
                 //Toast.makeText(MainActivity.this, "main activity: "+currentUserFromLA,
                 //     Toast.LENGTH_SHORT).show();
+                unregisterReceiver(broadcastReceiver);
                 Intent switchToLogin = new Intent(MainActivity.this, LoginActivity.class);
                 switchToLogin.putExtra("sign out", currentUserFromLA);
                 startActivity(switchToLogin);
@@ -197,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
                 storeScreen(startActivity1);
                 Intent goToStart = new Intent(MainActivity.this, StartActivity.class);
                 goToStart.putExtra("Start Activity", startActivity);
+                //goToStart.putExtra("User ID", userIDMA);
                 startActivity(goToStart);
                 finish();
             }
@@ -204,27 +225,14 @@ public class MainActivity extends AppCompatActivity {
         goToStart.setOnClickListener(handler1);
 
 
-        mStartUpdatesButton = (Button) findViewById(R.id.start_updates_button);
-        mStopUpdatesButton = (Button) findViewById(R.id.stop_updates_button);
+        //mStartUpdatesButton = (Button) findViewById(R.id.start_updates_button);
+        //mStopUpdatesButton = (Button) findViewById(R.id.stop_updates_button);
 
-        updateUI();
-
-        int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-            } else {
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
-            }
-        }
+        //updateUI();
 
 
-       // startLocationUpdates();
 
-        mStartUpdatesButton.setOnClickListener(new View.OnClickListener() {
+        /*mStartUpdatesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, BackgroundLocationService.class);
@@ -234,10 +242,10 @@ public class MainActivity extends AppCompatActivity {
                 updateUI();
 
             }
-        });
+        });*/
 
 
-        mStopUpdatesButton.setOnClickListener(new View.OnClickListener() {
+        /*mStopUpdatesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, BackgroundLocationService.class);
@@ -245,15 +253,16 @@ public class MainActivity extends AppCompatActivity {
 
                 updateUI();
             }
-        });
+        });*/
 
         // numberDrinks = getIntent().getIntExtra("number of drinks",0);
         imageViewStartStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "what tf is going on", Toast.LENGTH_SHORT).show();
                 Intent switchToMain2Activity = new Intent(MainActivity.this, Main2Activity.class);
-                switchToMain2Activity.putExtra("User ID", userIDMA);
-                switchToMain2Activity.putExtra("initial time", initialTimeStr);
+                //switchToMain2Activity.putExtra("User ID", userIDMA);
+               // switchToMain2Activity.putExtra("initial time", initialTimeStr);
                 startActivity(switchToMain2Activity);
                 finish();
                 //setTimerValues();
@@ -263,25 +272,45 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void startLocationUpdates() {
-        Intent locationIntent = new Intent(MainActivity.this, BackgroundLocationService.class);
-        locationIntent.putExtra("User ID", userIDMA);
-        startService(locationIntent);
+    private void startLocationUpdates(String userID){
+        Toast.makeText(this, "startingLocation", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,userID,Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(MainActivity.this, BackgroundLocationService.class);
+        //intent.putExtra("User ID", userID);
+        startService(intent);
+
+        //updateUI();
+    }
+
+    private void stopLocationUpdates(){
+        //Toast.makeText(this, "stopping location", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(MainActivity.this, BackgroundLocationService.class);
+        stopService(intent);
+
+        //updateUI();
     }
 
     private void createMorningAlarm () {
         Calendar morningCal = Calendar.getInstance();
         int day = morningCal.get(Calendar.DAY_OF_WEEK);
-        morningCal.set(Calendar.HOUR, 22);
-        morningCal.set(Calendar.MINUTE, 05);
-
+        morningCal.set(Calendar.HOUR_OF_DAY, 24);
+        morningCal.set(Calendar.MINUTE, 28);
+        morningCal.set(Calendar.SECOND, 0);
+        //int hour = morningCal.get(Calendar.HOUR);
+        //int minute = morningCal.get(Calendar.MINUTE);
+        //Toast.makeText(this, hour+":"+minute, Toast.LENGTH_SHORT).show();
         Intent alertIntent = new Intent(this, TimerReceiver.class);
         AlarmManager morningAlarmMan = (AlarmManager) getSystemService(ALARM_SERVICE);
         alertIntent.putExtra("broadcast Int", "5");
-        alertIntent.putExtra("User ID", userIDMA);
+        //alertIntent.putExtra("User ID", userIDMA);
         alertIntent.putExtra("initial time", initialTimeStr);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 5, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         morningAlarmMan.set(AlarmManager.RTC_WAKEUP, morningCal.getTimeInMillis(), pendingIntent);
+    }
+    public void writeToDB(String text1) {
+        DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child("Location").child(time);
+        mRef.setValue(text1);
+
     }
 
     private void storeScreen(String string) {
@@ -344,7 +373,7 @@ public class MainActivity extends AppCompatActivity {
     public void startAlarm(long time, int broadcastID) {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         resultIntent = new Intent(MainActivity.this, TimerReceiver.class);
-        resultIntent.putExtra("User ID", userIDMA);
+        //resultIntent.putExtra("User ID", userIDMA);
         resultIntent.putExtra("initial time", initialTimeStr);
         resultIntent.putExtra("broadcast Int", "" + broadcastID);
         pIntent = PendingIntent.getBroadcast(MainActivity.this, broadcastID, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -369,11 +398,9 @@ public class MainActivity extends AppCompatActivity {
         //Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
         SharedPreferences mSharedPreferences1 = getSharedPreferences("screen", MODE_PRIVATE);
         String selectedScreen = mSharedPreferences1.getString("currentScreen", "none");
-        if (selectedScreen.equals("start")) {
-            Intent intent = new Intent(MainActivity.this, BackgroundLocationService.class);
-            stopService(intent);
-
+        if (selectedScreen.equals("start") | selectedScreen.equals("morningQS")) {
             stopUIUpdateService();
+            stopLocationUpdates();
             unregisterReceiver(broadcastReceiver);
             Intent goToStart = new Intent(MainActivity.this, StartActivity.class);
             goToStart.putExtra("Start Activity", startActivity);
