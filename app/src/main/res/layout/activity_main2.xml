@@ -1,13 +1,225 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/type_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Type"
+        android:layout_marginTop="25dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/size_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="37dp"
+        android:text="Size (oz)"
+        android:layout_below="@+id/beerBtn"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/who_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Who?"
+        android:layout_above="@+id/partner"
+        android:layout_marginBottom="19dp"
+        android:layout_alignRight="@+id/type_text_view"
+        android:layout_alignEnd="@+id/type_text_view" />
+
+    <TextView
+        android:id="@+id/where_text_view"
+        android:text="Where?"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="13dp" />
+
 
     <Button
-        android:layout_width="165dp"
-        android:layout_height="match_parent"
-        android:text = "click to go back to Timer"
-        android:id = "@+id/goToMainActivity"
-        android:onClick = "switchToMainActivty"/>
-</LinearLayout>
+        android:id="@+id/wineBtn"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/type_text_view"
+        android:layout_marginEnd="14dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginTop="11dp"
+        android:layout_toLeftOf="@+id/submitBtn"
+        android:layout_toStartOf="@+id/submitBtn"
+        android:text="Wine" />
+
+    <Button
+        android:id="@+id/beerBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Beer"
+        android:layout_alignBaseline="@+id/wineBtn"
+        android:layout_alignBottom="@+id/wineBtn"
+        android:layout_alignLeft="@+id/submitBtn"
+        android:layout_alignStart="@+id/submitBtn" />
+
+    <Button
+        android:id="@+id/submitBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="switchToMainActivty"
+        android:text="Submit"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="28dp" />
+
+    <Button
+        android:id="@+id/liquorBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Liquor"
+        android:layout_alignBaseline="@+id/beerBtn"
+        android:layout_alignBottom="@+id/beerBtn"
+        android:layout_toRightOf="@+id/beerBtn"
+        android:layout_toEndOf="@+id/beerBtn"
+        android:layout_marginLeft="19dp"
+        android:layout_marginStart="19dp" />
+
+    <Button
+        android:id="@+id/shotBtn"
+        android:text="Shot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/size_text_view"
+        android:layout_toLeftOf="@+id/eight"
+        android:layout_toStartOf="@+id/eight" />
+
+    <Button
+        android:id="@+id/eight"
+        android:text="8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/shotBtn"
+        android:layout_alignBottom="@+id/shotBtn"
+        android:layout_toLeftOf="@+id/sixteen"
+        android:layout_toStartOf="@+id/sixteen" />
+
+    <Button
+        android:id="@+id/sixteen"
+        android:text="16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/eight"
+        android:layout_alignBottom="@+id/eight"
+        android:layout_toLeftOf="@+id/twentyFour"
+        android:layout_toStartOf="@+id/twentyFour" />
+
+    <Button
+        android:id="@+id/twentyFour"
+        android:text="24"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="18dp"
+        android:layout_marginEnd="18dp"
+        android:layout_alignBaseline="@+id/sixteen"
+        android:layout_alignBottom="@+id/sixteen"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:id="@+id/nobody"
+        android:text="Nobody"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/partner"
+        android:layout_alignBottom="@+id/partner"
+        android:layout_toLeftOf="@+id/partner"
+        android:layout_toStartOf="@+id/partner" />
+
+    <Button
+        android:id="@+id/partner"
+        android:text="Partner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/friends"
+        android:layout_alignBottom="@+id/friends"
+        android:layout_toLeftOf="@+id/friends"
+        android:layout_toStartOf="@+id/friends" />
+
+    <Button
+        android:id="@+id/friends"
+        android:text="Friends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/other"
+        android:layout_alignBottom="@+id/other"
+        android:layout_toLeftOf="@+id/other"
+        android:layout_toStartOf="@+id/other" />
+
+    <Button
+        android:id="@+id/other"
+        android:text="Other"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/twentyFour"
+        android:layout_toRightOf="@+id/sixteen"
+        android:layout_toEndOf="@+id/sixteen"
+        android:layout_marginTop="68dp" />
+
+    <Button
+        android:id="@+id/home"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Home"
+        android:layout_alignBaseline="@+id/work"
+        android:layout_alignBottom="@+id/work"
+        android:layout_alignLeft="@+id/nobody"
+        android:layout_alignStart="@+id/nobody" />
+
+    <Button
+        android:id="@+id/work"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Work"
+        android:layout_alignBaseline="@+id/bar"
+        android:layout_alignBottom="@+id/bar"
+        android:layout_toLeftOf="@+id/submitBtn"
+        android:layout_toStartOf="@+id/submitBtn" />
+
+    <Button
+        android:id="@+id/bar"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bar"
+        android:layout_alignBaseline="@+id/party"
+        android:layout_alignBottom="@+id/party"
+        android:layout_alignRight="@+id/who_text_view"
+        android:layout_alignEnd="@+id/who_text_view" />
+
+    <Button
+        android:id="@+id/party"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Party"
+        android:layout_alignBaseline="@+id/otherPlace"
+        android:layout_alignBottom="@+id/otherPlace"
+        android:layout_toRightOf="@+id/size_text_view"
+        android:layout_toEndOf="@+id/size_text_view" />
+
+    <Button
+        android:id="@+id/otherPlace"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="14dp"
+        android:text="Other"
+        android:layout_above="@+id/submitBtn"
+        android:layout_alignRight="@+id/other"
+        android:layout_alignEnd="@+id/other" />
+
+</RelativeLayout>

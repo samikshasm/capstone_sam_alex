@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -36,7 +37,6 @@ public class NotificationService extends Service {
         Log.e("We are in notification", "yay");
         int NOTIFICATION_ID;
 
-
         //String userIDMA = intent.getStringExtra("User ID");
         String initialTimeStr = intent.getStringExtra("initial time");
         String broadcastId = intent.getStringExtra("broadcast Int");
@@ -45,7 +45,7 @@ public class NotificationService extends Service {
         if (NOTIFICATION_ID != 5) {
 
             Intent mainIntent = new Intent(this, MainActivity.class);
-           // mainIntent.putExtra("User ID", userIDMA);
+            // mainIntent.putExtra("User ID", userIDMA);
             mainIntent.putExtra("broadcast Int", broadcastId);
             PendingIntent mainPI = PendingIntent.getActivity(this, 0, mainIntent, PendingIntent.FLAG_ONE_SHOT);
 
@@ -66,8 +66,8 @@ public class NotificationService extends Service {
                     .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.app_icon_small))
                     .setContentTitle("Boozymeter")
                     .setContentText("It's been 30 minutes! Have you had a drink?")
-                    .addAction(0, "Yes", yesIntent1)
-                    .addAction(0, "No", noIntent1)
+                    .addAction(R.drawable.check_small, "Yes", yesIntent1)
+                    .addAction(R.drawable.cancel_small, "No", noIntent1)
                     //.setFullScreenIntent(yesIntent1, true)
                     .setFullScreenIntent(noIntent1, true)
                     .setAutoCancel(true);

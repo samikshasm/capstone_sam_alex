@@ -36,8 +36,8 @@ public class StartActivity extends AppCompatActivity {
 
         //storeUserID(userIDMA);
 
-        String hello = getScreen();
-        Toast.makeText(this, hello, Toast.LENGTH_SHORT).show();
+        //String hello = getScreen();
+        //Toast.makeText(this, hello, Toast.LENGTH_SHORT).show();
 
         Button startDrinking = (Button) findViewById(R.id.start_drinking);
         startDrinking.setOnClickListener(new View.OnClickListener() {
@@ -47,7 +47,7 @@ public class StartActivity extends AppCompatActivity {
                 Intent switchToMainActivity = new Intent(StartActivity.this, MainActivity.class);
                 switchToMainActivity.putExtra("coming from start", "start");
                 switchToMainActivity.putExtra("Start Activity", startActivity);
-               // switchToMainActivity.putExtra("User ID", userIDMA);
+                // switchToMainActivity.putExtra("User ID", userIDMA);
                 switchToMainActivity.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(switchToMainActivity);
                 finish();
@@ -72,14 +72,14 @@ public class StartActivity extends AppCompatActivity {
         String selectedScreen = mSharedPreferences.getString("currentScreen","none");
         if (selectedScreen.equals("main")) {
             Intent switchToMain = new Intent(StartActivity.this, MainActivity.class);
-           // switchToMain.putExtra("User ID", userIDMA);
+            // switchToMain.putExtra("User ID", userIDMA);
             startActivity(switchToMain);
             finish();
         }
 
         else if (selectedScreen.equals("morningQS")){
             Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
-           // switchToMorning.putExtra("User ID", userIDMA);
+            // switchToMorning.putExtra("User ID", userIDMA);
             startActivity(switchToMorning);
             finish();
         }
@@ -117,7 +117,7 @@ public class StartActivity extends AppCompatActivity {
         String selectedScreen = mSharedPreferences.getString("currentScreen","none");
         if (selectedScreen.equals("morningQS")){
             Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
-           // switchToMorning.putExtra("User ID", userIDMA);
+            // switchToMorning.putExtra("User ID", userIDMA);
             startActivity(switchToMorning);
             finish();
         }

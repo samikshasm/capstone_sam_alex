@@ -39,7 +39,7 @@ public class LocationUpdates extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        Log.e("Locatoin Service", "boi");
+        //Log.e("Locatoin Service", "boi");
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -61,15 +61,17 @@ public class LocationUpdates extends IntentService {
 
                 SharedPreferences mSharedPreferences1 = getSharedPreferences("screen", MODE_PRIVATE);
                 String selectedScreen = mSharedPreferences1.getString("currentScreen","none");
+                Log.e("selectedScreen", selectedScreen);
 
-                //if (selectedScreen.equals("main")) {
+                if (selectedScreen.equals("main")) {
                     writeToDB(text);
-                //}
+                }
             }
         }
     }
 
     public void writeToDB(String text1) {
+        Log.e("Location Service DB", "Boi");
         DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child("Location").child(time);
         mRef.setValue(text1);
 

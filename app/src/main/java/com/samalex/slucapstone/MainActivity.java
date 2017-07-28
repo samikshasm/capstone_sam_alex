@@ -195,26 +195,18 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        Button signOut = (Button) findViewById(R.id.sign_out_button);
-        signOut.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                currentUserFromLA = "signed out";
-                //Toast.makeText(MainActivity.this, "main activity: "+currentUserFromLA,
-                //     Toast.LENGTH_SHORT).show();
-                unregisterReceiver(broadcastReceiver);
-                Intent switchToLogin = new Intent(MainActivity.this, LoginActivity.class);
-                switchToLogin.putExtra("sign out", currentUserFromLA);
-                startActivity(switchToLogin);
-                finish();
-            }
-        });
-
         Button goToStart = (Button) findViewById(R.id.go_to_start);
         View.OnClickListener handler1 = new View.OnClickListener() {
             public void onClick(View view) {
                 stopUIUpdateService();
+                cancelAlarm(1);
+                cancelAlarm(2);
+                cancelAlarm(3);
+                cancelAlarm(4);
                 startActivity1 = "start";
                 storeScreen(startActivity1);
+                stopLocationUpdates();
+                unregisterReceiver(broadcastReceiver);
                 Intent goToStart = new Intent(MainActivity.this, StartActivity.class);
                 goToStart.putExtra("Start Activity", startActivity);
                 //goToStart.putExtra("User ID", userIDMA);
@@ -225,44 +217,14 @@ public class MainActivity extends AppCompatActivity {
         goToStart.setOnClickListener(handler1);
 
 
-        //mStartUpdatesButton = (Button) findViewById(R.id.start_updates_button);
-        //mStopUpdatesButton = (Button) findViewById(R.id.stop_updates_button);
-
-        //updateUI();
-
-
-
-        /*mStartUpdatesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, BackgroundLocationService.class);
-                intent.putExtra("User ID", userIDMA);
-                startService(intent);
-
-                updateUI();
-
-            }
-        });*/
-
-
-        /*mStopUpdatesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, BackgroundLocationService.class);
-                stopService(intent);
-
-                updateUI();
-            }
-        });*/
-
         // numberDrinks = getIntent().getIntExtra("number of drinks",0);
         imageViewStartStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "what tf is going on", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "what tf is going on", Toast.LENGTH_SHORT).show();
                 Intent switchToMain2Activity = new Intent(MainActivity.this, Main2Activity.class);
                 //switchToMain2Activity.putExtra("User ID", userIDMA);
-               // switchToMain2Activity.putExtra("initial time", initialTimeStr);
+                // switchToMain2Activity.putExtra("initial time", initialTimeStr);
                 startActivity(switchToMain2Activity);
                 finish();
                 //setTimerValues();
@@ -273,8 +235,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startLocationUpdates(String userID){
-        Toast.makeText(this, "startingLocation", Toast.LENGTH_SHORT).show();
-        Toast.makeText(this,userID,Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "startingLocation", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this,userID,Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(MainActivity.this, BackgroundLocationService.class);
         //intent.putExtra("User ID", userID);
         startService(intent);
@@ -294,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
         Calendar morningCal = Calendar.getInstance();
         int day = morningCal.get(Calendar.DAY_OF_WEEK);
         morningCal.set(Calendar.HOUR_OF_DAY, 24);
-        morningCal.set(Calendar.MINUTE, 28);
+        morningCal.set(Calendar.MINUTE, 00);
         morningCal.set(Calendar.SECOND, 0);
         //int hour = morningCal.get(Calendar.HOUR);
         //int minute = morningCal.get(Calendar.MINUTE);

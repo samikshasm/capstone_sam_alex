@@ -34,6 +34,10 @@ public class Main2Activity extends AppCompatActivity{
     private Integer counterInt;
     private String time;
     private DatabaseReference mDatabase;
+    private String typeOfDrink;
+    private String sizeOfDrink;
+    private String withWhom;
+    private String where;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -43,25 +47,150 @@ public class Main2Activity extends AppCompatActivity{
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        Button goToMainActivity = (Button) findViewById(R.id.goToMainActivity);
-        goToMainActivity.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
+        Button beer = (Button) findViewById(R.id.beerBtn);
+        Button liquor = (Button) findViewById(R.id.liquorBtn);
+        Button wine = (Button) findViewById(R.id.wineBtn);
 
+        Button shot = (Button) findViewById(R.id.shotBtn);
+        Button eight = (Button) findViewById(R.id.eight);
+        Button sixteen = (Button) findViewById(R.id.sixteen);
+        Button twentyFour = (Button) findViewById(R.id.twentyFour);
+
+        Button nobody = (Button) findViewById(R.id.nobody);
+        Button partner  = (Button) findViewById(R.id.partner);
+        Button friends = (Button) findViewById(R.id.friends);
+        Button other = (Button) findViewById(R.id.other);
+
+        Button home = (Button) findViewById(R.id.home);
+        Button work = (Button) findViewById(R.id.work);
+        Button bar = (Button) findViewById(R.id.bar);
+        Button party = (Button) findViewById(R.id.party);
+        Button otherPlace = (Button) findViewById(R.id.otherPlace);
+
+
+        beer.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                typeOfDrink = "beer";
+            }
+        });
+
+        liquor.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                typeOfDrink = "liquor";
+            }
+        });
+
+        wine.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                typeOfDrink = "wine";
+            }
+        });
+
+        shot.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                sizeOfDrink = "Shot";
+            }
+        });
+
+        eight.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                sizeOfDrink = "8";
+            }
+        });
+
+        sixteen.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                sizeOfDrink = "16";
+            }
+        });
+
+        twentyFour.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                sizeOfDrink = "24";
+
+            }
+        });
+
+        nobody.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                withWhom = "Nobody";
+            }
+        });
+
+        partner.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                withWhom = "Partner";
+            }
+        });
+
+        friends.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                withWhom = "Friends";
+            }
+        });
+
+        other.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                withWhom = "Other";
+
+            }
+        });
+
+        home.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                where = "Home";
+
+            }
+        });
+
+        work.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                where = "Work";
+
+            }
+        });
+
+        bar.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                where = "Bar/Restaurant";
+
+            }
+        });
+
+        party.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                where = "Party";
+
+            }
+        });
+
+        otherPlace.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                where = "Other";
+
+            }
+        });
+
+        Button submitBtn = (Button) findViewById(R.id.submitBtn);
+        submitBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                storeNumDrinks(0);
+                writeTypeToDB(typeOfDrink);
+                writeSizeToDB(sizeOfDrink);
+                writeWhoToDB(withWhom);
+                writeWhereToDB(where);
                 switchToMainActivity(view);
             }
         });
 
-      //  userIDMA = getIntent().getStringExtra("User ID");
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = mSharedPreferences.getString("user ID", "none");
 
-        //initialTimeStr = getIntent().getStringExtra("initial time");
-
+        numberDrinks = getNumDrinks();
         numberDrinks++;
-
-        Toast.makeText(Main2Activity.this, ""+numberDrinks, Toast.LENGTH_SHORT).show();
+        storeNumDrinks(numberDrinks);
         String numberOfDrinks = numberDrinks.toString();
-        writeNumDrinksToDB(numberOfDrinks);
+       // writeNumDrinksToDB(numberOfDrinks);
 
         String broadcastID = getIntent().getStringExtra("broadcast Int");
         if (broadcastID!= null) {
@@ -74,12 +203,9 @@ public class Main2Activity extends AppCompatActivity{
 
     }
 
-
     public void switchToMainActivity(View view){
         Intent switchToMainActivity = new Intent (Main2Activity.this, MainActivity.class);
-        //switchToMainActivity.putExtra("number of drinks", numberDrinks);
         switchToMainActivity.putExtra("coming from start", "come from qs");
-        //switchToMainActivity.putExtra("User ID", userIDMA);
         switchToMainActivity.putExtra("initial time", initialTimeStr);
         startActivity(switchToMainActivity);
         finish();
@@ -91,13 +217,34 @@ public class Main2Activity extends AppCompatActivity{
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         time = dateFormat.format(currentDate);
     }
-    public void writeNumDrinksToDB(String text1) {
-        getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(time).child("Number of Drinks");
-        mRef.setValue(text1);
-
+    public void writeNumDrinksToDB(String text1, String currentTime) {
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(time);
+        mRef.setValue("Number of Drinks, " +text1);
     }
 
+    public void writeTypeToDB(String type) {
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(time).child("Type");
+        mRef.setValue(type);
+    }
+
+    public void writeSizeToDB(String size) {
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(time).child("Size");
+        mRef.setValue(size);
+    }
+
+    public void writeWhoToDB(String who) {
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(time).child("Who");
+        mRef.setValue(who);
+    }
+
+    public void writeWhereToDB (String where) {
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(time).child("Where");
+        mRef.setValue(where);
+    }
     private void storeNumDrinks (Integer integer) {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();

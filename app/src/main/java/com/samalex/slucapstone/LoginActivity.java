@@ -475,6 +475,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             //        Toast.LENGTH_SHORT).show();
             intent.putExtra("User ID", UserID);
             //intent.putExtra("Sign in Boolean", currentUser);
+            storeUserID(UserID);
             startActivity(intent);
             finish();
 
