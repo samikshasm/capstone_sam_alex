@@ -27,6 +27,7 @@ public class LocationUpdates extends IntentService {
     private String text;
     private double latitude;
     private double longitude;
+    private Integer nightCount;
 
     public LocationUpdates() {
         super("Fused Location");
@@ -42,6 +43,7 @@ public class LocationUpdates extends IntentService {
         //Log.e("Locatoin Service", "boi");
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        nightCount = getNightCount();
 
         if (LocationResult.hasResult(intent)) {
             LocationResult locationResult = LocationResult.extractResult(intent);
@@ -57,7 +59,7 @@ public class LocationUpdates extends IntentService {
                 Date currentDate = new Date(currentDateTime);
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 time = dateFormat.format(currentDate);
-                text = latitude + "," + longitude;
+                text = latitude + "&" + longitude;
 
                 SharedPreferences mSharedPreferences1 = getSharedPreferences("screen", MODE_PRIVATE);
                 String selectedScreen = mSharedPreferences1.getString("currentScreen","none");
@@ -72,8 +74,14 @@ public class LocationUpdates extends IntentService {
 
     public void writeToDB(String text1) {
         Log.e("Location Service DB", "Boi");
-        DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child("Location").child(time);
+        DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("Location").child(time);
         mRef.setValue(text1);
 
+    }
+
+    private Integer getNightCount() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
+        Integer nightCount = mSharedPreferences.getInt("night counter", 0);
+        return nightCount;
     }
 }

@@ -296,32 +296,28 @@ public class Main2Activity extends AppCompatActivity{
         date = dateFormat.format(currentDate);
         time = timeFormat.format(currentDate);
     }
-    public void writeNumDrinksToDB(String text1, String currentTime) {
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(date).child(time);
-        mRef.setValue("Number of Drinks, " +text1);
-    }
 
     public void writeTypeToDB(String type) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(date).child("Type").child(time);
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("Answers").child(date).child("Type").child(time);
         mRef.setValue(type);
     }
 
     public void writeSizeToDB(String size) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(date).child("Size").child(time);
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("Answers").child(date).child("Size").child(time);
         mRef.setValue(size);
     }
 
     public void writeWhoToDB(String who) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(date).child("Who").child(time);
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("Answers").child(date).child("Who").child(time);
         mRef.setValue(who);
     }
 
     public void writeWhereToDB (String where) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(date).child("Where").child(time);
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("Answers").child(date).child("Where").child(time);
         mRef.setValue(where);
     }
     private void storeNumDrinks (Integer integer) {

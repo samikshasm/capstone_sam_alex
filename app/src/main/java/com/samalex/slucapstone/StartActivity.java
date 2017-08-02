@@ -41,14 +41,15 @@ public class StartActivity extends AppCompatActivity {
             Log.e("User ID Start", userIDMA);
         }
 
-        nightCount = getNightCount();
-        nightCount++;
-        storeNight(nightCount);
-        Toast.makeText(this, ""+nightCount, Toast.LENGTH_SHORT).show();
+
 
         ImageButton startDrinking = (ImageButton) findViewById(R.id.start_drinking);
         startDrinking.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                nightCount = getNightCount();
+                nightCount++;
+                storeNight(nightCount);
+                Toast.makeText(StartActivity.this, ""+nightCount, Toast.LENGTH_SHORT).show();
                 id = 2;
                 startActivity = "start";
                 Intent switchToMainActivity = new Intent(StartActivity.this, MainActivity.class);

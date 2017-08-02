@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,6 +43,12 @@ public class MorningQS extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private String time;
     private String date;
+    private String monoStr = "no";
+    private String friendStr = "no";
+    private String newStr = "no";
+    private String naStr = "no";
+    private Integer counter = 0;
+    private Integer nightCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +87,15 @@ public class MorningQS extends AppCompatActivity {
         final LinearLayout analCondomLayout = (LinearLayout) findViewById(R.id.anal_condom);
         final LinearLayout oralConsentLayout = (LinearLayout) findViewById(R.id.oral_consent);
 
+        //new stuff
+        final Button add = (Button) findViewById(R.id.add_button);
+        final Button subtract = (Button) findViewById(R.id.subtract_button);
+        final TextView numPartner = (TextView) findViewById(R.id.partners_counter);
+        final CheckBox monoPartner = (CheckBox) findViewById(R.id.monogamous_partner);
+        final CheckBox friendPartner = (CheckBox) findViewById(R.id.friend_partner);
+        final CheckBox newPartner = (CheckBox) findViewById(R.id.new_partner);
+        final CheckBox naPartner = (CheckBox) findViewById(R.id.na_partner);
+
         /*userIDMA = getIntent().getStringExtra("User ID");
         if (userIDMA == null){
             Toast.makeText(this, "null", Toast.LENGTH_SHORT).show();
@@ -89,6 +106,7 @@ public class MorningQS extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = mSharedPreferences.getString("user ID", "none");
 
+        nightCount = getNightCount();
 
         View.OnClickListener handler1 = new View.OnClickListener() {
             public void onClick(View view) {
@@ -102,6 +120,11 @@ public class MorningQS extends AppCompatActivity {
                 writeAnalToDB(anal);
                 writeAnalCondomToDB(analCondomStr);
                 writeAnalConsentToDB(analConsentStr);
+                writeNumPartners(counter);
+                writeMonoPartner(monoStr);
+                writeFriendPartner(friendStr);
+                writeNewPartner(newStr);
+                writeNAPartner(naStr);
                 finish();
             }
         };
@@ -290,7 +313,76 @@ public class MorningQS extends AppCompatActivity {
             }
         });
 
+        add.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                counter++;
+                if (counter == 0){
+                    numPartner.setText("none");
+                }else {
+                    numPartner.setText(""+counter);
+                }
+            }
+        });
 
+        subtract.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                counter--;
+                if (counter == 0){
+                    numPartner.setText("none");
+                }else {
+                    numPartner.setText(""+counter);
+                }
+            }
+        });
+
+
+        monoPartner.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (monoPartner.isChecked() == true) {
+                    monoPartner.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    monoStr = "yes";
+                }else{
+                    monoPartner.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                    monoStr = "no";
+                }
+            }
+        });
+
+        friendPartner.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (friendPartner.isChecked() == true) {
+                    friendPartner.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    friendStr = "yes";
+                }else{
+                    friendPartner.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                    friendStr = "no";
+                }
+            }
+        });
+
+        newPartner.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (newPartner.isChecked() == true) {
+                    newPartner.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    newStr = "yes";
+                }else{
+                    newPartner.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                    newStr = "no";
+                }
+            }
+        });
+
+        naPartner.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (naPartner.isChecked() == true) {
+                    naPartner.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    naStr = "yes";
+                }else{
+                    naPartner.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                    naStr = "no";
+                }
+            }
+        });
     }
 
     public void getTime() {
@@ -307,51 +399,86 @@ public class MorningQS extends AppCompatActivity {
         mEditor.apply();
     }
 
+    public void writeNumPartners(int number){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("numPartners");
+        mRef.setValue(number);
+    }
+
+    public void writeMonoPartner(String monoPartner){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("MonogamousPartner");
+        mRef.setValue(monoPartner);
+    }
+
+    public void writeFriendPartner(String friendPartner){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("FriendPartner");
+        mRef.setValue(friendPartner);
+    }
+
+    public void writeNewPartner(String newPartner){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("NewPartner");
+        mRef.setValue(newPartner);
+    }
+
+    public void writeNAPartner(String naPartner){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("NAPartner");
+        mRef.setValue(naPartner);
+    }
     public void writeOralToDB (String oral) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("MorningAnswers").child(time).child("oral");
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("oral");
         mRef.setValue(oral);
     }
 
     public void writeOralConsentToDB(String oralConsent){
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("MorningAnswers").child(time).child("oralConsent");
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("oralConsent");
         mRef.setValue(oralConsent);
     }
 
     public void writeVaginalToDB (String vaginal) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("MorningAnswers").child(time).child("vaginal");
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("vaginal");
         mRef.setValue(vaginal);
     }
 
     public void writeAnalToDB (String anal) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("MorningAnswers").child(time).child("anal");
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("anal");
         mRef.setValue(anal);
     }
 
     public void writeVaginalCondomToDB (String vaginalCondom) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("MorningAnswers").child(time).child("vaginalCondom");
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("vaginalCondom");
         mRef.setValue(vaginalCondom);
     }
 
     public void writeVaginalConsentToDB (String vaginalConsent) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("MorningAnswers").child(time).child("vaginalConsent");
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("vaginalConsent");
         mRef.setValue(vaginalConsent);
     }
 
     public void writeAnalCondomToDB (String analCondom) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("MorningAnswers").child(time).child("analCondom");
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("analCondom");
         mRef.setValue(analCondom);
     }
 
     public void writeAnalConsentToDB (String analConsent) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("MorningAnswers").child(time).child("analConsent");
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("analConsent");
         mRef.setValue(analConsent);
+    }
+
+    private Integer getNightCount() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
+        Integer nightCount = mSharedPreferences.getInt("night counter", 0);
+        return nightCount;
     }
 }

@@ -47,7 +47,22 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/display_numDrinks"
+        />
 
+    <TextView
+        android:id="@+id/numLocationLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/textViewCalories"
+        />
+
+    <TextView
+        android:id="@+id/numLocationValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/numLocationLabel"
         />
 
     <Button

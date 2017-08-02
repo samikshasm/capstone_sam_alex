@@ -3,6 +3,7 @@ package com.samalex.slucapstone;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.location.Location;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
@@ -43,9 +44,15 @@ public class MorningReport extends AppCompatActivity{
     private String type;
     private String[] typeList;
     private String[] sizeList;
+    private String[] locationList;
+    private String[] longitudeList;
+    private String[] latitudeList;
     private String date;
     private Integer totalCalConsumed;
     private TextView display_calories;
+    private Integer nightCount;
+    private Integer numLocation;
+    private TextView display_location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +66,14 @@ public class MorningReport extends AppCompatActivity{
         mReference = FirebaseDatabase.getInstance().getReference();
 
         getTime();
+        nightCount = getNightCount();
+
         mReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
                 getData(dataSnapshot);
+                getDistance(dataSnapshot);
             }
 
             @Override
@@ -79,12 +90,16 @@ public class MorningReport extends AppCompatActivity{
         display_numDrinks.setText(numberDrinksStr);
 
         display_calories = (TextView) findViewById(R.id.display_calories);
+        display_location = (TextView) findViewById(R.id.numLocationValue);
 
         TextView drinkLabel = (TextView) findViewById(R.id.textViewDrinks);
         drinkLabel.setText("Number of Drinks Consumed: ");
 
         TextView caloriesLabel = (TextView) findViewById(R.id.textViewCalories);
         caloriesLabel.setText("Total Calories Consumed: ");
+
+        TextView locationLabel = (TextView) findViewById(R.id.numLocationLabel);
+        locationLabel.setText("Total Locations Visited");
 
         Button goToStart = (Button) findViewById(R.id.switch_to_start);
         View.OnClickListener handler1 = new View.OnClickListener() {
@@ -104,7 +119,7 @@ public class MorningReport extends AppCompatActivity{
 
     private void getData(DataSnapshot dataSnapshot) {
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
-            String typeDrink = ds.child(userIDMA).child("Answers").child(date).child("Type").getValue().toString();
+            String typeDrink = ds.child(userIDMA).child(""+nightCount).child("Answers").child(date).child("Type").getValue().toString();
             String typeDrinkSub = typeDrink.substring(1, typeDrink.length()-1);
             String[] testType = typeDrinkSub.split(",");
             typeList = new String[testType.length];
@@ -113,7 +128,7 @@ public class MorningReport extends AppCompatActivity{
                 typeList[i] = tempList[1];
             }
 
-            String sizeDrink = ds.child(userIDMA).child("Answers").child(date).child("Size").getValue().toString();
+            String sizeDrink = ds.child(userIDMA).child(""+nightCount).child("Answers").child(date).child("Size").getValue().toString();
             String sizeDrinkSub = sizeDrink.substring(1, sizeDrink.length()-1);
             String[] test = sizeDrinkSub.split(",");
             sizeList = new String[test.length];
@@ -203,6 +218,51 @@ public class MorningReport extends AppCompatActivity{
         }
     }
 
+    private void getDistance(DataSnapshot dataSnapshot){
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+            String location = ds.child(userIDMA).child("" + nightCount).child("Location").getValue().toString();
+            String locationSub = location.substring(1, location.length() - 1);
+            String[] testType = locationSub.split(",");
+            locationList = new String[testType.length];
+            longitudeList = new String[testType.length];
+            latitudeList = new String[testType.length];
+
+            for (int i = 0; i < testType.length; i++) {
+                String[] tempList = testType[i].split("=");
+                locationList[i] = tempList[1];
+            }
+
+            for (int i =0; i<testType.length;i++) {
+                String[] tempList = locationList[i].split("&");
+                latitudeList[i] = tempList[0];
+                longitudeList[i] = tempList[1];
+            }
+
+            float distance = 0;
+
+            for (int i =0; i<testType.length; i++) {
+                float lat1 = Float.parseFloat(latitudeList[i]);
+                float lon1 = Float.parseFloat(longitudeList[i]);
+                float lat2 = Float.parseFloat(latitudeList[i+1]);
+                float lon2 = Float.parseFloat(longitudeList[i+1]);
+
+                Location locationA = new Location("pointA");
+                Location locationB = new Location("pointB");
+                locationA.setLatitude(lat1);
+                locationA.setLongitude(lon1);
+                locationB.setLatitude(lat2);
+                locationB.setLongitude(lon2);
+                distance = locationA.distanceTo(locationB);
+                Log.e("distance", ""+distance);
+
+                if (distance > 1610) {
+                    numLocation++;
+                    display_location.setText(""+numLocation);
+                }
+            }
+        }
+    }
+
     public void getTime() {
         long currentDateTime = System.currentTimeMillis();
         Date currentDate = new Date(currentDateTime);
@@ -221,6 +281,12 @@ public class MorningReport extends AppCompatActivity{
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.putInt("numDrinks", integer);
         mEditor.apply();
+    }
+
+    private Integer getNightCount() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
+        Integer nightCount = mSharedPreferences.getInt("night counter", 0);
+        return nightCount;
     }
 
 }
