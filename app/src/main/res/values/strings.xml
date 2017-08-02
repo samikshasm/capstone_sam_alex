@@ -31,4 +31,5 @@
     <string name="title_location_permission">"idk what this does?"</string>
     <string name="text_location_permission">we shall see how this workds</string>
     <string name="ok">ok</string>
+    <string name="timer_finished">Timer Finished</string>
 </resources>

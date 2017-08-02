@@ -1,14 +1,20 @@
 package com.samalex.slucapstone;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 /**
@@ -22,6 +28,7 @@ public class StartActivity extends AppCompatActivity {
     private String startActivity;
     private Integer id = 1;
     private String lastActivity;
+    private Integer nightCount = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -34,12 +41,12 @@ public class StartActivity extends AppCompatActivity {
             Log.e("User ID Start", userIDMA);
         }
 
-        //storeUserID(userIDMA);
+        nightCount = getNightCount();
+        nightCount++;
+        storeNight(nightCount);
+        Toast.makeText(this, ""+nightCount, Toast.LENGTH_SHORT).show();
 
-        //String hello = getScreen();
-        //Toast.makeText(this, hello, Toast.LENGTH_SHORT).show();
-
-        Button startDrinking = (Button) findViewById(R.id.start_drinking);
+        ImageButton startDrinking = (ImageButton) findViewById(R.id.start_drinking);
         startDrinking.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 id = 2;
@@ -47,16 +54,13 @@ public class StartActivity extends AppCompatActivity {
                 Intent switchToMainActivity = new Intent(StartActivity.this, MainActivity.class);
                 switchToMainActivity.putExtra("coming from start", "start");
                 switchToMainActivity.putExtra("Start Activity", startActivity);
-                // switchToMainActivity.putExtra("User ID", userIDMA);
-                switchToMainActivity.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(switchToMainActivity);
                 finish();
-
             }
         });
 
         //sign out button
-        Button signOut = (Button) findViewById(R.id.sign_out_button);
+        ImageButton signOut = (ImageButton) findViewById(R.id.sign_out_button);
         signOut.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 storeUserID("none");
@@ -68,33 +72,28 @@ public class StartActivity extends AppCompatActivity {
             }
         });
 
+        ImageButton contact = (ImageButton) findViewById(R.id.contact);
+        contact.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Toast toast = Toast.makeText(StartActivity.this, "Contact Dr. Shacham: eshacham@slu.edu", Toast.LENGTH_LONG );
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+            }
+        });
+
         SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
         String selectedScreen = mSharedPreferences.getString("currentScreen","none");
         if (selectedScreen.equals("main")) {
             Intent switchToMain = new Intent(StartActivity.this, MainActivity.class);
-            // switchToMain.putExtra("User ID", userIDMA);
             startActivity(switchToMain);
             finish();
         }
 
         else if (selectedScreen.equals("morningQS")){
             Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
-            // switchToMorning.putExtra("User ID", userIDMA);
             startActivity(switchToMorning);
             finish();
         }
-
-
-        //Toast.makeText(this, selectedScreen, Toast.LENGTH_SHORT).show();
-
-        startActivity = getIntent().getStringExtra("Start Activity");
-        if (startActivity != null){
-            if (startActivity.equals("main" )){
-                startActivity = "start";
-
-            }
-        }
-
 
     }
 
@@ -105,10 +104,23 @@ public class StartActivity extends AppCompatActivity {
         mEditor.apply();
     }
 
+    private void storeNight(Integer nightCount) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putInt("night counter", nightCount);
+        mEditor.apply();
+    }
+
     private String getScreen() {
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         String selectedScreen = mSharedPreferences.getString("user ID", "none");
         return selectedScreen;
+    }
+
+    private Integer getNightCount() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
+        Integer nightCount = mSharedPreferences.getInt("night counter", 0);
+        return nightCount;
     }
 
     @Override
@@ -117,7 +129,6 @@ public class StartActivity extends AppCompatActivity {
         String selectedScreen = mSharedPreferences.getString("currentScreen","none");
         if (selectedScreen.equals("morningQS")){
             Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
-            // switchToMorning.putExtra("User ID", userIDMA);
             startActivity(switchToMorning);
             finish();
         }

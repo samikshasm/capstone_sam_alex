@@ -1,18 +1,119 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.samalex.slucapstone.StartActivity"
+    android:background="@color/app_background"
+    >
 
-    <Button
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_top"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:background="@color/app_background_darker"
+        android:minHeight="?attr/actionBarSize" >
+
+    </android.support.v7.widget.Toolbar>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:gravity="center"
+        android:src="@drawable/white_logo"
+        android:maxHeight="?attr/actionBarSize"/>
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_bottom"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:background="@color/app_background_darker"
+        android:layout_alignParentBottom="true"
+        android:minHeight="?attr/actionBarSize" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CLICK TO START DRINKING"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:textColor="@color/white"
+        android:paddingBottom="200dp"
+        android:textSize="25sp"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/start_button_color"
         android:id="@+id/start_drinking"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="switch to main" />
+        android:adjustViewBounds="true"
+        android:scaleType="centerInside"
+        android:background="@color/app_background"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
-    <Button
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_alignTop="@id/toolbar_bottom"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/sign_out_button"
-        android:text ="sign out"/>
+        android:weightSum="2">
 
-</LinearLayout>
+        <ImageButton
+            android:id="@+id/contact"
+            android:layout_width="24dp"
+            android:layout_height="35dp"
+            android:adjustViewBounds="true"
+            android:layout_weight="1"
+            android:src="@drawable/contact_button"
+            android:background="@color/app_background_darker"
+            android:paddingTop="5dp"
+            android:scaleType="centerInside" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/white"/>
+
+
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="35dp"
+            android:id="@+id/sign_out_button"
+            android:layout_weight="1"
+            android:src="@drawable/logout_button"
+            android:adjustViewBounds="true"
+            android:background="@color/app_background_darker"
+            android:paddingTop="5dp"
+            android:scaleType="centerInside" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_alignBottom="@id/toolbar_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="2">
+
+
+        <TextView
+            android:id="@+id/contactTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:text="contact"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:id="@+id/sign_out_button_txt"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:text="sign out"/>
+
+    </LinearLayout>
+</RelativeLayout>

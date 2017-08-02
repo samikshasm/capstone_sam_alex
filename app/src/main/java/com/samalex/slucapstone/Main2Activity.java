@@ -5,11 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +45,9 @@ public class Main2Activity extends AppCompatActivity{
     private String sizeOfDrink;
     private String withWhom;
     private String where;
+    private Drawable[] wineLayers;
+    private String date;
+    private Integer nightCount;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -47,91 +57,134 @@ public class Main2Activity extends AppCompatActivity{
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        Button beer = (Button) findViewById(R.id.beerBtn);
-        Button liquor = (Button) findViewById(R.id.liquorBtn);
-        Button wine = (Button) findViewById(R.id.wineBtn);
+        nightCount = getNightCount();
 
-        Button shot = (Button) findViewById(R.id.shotBtn);
-        Button eight = (Button) findViewById(R.id.eight);
-        Button sixteen = (Button) findViewById(R.id.sixteen);
-        Button twentyFour = (Button) findViewById(R.id.twentyFour);
+        final ImageButton beer = (ImageButton) findViewById(R.id.beerBtn);
+        final ImageButton liquor = (ImageButton) findViewById(R.id.liquorBtn);
+        final ImageButton wine = (ImageButton) findViewById(R.id.wineBtn);
 
-        Button nobody = (Button) findViewById(R.id.nobody);
-        Button partner  = (Button) findViewById(R.id.partner);
-        Button friends = (Button) findViewById(R.id.friends);
-        Button other = (Button) findViewById(R.id.other);
+        final ImageButton shot = (ImageButton) findViewById(R.id.shotBtn);
+        final ImageButton eight = (ImageButton) findViewById(R.id.eight);
+        final ImageButton sixteen = (ImageButton) findViewById(R.id.sixteen);
+        final ImageButton twentyFour = (ImageButton) findViewById(R.id.twentyFour);
 
-        Button home = (Button) findViewById(R.id.home);
-        Button work = (Button) findViewById(R.id.work);
-        Button bar = (Button) findViewById(R.id.bar);
-        Button party = (Button) findViewById(R.id.party);
-        Button otherPlace = (Button) findViewById(R.id.otherPlace);
+        final ImageButton nobody = (ImageButton) findViewById(R.id.nobody);
+        final ImageButton partner  = (ImageButton) findViewById(R.id.partner);
+        final ImageButton friends = (ImageButton) findViewById(R.id.friends);
+        final ImageButton other = (ImageButton) findViewById(R.id.other);
 
+        final ImageButton home = (ImageButton) findViewById(R.id.home);
+        final ImageButton work = (ImageButton) findViewById(R.id.work);
+        final ImageButton bar = (ImageButton) findViewById(R.id.bar);
+        final ImageButton party = (ImageButton) findViewById(R.id.party);
+        final ImageButton otherPlace = (ImageButton) findViewById(R.id.otherPlace);
 
         beer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 typeOfDrink = "beer";
+                wine.setImageResource(R.drawable.new_wine_purple);
+                beer.setImageResource(R.drawable.beer_button_small_green);
+                liquor.setImageResource(R.drawable.liquor_button_small_purple);
+
             }
         });
 
         liquor.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 typeOfDrink = "liquor";
+                wine.setImageResource(R.drawable.new_wine_purple);
+                beer.setImageResource(R.drawable.beer_button_small_purple);
+                liquor.setImageResource(R.drawable.liquor_button_small_green);
             }
         });
 
         wine.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 typeOfDrink = "wine";
+                wine.setImageResource(R.drawable.wine_button_small_green);
+                beer.setImageResource(R.drawable.beer_button_small_purple);
+                liquor.setImageResource(R.drawable.liquor_button_small_purple);
             }
         });
 
         shot.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 sizeOfDrink = "Shot";
+                shot.setImageResource(R.drawable.shot_green);
+                eight.setImageResource(R.drawable.eight_purple);
+                sixteen.setImageResource(R.drawable.sixteen_purple);
+                twentyFour.setImageResource(R.drawable.twenty_four_purple);
+
             }
         });
 
         eight.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 sizeOfDrink = "8";
+                shot.setImageResource(R.drawable.shot_purple);
+                eight.setImageResource(R.drawable.eight_green);
+                sixteen.setImageResource(R.drawable.sixteen_purple);
+                twentyFour.setImageResource(R.drawable.twenty_four_purple);
             }
         });
 
         sixteen.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 sizeOfDrink = "16";
+                shot.setImageResource(R.drawable.shot_purple);
+                eight.setImageResource(R.drawable.eight_purple);
+                sixteen.setImageResource(R.drawable.sixteen_green);
+                twentyFour.setImageResource(R.drawable.twenty_four_purple);
             }
         });
 
         twentyFour.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 sizeOfDrink = "24";
-
+                shot.setImageResource(R.drawable.shot_purple);
+                eight.setImageResource(R.drawable.eight_purple);
+                sixteen.setImageResource(R.drawable.sixteen_purple);
+                twentyFour.setImageResource(R.drawable.twenty_four_green);
             }
         });
 
         nobody.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 withWhom = "Nobody";
+                nobody.setImageResource(R.drawable.alone_button_green);
+                partner.setImageResource(R.drawable.couple_purple);
+                friends.setImageResource(R.drawable.friends_purple);
+                other.setImageResource(R.drawable.other_purple);
             }
         });
 
         partner.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 withWhom = "Partner";
+                nobody.setImageResource(R.drawable.alone_button_purple);
+                partner.setImageResource(R.drawable.couple_green);
+                friends.setImageResource(R.drawable.friends_purple);
+                other.setImageResource(R.drawable.other_purple);
             }
         });
 
         friends.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 withWhom = "Friends";
+                nobody.setImageResource(R.drawable.alone_button_purple);
+                partner.setImageResource(R.drawable.couple_purple);
+                friends.setImageResource(R.drawable.friends_green);
+                other.setImageResource(R.drawable.other_purple);
             }
         });
 
         other.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 withWhom = "Other";
+                nobody.setImageResource(R.drawable.alone_button_purple);
+                partner.setImageResource(R.drawable.couple_purple);
+                friends.setImageResource(R.drawable.friends_purple);
+                other.setImageResource(R.drawable.other_green);
 
             }
         });
@@ -139,6 +192,11 @@ public class Main2Activity extends AppCompatActivity{
         home.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 where = "Home";
+                home.setImageResource(R.drawable.home_green);
+                work.setImageResource(R.drawable.work_purple);
+                bar.setImageResource(R.drawable.bar_purple);
+                party.setImageResource(R.drawable.party_purple);
+                other.setImageResource(R.drawable.other_purple);
 
             }
         });
@@ -146,6 +204,11 @@ public class Main2Activity extends AppCompatActivity{
         work.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 where = "Work";
+                home.setImageResource(R.drawable.home_purple);
+                work.setImageResource(R.drawable.work_green);
+                bar.setImageResource(R.drawable.bar_purple);
+                party.setImageResource(R.drawable.party_purple);
+                other.setImageResource(R.drawable.other_purple);
 
             }
         });
@@ -153,6 +216,11 @@ public class Main2Activity extends AppCompatActivity{
         bar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 where = "Bar/Restaurant";
+                home.setImageResource(R.drawable.home_purple);
+                work.setImageResource(R.drawable.work_purple);
+                bar.setImageResource(R.drawable.bar_green);
+                party.setImageResource(R.drawable.party_purple);
+                other.setImageResource(R.drawable.other_purple);
 
             }
         });
@@ -160,13 +228,22 @@ public class Main2Activity extends AppCompatActivity{
         party.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 where = "Party";
-
+                home.setImageResource(R.drawable.home_purple);
+                work.setImageResource(R.drawable.work_purple);
+                bar.setImageResource(R.drawable.bar_purple);
+                party.setImageResource(R.drawable.party_green);
+                other.setImageResource(R.drawable.other_purple);
             }
         });
 
         otherPlace.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 where = "Other";
+                home.setImageResource(R.drawable.home_purple);
+                work.setImageResource(R.drawable.work_purple);
+                bar.setImageResource(R.drawable.bar_purple);
+                party.setImageResource(R.drawable.party_purple);
+                other.setImageResource(R.drawable.other_green);
 
             }
         });
@@ -174,7 +251,6 @@ public class Main2Activity extends AppCompatActivity{
         Button submitBtn = (Button) findViewById(R.id.submitBtn);
         submitBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                storeNumDrinks(0);
                 writeTypeToDB(typeOfDrink);
                 writeSizeToDB(sizeOfDrink);
                 writeWhoToDB(withWhom);
@@ -190,10 +266,11 @@ public class Main2Activity extends AppCompatActivity{
         numberDrinks++;
         storeNumDrinks(numberDrinks);
         String numberOfDrinks = numberDrinks.toString();
-       // writeNumDrinksToDB(numberOfDrinks);
+        // writeNumDrinksToDB(numberOfDrinks);
 
+        //not sure this is working
         String broadcastID = getIntent().getStringExtra("broadcast Int");
-        if (broadcastID!= null) {
+        if (broadcastID != null) {
             int notificationId = Integer.parseInt(broadcastID);
             Toast.makeText(this, broadcastID, Toast.LENGTH_SHORT).show();
 
@@ -214,35 +291,37 @@ public class Main2Activity extends AppCompatActivity{
     public void getTime() {
         long currentDateTime = System.currentTimeMillis();
         Date currentDate = new Date(currentDateTime);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        time = dateFormat.format(currentDate);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+        date = dateFormat.format(currentDate);
+        time = timeFormat.format(currentDate);
     }
     public void writeNumDrinksToDB(String text1, String currentTime) {
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(time);
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(date).child(time);
         mRef.setValue("Number of Drinks, " +text1);
     }
 
     public void writeTypeToDB(String type) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(time).child("Type");
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(date).child("Type").child(time);
         mRef.setValue(type);
     }
 
     public void writeSizeToDB(String size) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(time).child("Size");
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(date).child("Size").child(time);
         mRef.setValue(size);
     }
 
     public void writeWhoToDB(String who) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(time).child("Who");
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(date).child("Who").child(time);
         mRef.setValue(who);
     }
 
     public void writeWhereToDB (String where) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(time).child("Where");
+        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child("Answers").child(date).child("Where").child(time);
         mRef.setValue(where);
     }
     private void storeNumDrinks (Integer integer) {
@@ -256,5 +335,11 @@ public class Main2Activity extends AppCompatActivity{
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
         Integer numberDrinks = mSharedPreferences.getInt("numDrinks",0);
         return numberDrinks;
+    }
+
+    private Integer getNightCount() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
+        Integer nightCount = mSharedPreferences.getInt("night counter", 0);
+        return nightCount;
     }
 }

@@ -1,13 +1,375 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/submit"
-        android:layout_width="wrap_content"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_background">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_top"
         android:layout_height="wrap_content"
-        android:text="submit answers" />
+        android:layout_width="match_parent"
+        android:background="@color/app_background_darker"
+        android:minHeight="?attr/actionBarSize">
 
 
-</LinearLayout>
+    </android.support.v7.widget.Toolbar>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:gravity="center"
+        android:src="@drawable/white_logo"
+        android:maxHeight="?attr/actionBarSize"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar_top">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/app_background">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="20dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:paddingTop="25dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:gravity="center_horizontal"
+                    android:text="Did you have oral sex last night?"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:weightSum="2">
+
+                    <ImageButton
+                        android:id="@+id/oral_yes_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/yes_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                    <ImageButton
+                        android:id="@+id/oral_no_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/no_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/oral_consent_qs"
+                    android:paddingTop="25dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:gravity="center_horizontal"
+                    android:text="Did you consent to oral sex?"
+                    android:visibility="gone"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/oral_consent"
+                    android:visibility="gone"
+                    android:paddingTop="10dp"
+                    android:weightSum="2">
+
+                    <ImageButton
+                        android:id="@+id/oral_consent_yes_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/yes_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                    <ImageButton
+                        android:id="@+id/oral_consent_no_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/no_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:paddingTop="25dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:gravity="center_horizontal"
+                    android:text="Did you have vaginal sex last night?"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:weightSum="2">
+
+                    <ImageButton
+                        android:id="@+id/vaginal_yes_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/yes_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                    <ImageButton
+                        android:id="@+id/vaginal_no_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/no_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/vaginal_condom_qs"
+                    android:paddingTop="25dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:gravity="center_horizontal"
+                    android:text="Did you use a condom?"
+                    android:visibility="gone"/>
+
+                <LinearLayout
+                    android:id="@+id/vaginal_condom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:paddingTop="10dp"
+                    android:weightSum="2">
+
+                    <ImageButton
+                        android:id="@+id/vaginal_condom_yes_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/yes_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                    <ImageButton
+                        android:id="@+id/vaginal_condom_no_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/no_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/vaginal_consent_qs"
+                    android:paddingTop="25dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:gravity="center_horizontal"
+                    android:text="Did you consent to vaginal sex?"
+                    android:visibility="gone"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/vaginal_consent"
+                    android:visibility="gone"
+                    android:paddingTop="10dp"
+                    android:weightSum="2">
+
+                    <ImageButton
+                        android:id="@+id/vaginal_consent_yes_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/yes_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                    <ImageButton
+                        android:id="@+id/vaginal_consent_no_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/no_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:paddingTop="25dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:gravity="center_horizontal"
+                    android:text="Did you have anal sex last night?"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:weightSum="2">
+
+                    <ImageButton
+                        android:id="@+id/anal_yes_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/yes_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                    <ImageButton
+                        android:id="@+id/anal_no_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/no_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/anal_condom_qs"
+                    android:paddingTop="25dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:gravity="center_horizontal"
+                    android:text="Did you use a condom?"
+                    android:visibility="gone"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/anal_condom"
+                    android:visibility="gone"
+                    android:paddingTop="10dp"
+                    android:weightSum="2">
+
+                    <ImageButton
+                        android:id="@+id/anal_condom_yes_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/yes_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                    <ImageButton
+                        android:id="@+id/anal_condom_no_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/no_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/anal_consent_qs"
+                    android:paddingTop="25dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:gravity="center_horizontal"
+                    android:text="Did you use a consent?"
+                    android:visibility="gone"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/anal_consent"
+                    android:visibility="gone"
+                    android:paddingTop="10dp"
+                    android:weightSum="2">
+
+                    <ImageButton
+                        android:id="@+id/anal_consent_yes_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/yes_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                    <ImageButton
+                        android:id="@+id/anal_consent_no_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/app_background"
+                        android:src="@drawable/no_button"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/submit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/white"
+                android:text="SUBMIT"
+                android:background="@color/light_blue"/>
+
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

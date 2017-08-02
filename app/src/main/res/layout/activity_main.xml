@@ -1,97 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/app_background"
+    android:orientation="vertical"
     tools:context="com.samalex.slucapstone.MainActivity">
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/main_activity_container"
-        android:layout_width="368dp"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_top"
         android:layout_height="wrap_content"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="16dp">
+        android:layout_width="match_parent"
+        android:background="@color/app_background_darker"
+        android:minHeight="?attr/actionBarSize">
 
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    </android.support.v7.widget.Toolbar>
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id = "@+id/go_to_start"
-                android:text = "go to start"
-                android:onClick = "goToStart"/>
-        </RelativeLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:gravity="center"
+        android:src="@drawable/white_logo"
+        android:maxHeight="?attr/actionBarSize"/>
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/activity_main"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/go_to_start"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/red"
+        android:minHeight="?attr/actionBarSize" >
 
-            <ProgressBar
-                android:id="@+id/progressBarCircle"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="270dp"
-                android:layout_height="270dp"
-                android:background="@drawable/drawable_circle_dark"
-                android:indeterminate="false"
-                android:max="100"
-                android:progress="100"
-                android:progressDrawable="@drawable/drawable_circle"
-                android:rotation="-90"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true" />
+    </android.support.v7.widget.Toolbar>
 
-            <TextView
-                android:id="@+id/editTextMinute"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/textViewTime"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="10dp"
-                android:gravity="center"
-                android:onClick="numberDrinks"
-                android:textColor="@color/colorPrimary"
-                android:textColorHint="@color/colorPrimary" />
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/main_activity_container"
+        android:layout_below="@id/toolbar_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@color/app_background">
 
-            <TextView
-                android:id="@+id/textViewTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="30:00"
-                android:textColor="@color/colorPrimary"
-                android:textSize="40sp"
-                android:layout_above="@+id/imageViewStartStop"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="99dp" />
-
-            <ImageView
-                android:id="@+id/imageViewReset"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_above="@+id/imageViewStartStop"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="29dp"
-                android:src="@drawable/icon_reset"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/imageViewStartStop"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_below="@+id/progressBarCircle"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
-                android:src="@drawable/icon_start" />
-
-        </RelativeLayout>
+        <ProgressBar
+            android:id="@+id/progressBarCircle"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="270dp"
+            android:layout_height="270dp"
+            android:background="@drawable/drawable_circle_dark"
+            android:indeterminate="false"
+            android:max="100"
+            android:progress="100"
+            android:progressDrawable="@drawable/drawable_circle"
+            android:rotation="-90"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
 
 
-    </android.support.design.widget.TextInputLayout>
+        <TextView
+            android:id="@+id/textViewTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30:00"
+            android:textColor="@color/orange"
+            android:textSize="40sp"
+            android:layout_above="@+id/imageViewStartStop"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="99dp" />
+
+        <ImageView
+            android:id="@+id/imageViewStartStop"
+            android:layout_width="60dp"
+            android:layout_height="70dp"
+            android:layout_below="@+id/progressBarCircle"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/add_drink" />
+
+        <TextView
+            android:id="@+id/drinkTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DRINK"
+            android:textColor="@color/white"
+            android:layout_below="@id/imageViewStartStop"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="In Progress"
+            android:id="@+id/in_progress"
+            android:textColor="@color/white"
+            android:layout_below="@id/drinkTxt"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp" />
 
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

@@ -135,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
 
         //initialize UI stuff
         progressBarCircle = (ProgressBar) findViewById(R.id.progressBarCircle);
-        editTextMinute = (TextView) findViewById(R.id.editTextMinute);
         textViewTime = (TextView) findViewById(R.id.textViewTime);
         imageViewStartStop = (ImageView) findViewById(R.id.imageViewStartStop);
 
@@ -195,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        Button goToStart = (Button) findViewById(R.id.go_to_start);
+        Toolbar goToStart = (Toolbar) findViewById(R.id.go_to_start);
         View.OnClickListener handler1 = new View.OnClickListener() {
             public void onClick(View view) {
                 stopUIUpdateService();
@@ -255,8 +254,8 @@ public class MainActivity extends AppCompatActivity {
     private void createMorningAlarm () {
         Calendar morningCal = Calendar.getInstance();
         int day = morningCal.get(Calendar.DAY_OF_WEEK);
-        morningCal.set(Calendar.HOUR_OF_DAY, 24);
-        morningCal.set(Calendar.MINUTE, 00);
+        morningCal.set(Calendar.HOUR_OF_DAY, 12);
+        morningCal.set(Calendar.MINUTE, 41);
         morningCal.set(Calendar.SECOND, 0);
         //int hour = morningCal.get(Calendar.HOUR);
         //int minute = morningCal.get(Calendar.MINUTE);
@@ -267,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
         //alertIntent.putExtra("User ID", userIDMA);
         alertIntent.putExtra("initial time", initialTimeStr);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 5, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        morningAlarmMan.set(AlarmManager.RTC_WAKEUP, morningCal.getTimeInMillis(), pendingIntent);
+        morningAlarmMan.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pendingIntent);
     }
     public void writeToDB(String text1) {
         DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child("Location").child(time);
