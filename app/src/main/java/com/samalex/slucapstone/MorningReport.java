@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.location.Location;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +16,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.google.android.gms.vision.text.Text;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -53,6 +59,15 @@ public class MorningReport extends AppCompatActivity{
     private Integer nightCount;
     private Integer numLocation;
     private TextView display_location;
+    private TextView display_numDrinks;
+    private TextView display_wine_percent;
+    private TextView display_beer_percent;
+    private TextView display_liquor_percent;
+    private Integer numDrinks;
+    private PieChart pieChart;
+    private float[] data = {30.0f, 30.0f, 40.0f};
+    private String[] drinkNames = {"beer", "liquor", "wine"};
+    private TextView litersDrank;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +82,13 @@ public class MorningReport extends AppCompatActivity{
 
         getTime();
         nightCount = getNightCount();
+        numDrinks = getNumDrinks();
+
+        pieChart = (PieChart) findViewById(R.id.pie_chart);
+        pieChart.setHoleRadius(0f);
+        pieChart.setHoleColor(ContextCompat.getColor(MorningReport.this, R.color.app_background));
+        pieChart.setTransparentCircleAlpha(0);
+        pieChart.getDescription().setEnabled(false);
 
         mReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -86,20 +108,12 @@ public class MorningReport extends AppCompatActivity{
         Integer numberDrinks = numDrinksSharedPref.getInt("numDrinks",0);
         String numberDrinksStr = numberDrinks.toString();
 
-        TextView display_numDrinks = (TextView) findViewById(R.id.display_numDrinks);
-        display_numDrinks.setText(numberDrinksStr);
-
+        display_numDrinks = (TextView) findViewById(R.id.display_numDrinks);
         display_calories = (TextView) findViewById(R.id.display_calories);
         display_location = (TextView) findViewById(R.id.numLocationValue);
-
-        TextView drinkLabel = (TextView) findViewById(R.id.textViewDrinks);
-        drinkLabel.setText("Number of Drinks Consumed: ");
-
-        TextView caloriesLabel = (TextView) findViewById(R.id.textViewCalories);
-        caloriesLabel.setText("Total Calories Consumed: ");
-
-        TextView locationLabel = (TextView) findViewById(R.id.numLocationLabel);
-        locationLabel.setText("Total Locations Visited");
+        TextView display_day = (TextView) findViewById(R.id.display_day);
+        display_day.setText(date);
+        litersDrank = (TextView) findViewById(R.id.liters_drank);
 
         Button goToStart = (Button) findViewById(R.id.switch_to_start);
         View.OnClickListener handler1 = new View.OnClickListener() {
@@ -117,7 +131,36 @@ public class MorningReport extends AppCompatActivity{
         goToStart.setOnClickListener(handler1);
     }
 
+    private void addDataChart(){
+        ArrayList<PieEntry> yEntrys = new ArrayList<>();
+        ArrayList<String> xEntrys = new ArrayList<>();
+
+        for (int i = 0; i < data.length; i++){
+            yEntrys.add(new PieEntry(data[i], i));
+        }
+        for (int i = 0; i < drinkNames.length; i++){
+            xEntrys.add(drinkNames[i]);
+        }
+        PieDataSet pieDataSet = new PieDataSet(yEntrys, "");
+        pieDataSet.setSliceSpace(0);
+        pieDataSet.setValueTextSize(50);
+        pieDataSet.setValueTextColor(ContextCompat.getColor(MorningReport.this, R.color.white));
+        ArrayList<Integer> colors = new ArrayList<>();
+        colors.add(ContextCompat.getColor(MorningReport.this, R.color.pink));
+        colors.add(ContextCompat.getColor(MorningReport.this, R.color.orange));
+        colors.add(ContextCompat.getColor(MorningReport.this, R.color.green));
+
+        pieDataSet.setColors(colors);
+
+        PieData pieData = new PieData(pieDataSet);
+        pieChart.setData(pieData);
+        pieChart.invalidate();
+
+    }
+
     private void getData(DataSnapshot dataSnapshot) {
+
+
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             String typeDrink = ds.child(userIDMA).child(""+nightCount).child("Answers").child(date).child("Type").getValue().toString();
             String typeDrinkSub = typeDrink.substring(1, typeDrink.length()-1);
@@ -155,17 +198,36 @@ public class MorningReport extends AppCompatActivity{
             Integer calorieLiquorTwentyFour = 565;
 
             totalCalConsumed = 0;
-            // Toast.makeText(this, ""+typeList.length, Toast.LENGTH_SHORT).show();
+            Integer totalOuncesConsumed = 0;
+            Integer numWine = 0;
+            Integer numLiquor = 0;
+            Integer numBeer = 0;
+            float percentWine = 0;
+            float percentLiquor = 0;
+            float percentBeer = 0;
+
             for (int i = 0; i < test.length; i++ ) {
                 totalCalConsumed+= i;
 
                 String type = typeList[i];
                 String size = sizeList[i];
 
+                if (!sizeList[i].equals("Shot")) {
+                    Integer sizeOfDrink = Integer.parseInt(sizeList[i]);
+                    totalOuncesConsumed = totalOuncesConsumed + sizeOfDrink;
+                }
+
+                else {
+                    totalOuncesConsumed = totalOuncesConsumed + 1;
+                }
+
                 if (type.equals("wine")) {
+                    numWine++;
+
                     if (size.equals("Shot")) {
                         totalCalConsumed = totalCalConsumed+calorieWineShot;
                     }
+
                     else if (size.equals("8")) {
                         totalCalConsumed = totalCalConsumed+calorieWineEight;
 
@@ -180,6 +242,8 @@ public class MorningReport extends AppCompatActivity{
                 }
 
                 else if (type.equals("liquor")) {
+                    numLiquor++;
+
                     if (size.equals("Shot")) {
                         totalCalConsumed = totalCalConsumed+calorieLiquorShot;
                     }
@@ -197,6 +261,8 @@ public class MorningReport extends AppCompatActivity{
                 }
 
                 else if (type.equals("beer")) {
+                    numBeer++;
+
                     if (size.equals("Shot")) {
                         totalCalConsumed = totalCalConsumed+calorieBeerShot;
                     }
@@ -213,7 +279,47 @@ public class MorningReport extends AppCompatActivity{
                     }
                 }
             }
+
+            double totalLitersConsumed = (totalOuncesConsumed * 0.03);
+            litersDrank.setText (""+totalLitersConsumed);
+
+            int numberDrinks = numBeer+numWine+numLiquor;
+            percentBeer = ((float) numBeer/ (float) numberDrinks)*100;
+            percentLiquor = ((float) numLiquor/ (float) numberDrinks)*100;
+            percentWine = ((float) numWine/ (float) numberDrinks)*100;
+
+            display_numDrinks.setText(""+numberDrinks);
+
+            Log.e("numBeer", ""+numBeer);
+            Log.e("numLiquor", ""+numLiquor);
+            Log.e("numWine", ""+numWine);
+            Log.e("Total drinks", ""+numberDrinks);
+
             display_calories.setText(""+totalCalConsumed);
+
+            ArrayList<PieEntry> yEntrys = new ArrayList<>();
+            ArrayList<String> xEntrys = new ArrayList<>();
+
+            yEntrys.add(new PieEntry(percentBeer, 0));
+            yEntrys.add(new PieEntry(percentLiquor, 1));
+            yEntrys.add(new PieEntry(percentWine, 2));
+
+            for (int i = 0; i < drinkNames.length; i++){
+                xEntrys.add(drinkNames[i]);
+            }
+            PieDataSet pieDataSet = new PieDataSet(yEntrys, "");
+            pieDataSet.setSliceSpace(2);
+            pieDataSet.setValueTextSize(20);
+            ArrayList<Integer> colors = new ArrayList<>();
+            colors.add(ContextCompat.getColor(MorningReport.this, R.color.pink));
+            colors.add(ContextCompat.getColor(MorningReport.this, R.color.orange));
+            colors.add(ContextCompat.getColor(MorningReport.this, R.color.green));
+
+            pieDataSet.setColors(colors);
+
+            PieData pieData = new PieData(pieDataSet);
+            pieChart.setData(pieData);
+            pieChart.invalidate();
 
         }
     }
@@ -239,8 +345,9 @@ public class MorningReport extends AppCompatActivity{
             }
 
             float distance = 0;
+            numLocation = 1;
 
-            for (int i =0; i<testType.length; i++) {
+            for (int i =0; i<testType.length-1; i++) {
                 float lat1 = Float.parseFloat(latitudeList[i]);
                 float lon1 = Float.parseFloat(longitudeList[i]);
                 float lat2 = Float.parseFloat(latitudeList[i+1]);
@@ -257,8 +364,9 @@ public class MorningReport extends AppCompatActivity{
 
                 if (distance > 1610) {
                     numLocation++;
-                    display_location.setText(""+numLocation);
                 }
+
+                display_location.setText(""+numLocation);
             }
         }
     }
@@ -287,6 +395,12 @@ public class MorningReport extends AppCompatActivity{
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
         return nightCount;
+    }
+
+    private Integer getNumDrinks () {
+        SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
+        Integer numberDrinks = mSharedPreferences.getInt("numDrinks",0);
+        return numberDrinks;
     }
 
 }

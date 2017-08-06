@@ -272,7 +272,6 @@ public class Main2Activity extends AppCompatActivity{
         String broadcastID = getIntent().getStringExtra("broadcast Int");
         if (broadcastID != null) {
             int notificationId = Integer.parseInt(broadcastID);
-            Toast.makeText(this, broadcastID, Toast.LENGTH_SHORT).show();
 
             NotificationManager manager = (NotificationManager) Main2Activity.this.getSystemService(Context.NOTIFICATION_SERVICE);
             manager.cancel(notificationId);

@@ -121,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        //Toast.makeText(this, "onCreate", Toast.LENGTH_SHORT).show();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
@@ -318,16 +317,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void createAlarms(long currentTime) {
-        long thirty = currentTime + 10000;
+        long thirty = currentTime + 1800000;
         startAlarm(thirty, 1);
 
-        long sixty = currentTime + 20000;
+        long sixty = currentTime + 3600000;
         startAlarm(sixty, 2);
 
-        long ninety = currentTime + 30000;
+        long ninety = currentTime + 5400000;
         startAlarm(ninety, 3);
 
-        long one = currentTime + 40000;
+        long one = currentTime + 7200000;
         startAlarm(one, 4);
     }
 
@@ -356,7 +355,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         startUIUpdateService();
-        //Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
         SharedPreferences mSharedPreferences1 = getSharedPreferences("screen", MODE_PRIVATE);
         String selectedScreen = mSharedPreferences1.getString("currentScreen", "none");
         if (selectedScreen.equals("start") | selectedScreen.equals("morningQS")) {

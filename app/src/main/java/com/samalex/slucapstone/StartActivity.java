@@ -49,7 +49,6 @@ public class StartActivity extends AppCompatActivity {
                 nightCount = getNightCount();
                 nightCount++;
                 storeNight(nightCount);
-                Toast.makeText(StartActivity.this, ""+nightCount, Toast.LENGTH_SHORT).show();
                 id = 2;
                 startActivity = "start";
                 Intent switchToMainActivity = new Intent(StartActivity.this, MainActivity.class);
@@ -76,11 +75,15 @@ public class StartActivity extends AppCompatActivity {
         ImageButton contact = (ImageButton) findViewById(R.id.contact);
         contact.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                Toast toast = Toast.makeText(StartActivity.this, "Contact Dr. Shacham: eshacham@slu.edu", Toast.LENGTH_LONG );
-                toast.setGravity(Gravity.CENTER, 0, 0);
-                toast.show();
+                new AlertDialog.Builder(StartActivity.this,R.style.MyAlertDialogStyle)
+                        //.setTitle("Contact Dr. Shacham")
+                        .setMessage("Email eshacham@slu.edu")
+                       // .setNegativeButton("Ok",null)
+                        .setPositiveButton("Ok",null).create().show();
             }
         });
+
+
 
         SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
         String selectedScreen = mSharedPreferences.getString("currentScreen","none");
