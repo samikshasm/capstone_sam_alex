@@ -1,68 +1,48 @@
 package com.samalex.slucapstone;
 
-import android.*;
 import android.Manifest;
 import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Build;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.vision.text.Text;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import static android.support.v4.content.PermissionChecker.PERMISSION_GRANTED;
+import static com.samalex.slucapstone.BroadcastService.STARTED_TIME_IN_MILLIS;
 
 public class MainActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
@@ -177,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 initialTimeStr = Long.toString(initialTime);
                 createAlarms(initialTime);
                 createMorningAlarm();
-                startUIUpdateService();
+                startUIUpdateService(initialTime);
                 startLocationUpdates(userIDMA);
                 mId = "come from qs";
             }
@@ -190,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                 cancelAlarm(3);
                 cancelAlarm(4);
                 stopUIUpdateService();
-                startUIUpdateService();
+                startUIUpdateService(notificationTime);
                 createAlarms(notificationTime);
             }
         }
@@ -295,8 +275,10 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    public void startUIUpdateService() {
-        startService(new Intent(this, BroadcastService.class));
+    public void startUIUpdateService(long startedTime) {
+        Intent intent = new Intent(this, BroadcastService.class);
+        intent.putExtra(STARTED_TIME_IN_MILLIS, startedTime);
+        startService(intent);
         registerReceiver(broadcastReceiver, new IntentFilter(BroadcastService.BROADCAST_ACTION));
     }
 
@@ -356,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onResume() {
-        startUIUpdateService();
+        startUIUpdateService(System.currentTimeMillis());
         //Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
         SharedPreferences mSharedPreferences1 = getSharedPreferences("screen", MODE_PRIVATE);
         String selectedScreen = mSharedPreferences1.getString("currentScreen", "none");

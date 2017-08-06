@@ -6,14 +6,12 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
-import java.sql.Date;
-import java.util.concurrent.TimeUnit;
-
 /**
  * Created by AlexL on 7/19/2017.
  */
 
 public class BroadcastService extends Service {
+    public static final String STARTED_TIME_IN_MILLIS = "STARTED_TIME_IN_MILLIS";
     private static final String TAG = "BroadcastService";
     private final Handler handler = new Handler();
     public static final String BROADCAST_ACTION = "com.samalex.slucapstone.displayevent";
@@ -28,9 +26,16 @@ public class BroadcastService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
+        if (intent != null) {
+            long startedTimeInMillis = intent.getLongExtra(STARTED_TIME_IN_MILLIS, System.currentTimeMillis());
+            long elapsedSeconds = (System.currentTimeMillis() - startedTimeInMillis) / 1000L;
+            if (elapsedSeconds < 1800) {
+                milliSeconds -= elapsedSeconds;
+            }
+        }
         handler.removeCallbacks(sendUpdatesToUI);
-        handler.postDelayed(sendUpdatesToUI, 1000);
-        return START_NOT_STICKY;
+        handler.post(sendUpdatesToUI);
+        return START_REDELIVER_INTENT;
     }
 
     private Runnable sendUpdatesToUI = new Runnable(){
