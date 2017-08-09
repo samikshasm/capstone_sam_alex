@@ -1,30 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/app_background"
+    android:orientation="vertical"
     tools:context="com.samalex.slucapstone.MainActivity">
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="368dp"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_top"
         android:layout_height="wrap_content"
-        tools:layout_editor_absoluteY="0dp"
-        tools:layout_editor_absoluteX="8dp">
+        android:layout_width="match_parent"
+        android:background="@color/app_background_darker"
+        android:minHeight="?attr/actionBarSize">
 
-        <EditText
-            android:id="@+id/text"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="Type here" />
 
-        <Button
-            android:id="@+id/saveDB"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Save to DB" />
+    </android.support.v7.widget.Toolbar>
 
-    </android.support.design.widget.TextInputLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:gravity="center"
+        android:src="@drawable/white_logo"
+        android:maxHeight="?attr/actionBarSize"/>
 
-</android.support.constraint.ConstraintLayout>
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/go_to_start"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/red"
+        android:minHeight="?attr/actionBarSize" >
 
+    </android.support.v7.widget.Toolbar>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/main_activity_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@color/app_background">
+
+        <ProgressBar
+            android:id="@+id/progressBarCircle"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="270dp"
+            android:layout_height="270dp"
+            android:background="@drawable/drawable_circle_dark"
+            android:indeterminate="false"
+            android:max="100"
+            android:progress="100"
+            android:progressDrawable="@drawable/drawable_circle"
+            android:rotation="-90"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+
+        <TextView
+            android:id="@+id/textViewTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30:00"
+            android:textColor="@color/orange"
+            android:textSize="40sp"
+            android:layout_above="@+id/imageViewStartStop"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="99dp" />
+
+        <ImageView
+            android:id="@+id/imageViewStartStop"
+            android:layout_width="60dp"
+            android:layout_height="70dp"
+            android:layout_below="@+id/progressBarCircle"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/add_drink" />
+
+        <TextView
+            android:id="@+id/drinkTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DRINK"
+            android:textColor="@color/white"
+            android:layout_below="@id/imageViewStartStop"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="In Progress"
+            android:id="@+id/in_progress"
+            android:textColor="@color/white"
+            android:layout_below="@id/drinkTxt"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp" />
+
+
+</RelativeLayout>
