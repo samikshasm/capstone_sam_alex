@@ -41,8 +41,6 @@ public class StartActivity extends AppCompatActivity {
             Log.e("User ID Start", userIDMA);
         }
 
-
-
         ImageButton startDrinking = (ImageButton) findViewById(R.id.start_drinking);
         startDrinking.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -98,7 +96,6 @@ public class StartActivity extends AppCompatActivity {
             startActivity(switchToMorning);
             finish();
         }
-
     }
 
     private void storeUserID(String string) {

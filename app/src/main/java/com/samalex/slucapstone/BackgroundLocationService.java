@@ -18,11 +18,12 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 
+//code adapted from open source googleSamples android-play-location and vipulasri LocationUpdates github library
+
 public class BackgroundLocationService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    protected static final String TAG = "BackgroundLocationService";
-
-    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+    //initialize variables
+    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 600000;
     public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
     public static String userID;
     protected GoogleApiClient mGoogleApiClient;
@@ -43,6 +44,7 @@ public class BackgroundLocationService extends Service implements GoogleApiClien
     public void onCreate() {
         super.onCreate();
 
+        //initializes Location Updates service
         mIntentService = new Intent(this,LocationUpdates.class);
         mPendingIntent = PendingIntent.getService(this, 1, mIntentService, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -59,6 +61,7 @@ public class BackgroundLocationService extends Service implements GoogleApiClien
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
+        //gets shared preferences variable needed
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         userID = mSharedPreferences.getString("user ID", "none");
 

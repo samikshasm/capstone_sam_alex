@@ -37,21 +37,20 @@ public class NotificationService extends Service {
         Log.e("We are in notification", "yay");
         int NOTIFICATION_ID;
 
-        //String userIDMA = intent.getStringExtra("User ID");
         String initialTimeStr = intent.getStringExtra("initial time");
         String broadcastId = intent.getStringExtra("broadcast Int");
         NOTIFICATION_ID = Integer.parseInt(broadcastId);
 
+
+        //creates a notification for the alarms that occur during the night after 30 minutes has gone by
         if (NOTIFICATION_ID != 5) {
 
             Intent mainIntent = new Intent(this, MainActivity.class);
-            // mainIntent.putExtra("User ID", userIDMA);
             mainIntent.putExtra("broadcast Int", broadcastId);
             PendingIntent mainPI = PendingIntent.getActivity(this, 0, mainIntent, PendingIntent.FLAG_ONE_SHOT);
 
             Intent yesIntent = new Intent(this, Main2Activity.class);
             yesIntent.putExtra("notificationBool", 100);
-            //yesIntent.putExtra("User ID", userIDMA);
             yesIntent.putExtra("initial time", initialTimeStr);
             yesIntent.putExtra("broadcast Int", broadcastId);
             PendingIntent yesIntent1 = PendingIntent.getActivity(this, 0, yesIntent, PendingIntent.FLAG_ONE_SHOT);
@@ -69,18 +68,21 @@ public class NotificationService extends Service {
                     .addAction(R.drawable.check_small, "Yes", yesIntent1)
                     .addAction(R.drawable.cancel_small, "No", noIntent1)
                     //.setFullScreenIntent(yesIntent1, true)
-                    .setFullScreenIntent(noIntent1, true)
+                    .setFullScreenIntent(mainPI, true)
                     .setAutoCancel(true);
 
-            //builder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
+            builder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
+            builder.setDefaults(Notification.DEFAULT_SOUND);
+
 
             //builder.setContentIntent(mainPI);
             NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             nManager.notify(NOTIFICATION_ID, builder.build());
 
-            // Toast.makeText(this, counter, Toast.LENGTH_SHORT).show();
         }else{
+            //creates notification that appears when the morning alarm goes off
             Intent morningIntent = new Intent(this, MorningQS.class);
+            morningIntent.putExtra("broadcast Int", broadcastId);
             PendingIntent morningIntent1 = PendingIntent.getActivity(this, 0, morningIntent, PendingIntent.FLAG_ONE_SHOT);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                     .setSmallIcon(R.drawable.small_statusbar_icon)

@@ -33,19 +33,17 @@ import java.util.Date;
 
 public class Main2Activity extends AppCompatActivity{
 
-    private boolean currentUserBool;
+
+    //initializes variables
     private Integer numberDrinks = 0;
     private String userIDMA;
-    private String initialTimeStr;
-    private String counterStr;
-    private Integer counterInt;
     private String time;
     private DatabaseReference mDatabase;
+    private String initialTimeStr;
     private String typeOfDrink;
     private String sizeOfDrink;
     private String withWhom;
     private String where;
-    private Drawable[] wineLayers;
     private String date;
     private Integer nightCount;
     @Override
@@ -55,10 +53,12 @@ public class Main2Activity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
+        //initialize databse
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         nightCount = getNightCount();
 
+        //initialize all ui elements
         final ImageButton beer = (ImageButton) findViewById(R.id.beerBtn);
         final ImageButton liquor = (ImageButton) findViewById(R.id.liquorBtn);
         final ImageButton wine = (ImageButton) findViewById(R.id.wineBtn);
@@ -79,6 +79,9 @@ public class Main2Activity extends AppCompatActivity{
         final ImageButton party = (ImageButton) findViewById(R.id.party);
         final ImageButton otherPlace = (ImageButton) findViewById(R.id.otherPlace);
 
+
+        //creates all of the onClick listeners for each button
+        //switches the images of the buttons when one is pressed
         beer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 typeOfDrink = "beer";
@@ -196,7 +199,7 @@ public class Main2Activity extends AppCompatActivity{
                 work.setImageResource(R.drawable.work_purple);
                 bar.setImageResource(R.drawable.bar_purple);
                 party.setImageResource(R.drawable.party_purple);
-                other.setImageResource(R.drawable.other_purple);
+                otherPlace.setImageResource(R.drawable.other_purple);
 
             }
         });
@@ -208,7 +211,7 @@ public class Main2Activity extends AppCompatActivity{
                 work.setImageResource(R.drawable.work_green);
                 bar.setImageResource(R.drawable.bar_purple);
                 party.setImageResource(R.drawable.party_purple);
-                other.setImageResource(R.drawable.other_purple);
+                otherPlace.setImageResource(R.drawable.other_purple);
 
             }
         });
@@ -220,7 +223,7 @@ public class Main2Activity extends AppCompatActivity{
                 work.setImageResource(R.drawable.work_purple);
                 bar.setImageResource(R.drawable.bar_green);
                 party.setImageResource(R.drawable.party_purple);
-                other.setImageResource(R.drawable.other_purple);
+                otherPlace.setImageResource(R.drawable.other_purple);
 
             }
         });
@@ -232,7 +235,7 @@ public class Main2Activity extends AppCompatActivity{
                 work.setImageResource(R.drawable.work_purple);
                 bar.setImageResource(R.drawable.bar_purple);
                 party.setImageResource(R.drawable.party_green);
-                other.setImageResource(R.drawable.other_purple);
+                otherPlace.setImageResource(R.drawable.other_purple);
             }
         });
 
@@ -243,11 +246,12 @@ public class Main2Activity extends AppCompatActivity{
                 work.setImageResource(R.drawable.work_purple);
                 bar.setImageResource(R.drawable.bar_purple);
                 party.setImageResource(R.drawable.party_purple);
-                other.setImageResource(R.drawable.other_green);
+                otherPlace.setImageResource(R.drawable.other_green);
 
             }
         });
 
+        //onClick listener for submit button
         Button submitBtn = (Button) findViewById(R.id.submitBtn);
         submitBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -259,16 +263,16 @@ public class Main2Activity extends AppCompatActivity{
             }
         });
 
+
+        //gets shared preference variables necessary for writing to the database
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = mSharedPreferences.getString("user ID", "none");
 
         numberDrinks = getNumDrinks();
         numberDrinks++;
         storeNumDrinks(numberDrinks);
-        String numberOfDrinks = numberDrinks.toString();
-        // writeNumDrinksToDB(numberOfDrinks);
 
-        //not sure this is working
+        //cancels notification when the activity opens
         String broadcastID = getIntent().getStringExtra("broadcast Int");
         if (broadcastID != null) {
             int notificationId = Integer.parseInt(broadcastID);
@@ -279,6 +283,7 @@ public class Main2Activity extends AppCompatActivity{
 
     }
 
+    //function for switching back to the main activity after questions are answered
     public void switchToMainActivity(View view){
         Intent switchToMainActivity = new Intent (Main2Activity.this, MainActivity.class);
         switchToMainActivity.putExtra("coming from start", "come from qs");
@@ -287,6 +292,7 @@ public class Main2Activity extends AppCompatActivity{
         finish();
     }
 
+    //function to get current time
     public void getTime() {
         long currentDateTime = System.currentTimeMillis();
         Date currentDate = new Date(currentDateTime);
@@ -296,6 +302,8 @@ public class Main2Activity extends AppCompatActivity{
         time = timeFormat.format(currentDate);
     }
 
+
+    //functions that write all of the answers to questions to the database
     public void writeTypeToDB(String type) {
         getTime();
         DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("Answers").child(date).child("Type").child(time);
@@ -319,6 +327,8 @@ public class Main2Activity extends AppCompatActivity{
         DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("Answers").child(date).child("Where").child(time);
         mRef.setValue(where);
     }
+
+    //stores number of drinks as shared preference variable
     private void storeNumDrinks (Integer integer) {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
@@ -326,12 +336,14 @@ public class Main2Activity extends AppCompatActivity{
         mEditor.apply();
     }
 
+    //gets number of drinks from shared preferences
     private Integer getNumDrinks () {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
         Integer numberDrinks = mSharedPreferences.getInt("numDrinks",0);
         return numberDrinks;
     }
 
+    //gets night count from shared preferences
     private Integer getNightCount() {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);

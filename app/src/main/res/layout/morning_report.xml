@@ -60,6 +60,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/layout_left"
                     android:layout_below="@id/toolbar_top"
+                    android:weightSum="2"
                     android:orientation="vertical">
 
                     <LinearLayout
@@ -67,11 +68,12 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_gravity="center_horizontal"
-                        android:paddingBottom="5dp">
+                        android:layout_weight="3"
+                        android:paddingBottom="27dp">
                         <TextView
                             android:id="@+id/display_numDrinks"
                             android:layout_width="wrap_content"
-                            android:layout_height="100dp"
+                            android:layout_height="110dp"
                             android:textColor="@color/light_blue"
                             android:layout_gravity="center_horizontal"
                             android:text="5"
@@ -98,6 +100,7 @@
                     <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:layout_gravity="center_horizontal">
 
                         <ImageView
@@ -107,14 +110,15 @@
                             android:src="@drawable/liters_icon"/>
 
                         <TextView
-                            android:id="@+id/liters_drank"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingLeft="17dp"
+                            android:id="@+id/liters_drank"
                             android:paddingTop="10dp"
+                            android:paddingLeft="17dp"
                             android:text="9"
                             android:textColor="@color/white"
-                            android:textSize="18sp" />
+                            android:textSize="25sp"
+                            />
                     </RelativeLayout>
 
                     <TextView
@@ -122,6 +126,7 @@
                         android:layout_height="wrap_content"
                         android:text="Liters"
                         android:textColor="@color/white"
+                        android:layout_weight="1"
                         android:layout_gravity="center_horizontal"
                         android:textSize="15sp"/>
 
@@ -142,6 +147,89 @@
                     </com.github.mikephil.charting.charts.PieChart>
 
                     <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:weightSum="4">
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_weight="1"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@color/pink"
+                                />
+
+                            <Space
+                                android:layout_width="2dp"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"
+                                android:text="beer"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@color/orange"
+                                />
+
+                            <Space
+                                android:layout_width="2dp"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"
+                                android:text="liquor"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@color/green"
+                                />
+
+
+                            <Space
+                                android:layout_width="2dp"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"
+                                android:text="wine"/>
+
+
+                        </LinearLayout>
+
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -157,7 +245,7 @@
                             android:layout_height="match_parent"
                             android:textColor="@color/purple"
                             android:textSize="100sp"
-                            android:text="20"
+                            android:text="0"
                             android:textStyle="bold"
                             android:layout_below="@+id/pie_chart"
                             android:layout_alignLeft="@id/pie_chart"

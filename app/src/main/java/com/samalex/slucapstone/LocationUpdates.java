@@ -1,14 +1,11 @@
 package com.samalex.slucapstone;
 
 import android.app.IntentService;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
-import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -17,8 +14,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+
+//class for updating the database at a given interval
+//adapted some code from vipulasri Location Updates open source github
 public class LocationUpdates extends IntentService {
 
+
+    //initialize variables
     private String TAG = this.getClass().getSimpleName();
     private DatabaseReference mDatabase;
     private String userIDMA;
@@ -29,6 +31,8 @@ public class LocationUpdates extends IntentService {
     private double longitude;
     private Integer nightCount;
 
+
+    //constructors
     public LocationUpdates() {
         super("Fused Location");
     }
@@ -40,31 +44,36 @@ public class LocationUpdates extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        //Log.e("Locatoin Service", "boi");
-
+        //initializes database instance
         mDatabase = FirebaseDatabase.getInstance().getReference();
         nightCount = getNightCount();
 
+        //checks to see if a valid location was passed
         if (LocationResult.hasResult(intent)) {
             LocationResult locationResult = LocationResult.extractResult(intent);
             Location location = locationResult.getLastLocation();
 
             if(location !=null) {
+
+                //gets latitude and longitude from location
                 userIDMA = BackgroundLocationService.userID;
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
                 Log.i(TAG, "onHandleIntent " + location.getLatitude() + "," + location.getLongitude());
 
+                //gets current date and time to log location in database
                 long currentDateTime = System.currentTimeMillis();
                 Date currentDate = new Date(currentDateTime);
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 time = dateFormat.format(currentDate);
                 text = latitude + "&" + longitude;
 
+                //gets relevant shared preference variables
                 SharedPreferences mSharedPreferences1 = getSharedPreferences("screen", MODE_PRIVATE);
                 String selectedScreen = mSharedPreferences1.getString("currentScreen","none");
                 Log.e("selectedScreen", selectedScreen);
 
+                //only writes to the database if the current screen is main
                 if (selectedScreen.equals("main")) {
                     writeToDB(text);
                 }
@@ -72,6 +81,7 @@ public class LocationUpdates extends IntentService {
         }
     }
 
+    //function to write to the database
     public void writeToDB(String text1) {
         Log.e("Location Service DB", "Boi");
         DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("Location").child(time);
@@ -79,6 +89,7 @@ public class LocationUpdates extends IntentService {
 
     }
 
+    //function to get the current night count
     private Integer getNightCount() {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);

@@ -1,5 +1,7 @@
 package com.samalex.slucapstone;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -54,6 +56,8 @@ public class MorningQS extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+
+        //initializes variables
         super.onCreate(savedInstanceState);
         setContentView(R.layout.morning_qs);
 
@@ -96,18 +100,14 @@ public class MorningQS extends AppCompatActivity {
         final CheckBox newPartner = (CheckBox) findViewById(R.id.new_partner);
         final CheckBox naPartner = (CheckBox) findViewById(R.id.na_partner);
 
-        /*userIDMA = getIntent().getStringExtra("User ID");
-        if (userIDMA == null){
-            Toast.makeText(this, "null", Toast.LENGTH_SHORT).show();
-        }else{
-            Log.e("User ID Morning QS", userIDMA);
-        }*/
-
+        //gets shared preferences variable
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = mSharedPreferences.getString("user ID", "none");
 
         nightCount = getNightCount();
 
+
+        //creates all of the onClick listeners for all of the buttons for questions
         View.OnClickListener handler1 = new View.OnClickListener() {
             public void onClick(View view) {
                 Intent switchToMorningReport = new Intent(MorningQS.this, MorningReport.class);
@@ -383,8 +383,17 @@ public class MorningQS extends AppCompatActivity {
                 }
             }
         });
+
+        String broadcastID = getIntent().getStringExtra("broadcast Int");
+        if (broadcastID != null) {
+            int notificationId = Integer.parseInt(broadcastID);
+            NotificationManager manager = (NotificationManager) MorningQS.this.getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.cancel(notificationId);
+        }
     }
 
+
+    //function to get current time
     public void getTime() {
         long currentDateTime = System.currentTimeMillis();
         Date currentDate = new Date(currentDateTime);
@@ -392,13 +401,7 @@ public class MorningQS extends AppCompatActivity {
         time = dateFormat.format(currentDate);
     }
 
-    private void storeScreen(String string) {
-        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
-        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-        mEditor.putString("currentScreen", string);
-        mEditor.apply();
-    }
-
+    //functions to write all of the answers to the database
     public void writeNumPartners(int number){
         getTime();
         DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("numPartners");
@@ -476,6 +479,7 @@ public class MorningQS extends AppCompatActivity {
         mRef.setValue(analConsent);
     }
 
+    //gets nightCount shared preference variable
     private Integer getNightCount() {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
