@@ -306,25 +306,25 @@ public class Main2Activity extends AppCompatActivity{
     //functions that write all of the answers to questions to the database
     public void writeTypeToDB(String type) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("Answers").child(date).child("Type").child(time);
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Type").child("Time: "+time);
         mRef.setValue(type);
     }
 
     public void writeSizeToDB(String size) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("Answers").child(date).child("Size").child(time);
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Size").child("Time: "+time);
         mRef.setValue(size);
     }
 
     public void writeWhoToDB(String who) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("Answers").child(date).child("Who").child(time);
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Who").child("Time: "+time);
         mRef.setValue(who);
     }
 
     public void writeWhereToDB (String where) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("Answers").child(date).child("Where").child(time);
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Where").child("Time: "+time);
         mRef.setValue(where);
     }
 

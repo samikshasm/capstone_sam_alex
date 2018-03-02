@@ -84,7 +84,7 @@ public class LocationUpdates extends IntentService {
     //function to write to the database
     public void writeToDB(String text1) {
         Log.e("Location Service DB", "Boi");
-        DatabaseReference mRef = mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("Location").child(time);
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Location").child("Time: "+time);
         mRef.setValue(text1);
 
     }

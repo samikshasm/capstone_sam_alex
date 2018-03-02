@@ -204,8 +204,8 @@ public class MainActivity extends AppCompatActivity {
             day = day+1;
         }
         morningCal.set(Calendar.DAY_OF_WEEK, day);
-        morningCal.set(Calendar.HOUR_OF_DAY, 7);
-        morningCal.set(Calendar.MINUTE, 00);
+        morningCal.set(Calendar.HOUR_OF_DAY, 2);
+        morningCal.set(Calendar.MINUTE, 12);
         morningCal.set(Calendar.SECOND, 0);
 
         Intent alertIntent = new Intent(this, TimerReceiver.class);
@@ -345,12 +345,14 @@ public class MainActivity extends AppCompatActivity {
         return startedTimeMillis;
     }
 
+
+    //LOOK HERE TO SEE LOCATION STUFF
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();

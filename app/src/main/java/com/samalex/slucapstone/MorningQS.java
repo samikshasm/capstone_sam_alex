@@ -74,22 +74,22 @@ public class MorningQS extends AppCompatActivity {
         final ImageButton vaginalCondomNo = (ImageButton) findViewById(R.id.vaginal_condom_no_button);
         final ImageButton analCondomYes = (ImageButton) findViewById(R.id.anal_condom_yes_button);
         final ImageButton analCondomNo = (ImageButton) findViewById(R.id.anal_condom_no_button);
-        final ImageButton oralConsentYes = (ImageButton) findViewById(R.id.oral_consent_yes_button);
-        final ImageButton oralConsentNo = (ImageButton) findViewById(R.id.oral_consent_no_button);
-        final ImageButton vaginalConsentYes = (ImageButton) findViewById(R.id.vaginal_consent_yes_button);
-        final ImageButton vaginalConsentNo = (ImageButton) findViewById(R.id.vaginal_consent_no_button);
-        final ImageButton analConsentYes = (ImageButton) findViewById(R.id.anal_consent_yes_button);
-        final ImageButton analConsentNo = (ImageButton) findViewById(R.id.anal_consent_no_button);
+        //final ImageButton oralConsentYes = (ImageButton) findViewById(R.id.oral_consent_yes_button);
+        //final ImageButton oralConsentNo = (ImageButton) findViewById(R.id.oral_consent_no_button);
+        //final ImageButton vaginalConsentYes = (ImageButton) findViewById(R.id.vaginal_consent_yes_button);
+        //final ImageButton vaginalConsentNo = (ImageButton) findViewById(R.id.vaginal_consent_no_button);
+        //final ImageButton analConsentYes = (ImageButton) findViewById(R.id.anal_consent_yes_button);
+        //final ImageButton analConsentNo = (ImageButton) findViewById(R.id.anal_consent_no_button);
         final TextView vaginalCondom = (TextView) findViewById(R.id.vaginal_condom_qs);
-        final TextView vaginalConsent = (TextView) findViewById(R.id.vaginal_consent_qs);
+        //final TextView vaginalConsent = (TextView) findViewById(R.id.vaginal_consent_qs);
         final TextView analCondom = (TextView) findViewById(R.id.anal_condom_qs);
-        final TextView analConsent = (TextView) findViewById(R.id.anal_consent_qs);
-        final TextView oralConsent = (TextView) findViewById(R.id.oral_consent_qs);
+        //final TextView analConsent = (TextView) findViewById(R.id.anal_consent_qs);
+        //final TextView oralConsent = (TextView) findViewById(R.id.oral_consent_qs);
         final LinearLayout vaginalCondomLayout = (LinearLayout) findViewById(R.id.vaginal_condom);
         final LinearLayout vaginalConsentLayout = (LinearLayout) findViewById(R.id.vaginal_consent);
-        final LinearLayout analConsentLayout = (LinearLayout) findViewById(R.id.anal_consent) ;
+        //final LinearLayout analConsentLayout = (LinearLayout) findViewById(R.id.anal_consent) ;
         final LinearLayout analCondomLayout = (LinearLayout) findViewById(R.id.anal_condom);
-        final LinearLayout oralConsentLayout = (LinearLayout) findViewById(R.id.oral_consent);
+        //final LinearLayout oralConsentLayout = (LinearLayout) findViewById(R.id.oral_consent);
 
         //new stuff
         final Button add = (Button) findViewById(R.id.add_button);
@@ -113,13 +113,13 @@ public class MorningQS extends AppCompatActivity {
                 Intent switchToMorningReport = new Intent(MorningQS.this, MorningReport.class);
                 startActivity(switchToMorningReport);
                 writeOralToDB(oral);
-                writeOralConsentToDB(oralConsentStr);
+                //writeOralConsentToDB(oralConsentStr);
                 writeVaginalToDB(vaginal);
                 writeVaginalCondomToDB(vaginalCondomStr);
-                writeVaginalConsentToDB(vaginalConsentStr);
+                //writeVaginalConsentToDB(vaginalConsentStr);
                 writeAnalToDB(anal);
                 writeAnalCondomToDB(analCondomStr);
-                writeAnalConsentToDB(analConsentStr);
+                //writeAnalConsentToDB(analConsentStr);
                 writeNumPartners(counter);
                 writeMonoPartner(monoStr);
                 writeFriendPartner(friendStr);
@@ -135,10 +135,10 @@ public class MorningQS extends AppCompatActivity {
                 oral = "no";
                 oralNo.setImageResource(R.drawable.no_green_button);
                 oralYes.setImageResource(R.drawable.yes_button);
-                oralConsent.setVisibility(View.GONE);
-                oralConsentLayout.setVisibility(View.GONE);
-                oralConsentNo.setVisibility(View.GONE);
-                oralConsentYes.setVisibility(View.GONE);
+                //oralConsent.setVisibility(View.GONE);
+                //oralConsentLayout.setVisibility(View.GONE);
+                //oralConsentNo.setVisibility(View.GONE);
+                //oralConsentYes.setVisibility(View.GONE);
 
             }
         });
@@ -148,30 +148,30 @@ public class MorningQS extends AppCompatActivity {
                 oral = "yes";
                 oralNo.setImageResource(R.drawable.no_button);
                 oralYes.setImageResource(R.drawable.yes_green);
-                oralConsent.setVisibility(View.VISIBLE);
-                oralConsentLayout.setVisibility(View.VISIBLE);
-                oralConsentNo.setVisibility(View.VISIBLE);
-                oralConsentYes.setVisibility(View.VISIBLE);
+                //oralConsent.setVisibility(View.VISIBLE);
+                //oralConsentLayout.setVisibility(View.VISIBLE);
+                //oralConsentNo.setVisibility(View.VISIBLE);
+                //oralConsentYes.setVisibility(View.VISIBLE);
 
             }
         });
 
-        oralConsentYes.setOnClickListener(new View.OnClickListener() {
+        /*oralConsentYes.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 oralConsentStr = "yes";
                 oralConsentNo.setImageResource(R.drawable.no_button);
                 oralConsentYes.setImageResource(R.drawable.yes_green);
 
             }
-        });
+        });*/
 
-        oralConsentNo.setOnClickListener(new View.OnClickListener() {
+        /*oralConsentNo.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 oralConsentStr = "no";
                 oralConsentNo.setImageResource(R.drawable.no_green_button);
                 oralConsentYes.setImageResource(R.drawable.yes_button);
             }
-        });
+        });*/
 
         vaginalNo.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -183,9 +183,9 @@ public class MorningQS extends AppCompatActivity {
                 vaginalCondomYes.setVisibility(View.GONE);
                 vaginalCondomNo.setVisibility(View.GONE);
                 vaginalConsentLayout.setVisibility(View.GONE);
-                vaginalConsent.setVisibility(View.GONE);
-                vaginalConsentYes.setVisibility(View.GONE);
-                vaginalConsentNo.setVisibility(View.GONE);
+                //vaginalConsent.setVisibility(View.GONE);
+                //vaginalConsentYes.setVisibility(View.GONE);
+                //vaginalConsentNo.setVisibility(View.GONE);
 
             }
         });
@@ -200,9 +200,9 @@ public class MorningQS extends AppCompatActivity {
                 vaginalCondomYes.setVisibility(View.VISIBLE);
                 vaginalCondomNo.setVisibility(View.VISIBLE);
                 vaginalConsentLayout.setVisibility(View.VISIBLE);
-                vaginalConsent.setVisibility(View.VISIBLE);
-                vaginalConsentYes.setVisibility(View.VISIBLE);
-                vaginalConsentNo.setVisibility(View.VISIBLE);
+                //vaginalConsent.setVisibility(View.VISIBLE);
+                //vaginalConsentYes.setVisibility(View.VISIBLE);
+                //vaginalConsentNo.setVisibility(View.VISIBLE);
 
             }
         });
@@ -225,33 +225,33 @@ public class MorningQS extends AppCompatActivity {
             }
         });
 
-        vaginalConsentNo.setOnClickListener(new View.OnClickListener() {
+        /*vaginalConsentNo.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 vaginalConsentStr = "no";
                 vaginalConsentNo.setImageResource(R.drawable.no_green_button);
                 vaginalConsentYes.setImageResource(R.drawable.yes_button);
 
             }
-        });
+        });*/
 
-        vaginalConsentYes.setOnClickListener(new View.OnClickListener() {
+        /*vaginalConsentYes.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 vaginalConsentStr = "yes";
                 vaginalConsentNo.setImageResource(R.drawable.no_button);
                 vaginalConsentYes.setImageResource(R.drawable.yes_green);
 
             }
-        });
+        });*/
 
         analYes.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 anal = "yes";
                 analNo.setImageResource(R.drawable.no_button);
                 analYes.setImageResource(R.drawable.yes_green);
-                analConsent.setVisibility(View.VISIBLE);
-                analConsentLayout.setVisibility(View.VISIBLE);
-                analConsentYes.setVisibility(View.VISIBLE);
-                analConsentNo.setVisibility(View.VISIBLE);
+                //analConsent.setVisibility(View.VISIBLE);
+                //analConsentLayout.setVisibility(View.VISIBLE);
+                //analConsentYes.setVisibility(View.VISIBLE);
+                //analConsentNo.setVisibility(View.VISIBLE);
                 analCondomLayout.setVisibility(View.VISIBLE);
                 analCondom.setVisibility(View.VISIBLE);
                 analCondomYes.setVisibility(View.VISIBLE);
@@ -265,10 +265,10 @@ public class MorningQS extends AppCompatActivity {
                 anal = "no";
                 analNo.setImageResource(R.drawable.no_green_button);
                 analYes.setImageResource(R.drawable.yes_button);
-                analConsent.setVisibility(View.GONE);
-                analConsentLayout.setVisibility(View.GONE);
-                analConsentYes.setVisibility(View.GONE);
-                analConsentNo.setVisibility(View.GONE);
+                //analConsent.setVisibility(View.GONE);
+                //analConsentLayout.setVisibility(View.GONE);
+                //analConsentYes.setVisibility(View.GONE);
+                //analConsentNo.setVisibility(View.GONE);
                 analCondomLayout.setVisibility(View.GONE);
                 analCondom.setVisibility(View.GONE);
                 analCondomYes.setVisibility(View.GONE);
@@ -295,23 +295,23 @@ public class MorningQS extends AppCompatActivity {
             }
         });
 
-        analConsentNo.setOnClickListener(new View.OnClickListener() {
+        /*analConsentNo.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 analConsentStr = "no";
                 analConsentNo.setImageResource(R.drawable.no_green_button);
                 analConsentYes.setImageResource(R.drawable.yes_button);
 
             }
-        });
+        });*/
 
-        analConsentYes.setOnClickListener(new View.OnClickListener() {
+        /*analConsentYes.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 analConsentStr = "yes";
                 analConsentNo.setImageResource(R.drawable.no_button);
                 analConsentYes.setImageResource(R.drawable.yes_green);
 
             }
-        });
+        });*/
 
         add.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {

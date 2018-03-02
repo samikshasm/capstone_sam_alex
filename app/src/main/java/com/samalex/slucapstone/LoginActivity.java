@@ -83,6 +83,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private Intent intent;
     private String currentUserBool;
     private FirebaseUser currentUser;
+    private String username;
 
 
     @Override
@@ -151,9 +152,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString() + "@gmail.com";
+        username = mEmailView.getText().toString();
+        storeUserID(username);
+        Log.e("username",username);
         //Toast.makeText(LoginActivity.this, email, Toast.LENGTH_SHORT).show();
         //String password = mPasswordView.getText().toString();
-        String password = "123456";
+        String password = "hello123";
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
             return;
@@ -187,13 +191,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             FirebaseUser user = mAuth.getCurrentUser();
                             currentUserBool = "signed in";
                             UserID = task.getResult().getUser().getUid();
-                            storeUserID(UserID);
+                            storeUserID(username);
 
                             // Toast.makeText(LoginActivity.this, "us",
                             //       Toast.LENGTH_SHORT).show();
 
-                            Log.e("User ID Login", UserID);
-                            intent.putExtra("User ID", UserID);
+                            Log.e("User ID Login", username);
+                            intent.putExtra("User ID", username);
                             intent.putExtra("Sign in Boolean", currentUserBool);
                             startActivity(intent);
                             finish();
@@ -374,11 +378,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (currentUser != null){
             //currentUserBool = "signed in";
             UserID = currentUser.getUid();
+            username = getScreen();
             //Toast.makeText(getApplicationContext(), UserID,
             //        Toast.LENGTH_SHORT).show();
-            intent.putExtra("User ID", UserID);
+            intent.putExtra("User ID", username);
             //intent.putExtra("Sign in Boolean", currentUser);
-            storeUserID(UserID);
+            Log.e("username2",username);
+            storeUserID(username);
             startActivity(intent);
             finish();
 
