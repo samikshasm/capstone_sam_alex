@@ -203,10 +203,10 @@ public class MainActivity extends AppCompatActivity {
             day = morningCal.get(Calendar.DAY_OF_WEEK);
             day = day+1;
         }
-        morningCal.set(Calendar.DAY_OF_WEEK, day);
-        morningCal.set(Calendar.HOUR_OF_DAY, 2);
-        morningCal.set(Calendar.MINUTE, 12);
-        morningCal.set(Calendar.SECOND, 0);
+        morningCal.set(Calendar.DAY_OF_WEEK, morningCal.get(Calendar.DAY_OF_WEEK));
+        morningCal.set(Calendar.HOUR_OF_DAY, morningCal.get(Calendar.HOUR_OF_DAY));
+        morningCal.set(Calendar.MINUTE, morningCal.get(Calendar.MINUTE)+1);
+        morningCal.set(Calendar.SECOND, morningCal.get(Calendar.SECOND));
 
         Intent alertIntent = new Intent(this, TimerReceiver.class);
         AlarmManager morningAlarmMan = (AlarmManager) getSystemService(ALARM_SERVICE);

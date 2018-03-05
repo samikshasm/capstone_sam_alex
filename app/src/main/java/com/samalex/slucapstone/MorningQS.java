@@ -86,7 +86,7 @@ public class MorningQS extends AppCompatActivity {
         //final TextView analConsent = (TextView) findViewById(R.id.anal_consent_qs);
         //final TextView oralConsent = (TextView) findViewById(R.id.oral_consent_qs);
         final LinearLayout vaginalCondomLayout = (LinearLayout) findViewById(R.id.vaginal_condom);
-        final LinearLayout vaginalConsentLayout = (LinearLayout) findViewById(R.id.vaginal_consent);
+        //final LinearLayout vaginalConsentLayout = (LinearLayout) findViewById(R.id.vaginal_consent);
         //final LinearLayout analConsentLayout = (LinearLayout) findViewById(R.id.anal_consent) ;
         final LinearLayout analCondomLayout = (LinearLayout) findViewById(R.id.anal_condom);
         //final LinearLayout oralConsentLayout = (LinearLayout) findViewById(R.id.oral_consent);
@@ -182,7 +182,7 @@ public class MorningQS extends AppCompatActivity {
                 vaginalCondomLayout.setVisibility(View.GONE);
                 vaginalCondomYes.setVisibility(View.GONE);
                 vaginalCondomNo.setVisibility(View.GONE);
-                vaginalConsentLayout.setVisibility(View.GONE);
+                //vaginalConsentLayout.setVisibility(View.GONE);
                 //vaginalConsent.setVisibility(View.GONE);
                 //vaginalConsentYes.setVisibility(View.GONE);
                 //vaginalConsentNo.setVisibility(View.GONE);
@@ -199,7 +199,7 @@ public class MorningQS extends AppCompatActivity {
                 vaginalCondomLayout.setVisibility(View.VISIBLE);
                 vaginalCondomYes.setVisibility(View.VISIBLE);
                 vaginalCondomNo.setVisibility(View.VISIBLE);
-                vaginalConsentLayout.setVisibility(View.VISIBLE);
+                //vaginalConsentLayout.setVisibility(View.VISIBLE);
                 //vaginalConsent.setVisibility(View.VISIBLE);
                 //vaginalConsentYes.setVisibility(View.VISIBLE);
                 //vaginalConsentNo.setVisibility(View.VISIBLE);
@@ -404,78 +404,78 @@ public class MorningQS extends AppCompatActivity {
     //functions to write all of the answers to the database
     public void writeNumPartners(int number){
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("numPartners");
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("numPartners");
         mRef.setValue(number);
     }
 
     public void writeMonoPartner(String monoPartner){
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("MonogamousPartner");
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("MonogamousPartner");
         mRef.setValue(monoPartner);
     }
 
     public void writeFriendPartner(String friendPartner){
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("FriendPartner");
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("FriendPartner");
         mRef.setValue(friendPartner);
     }
 
     public void writeNewPartner(String newPartner){
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("NewPartner");
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("NewPartner");
         mRef.setValue(newPartner);
     }
 
     public void writeNAPartner(String naPartner){
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("NAPartner");
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("NAPartner");
         mRef.setValue(naPartner);
     }
     public void writeOralToDB (String oral) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("oral");
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("oral");
         mRef.setValue(oral);
     }
 
     public void writeOralConsentToDB(String oralConsent){
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("oralConsent");
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("oralConsent");
         mRef.setValue(oralConsent);
     }
 
     public void writeVaginalToDB (String vaginal) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("vaginal");
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("vaginal");
         mRef.setValue(vaginal);
     }
 
     public void writeAnalToDB (String anal) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("anal");
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("anal");
         mRef.setValue(anal);
     }
 
     public void writeVaginalCondomToDB (String vaginalCondom) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("vaginalCondom");
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("vaginalCondom");
         mRef.setValue(vaginalCondom);
     }
 
     public void writeVaginalConsentToDB (String vaginalConsent) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("vaginalConsent");
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("vaginalConsent");
         mRef.setValue(vaginalConsent);
     }
 
     public void writeAnalCondomToDB (String analCondom) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("analCondom");
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("analCondom");
         mRef.setValue(analCondom);
     }
 
     public void writeAnalConsentToDB (String analConsent) {
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child(userIDMA).child(""+nightCount).child("MorningAnswers").child(time).child("analConsent");
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("analConsent");
         mRef.setValue(analConsent);
     }
 
