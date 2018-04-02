@@ -14,9 +14,12 @@ import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +49,7 @@ public class Main2Activity extends AppCompatActivity{
     private String where;
     private String date;
     private Integer nightCount;
+    private String drinkCost;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -79,6 +83,70 @@ public class Main2Activity extends AppCompatActivity{
         final ImageButton party = (ImageButton) findViewById(R.id.party);
         final ImageButton otherPlace = (ImageButton) findViewById(R.id.otherPlace);
 
+        final RadioButton drink0 = (RadioButton) findViewById(R.id.radio_0);
+        final RadioButton drink1_5 = (RadioButton) findViewById(R.id.radio_1_5);
+        final RadioButton drink6_10 = (RadioButton) findViewById(R.id.radio_6_10);
+        final RadioButton drink11_15 = (RadioButton) findViewById(R.id.radio_11_15);
+        final RadioButton drink16plus = (RadioButton) findViewById(R.id.radio_16plus);
+        final RadioGroup costGroup = (RadioGroup) findViewById(R.id.radioCost);
+
+
+
+
+
+        drink1_5.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view){
+                drink1_5.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.green));
+                drink0.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+                drink6_10.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+                drink11_15.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+                drink16plus.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+
+            }
+        });
+
+        drink0.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view){
+                drink0.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.green));
+                drink1_5.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+                drink6_10.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+                drink11_15.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+                drink16plus.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+
+            }
+        });
+
+        drink6_10.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view){
+                drink6_10.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.green));
+                drink0.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+                drink1_5.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+                drink11_15.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+                drink16plus.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+
+            }
+        });
+
+        drink11_15.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view){
+                drink11_15.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.green));
+                drink0.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+                drink6_10.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+                drink1_5.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+                drink16plus.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+
+            }
+        });
+
+        drink16plus.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view){
+                drink16plus.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.green));
+                drink0.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+                drink6_10.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+                drink11_15.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+                drink1_5.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
+            }
+        });
 
         //creates all of the onClick listeners for each button
         //switches the images of the buttons when one is pressed
@@ -259,6 +327,13 @@ public class Main2Activity extends AppCompatActivity{
                 writeSizeToDB(sizeOfDrink);
                 writeWhoToDB(withWhom);
                 writeWhereToDB(where);
+                // get selected radio button from radioGroup
+                int selectedId = costGroup.getCheckedRadioButtonId();
+                // find the radiobutton by returned id
+                RadioButton costButton;
+                costButton = (RadioButton) findViewById(selectedId);
+                drinkCost = costButton.getText().toString();
+                writeCostToDB(drinkCost);
                 switchToMainActivity(view);
             }
         });
@@ -300,6 +375,12 @@ public class Main2Activity extends AppCompatActivity{
         DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
         date = dateFormat.format(currentDate);
         time = timeFormat.format(currentDate);
+    }
+
+    public void writeCostToDB(String drink_cost){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Cost").child("Time: "+time);
+        mRef.setValue(drink_cost);
     }
 
 

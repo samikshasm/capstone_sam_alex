@@ -475,6 +475,95 @@
 
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/cost_qs"
+                    android:text="How much did you spend last night?"
+                    android:textColor="@color/white"
+                    android:textSize="20dp"
+                    android:paddingTop="25dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="13dp" />
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1"/>
+
+                    <RadioGroup
+                        android:id="@+id/radioTotalCost"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        >
+
+                        <RadioButton
+                            android:id="@+id/radio_Total0"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="$0.00"
+                            android:buttonTint="@color/pink"
+                            android:textColor="@color/white"
+                            android:textSize="20dp"
+                            android:checked="true" />
+
+                        <RadioButton
+                            android:id="@+id/radio_1_10_Total"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:textSize="20dp"
+                            android:buttonTint="@color/pink"
+                            android:text="$1.00-$10.00" />
+
+                        <RadioButton
+                            android:id="@+id/radio_11_20_Total"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:textSize="20dp"
+                            android:buttonTint="@color/pink"
+                            android:text="$11.00-$20.00" />
+                        <RadioButton
+                            android:id="@+id/radio_21_30_Total"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:textSize="20dp"
+                            android:buttonTint="@color/pink"
+                            android:text="$21.00-$30.00" />
+                        <RadioButton
+                            android:id="@+id/radio_31_40_Total"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:textSize="20dp"
+                            android:buttonTint="@color/pink"
+                            android:text="$31.00-$40.00" />
+                        <RadioButton
+                            android:id="@+id/radio_41_Totalplus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:textSize="20dp"
+                            android:buttonTint="@color/pink"
+                            android:text="$41.00+" />
+
+                    </RadioGroup>
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1"/>
+
+                </LinearLayout>
+
 
             </LinearLayout>
 
@@ -485,6 +574,7 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/white"
                 android:text="SUBMIT"
+                android:layout_marginTop="25dp"
                 android:background="@color/light_blue"/>
 
 

@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +53,7 @@ public class MorningQS extends AppCompatActivity {
     private String naStr = "no";
     private Integer counter = 0;
     private Integer nightCount;
+    private String drinkCost ="NA";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +103,9 @@ public class MorningQS extends AppCompatActivity {
         final CheckBox newPartner = (CheckBox) findViewById(R.id.new_partner);
         final CheckBox naPartner = (CheckBox) findViewById(R.id.na_partner);
 
+        final RadioGroup costGroup = (RadioGroup) findViewById(R.id.radioTotalCost);
+
+
         //gets shared preferences variable
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = mSharedPreferences.getString("user ID", "none");
@@ -125,6 +131,12 @@ public class MorningQS extends AppCompatActivity {
                 writeFriendPartner(friendStr);
                 writeNewPartner(newStr);
                 writeNAPartner(naStr);
+                int selectedId = costGroup.getCheckedRadioButtonId();
+                // find the radiobutton by returned id
+                RadioButton costButton;
+                costButton = (RadioButton) findViewById(selectedId);
+                drinkCost = costButton.getText().toString();
+                writeCostTotaltoDB(drinkCost);
                 finish();
             }
         };
@@ -399,6 +411,13 @@ public class MorningQS extends AppCompatActivity {
         Date currentDate = new Date(currentDateTime);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         time = dateFormat.format(currentDate);
+    }
+
+    public void writeCostTotaltoDB(String drink_cost){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("Cost_Total");
+        mRef.setValue(drink_cost);
+
     }
 
     //functions to write all of the answers to the database

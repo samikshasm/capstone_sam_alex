@@ -28,17 +28,27 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 //suna
 import static com.samalex.slucapstone.BroadcastService.STARTED_TIME_IN_MILLIS;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
-
+import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -61,6 +71,16 @@ public class MainActivity extends AppCompatActivity {
     private String startActivity1;
     public static final long ALARM_TIME = 1800000;
     public static final long PROGRESS_BAR_MAX = 1800;
+    private Integer nightCount;
+    private String[] typeList;
+    private String[] costList;
+    private String date;
+    private DatabaseReference mReference;
+    private String[] sizeList;
+    private Integer totalCalConsumed;
+    private Double avgCost = 0.00;
+
+
 
 
     public static final String startActivity = "main";
@@ -95,6 +115,25 @@ public class MainActivity extends AppCompatActivity {
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
         }
+        mReference = FirebaseDatabase.getInstance().getReference();
+
+        nightCount = getNightCount();
+        getTime();
+
+        mReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                getData(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
 
         //getIntents
         mId = getIntent().getStringExtra("coming from start");
@@ -177,6 +216,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //function to get the current time
+    public void getTime() {
+        long currentDateTime = System.currentTimeMillis();
+        Date currentDate = new Date(currentDateTime);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        date = dateFormat.format(currentDate);
+    }
+
     //starts the location updates service which updates the database at given interval
     //starts BackgroundLocationService class
     private void startLocationUpdates(String userID){
@@ -203,10 +250,10 @@ public class MainActivity extends AppCompatActivity {
             day = morningCal.get(Calendar.DAY_OF_WEEK);
             day = day+1;
         }
-        morningCal.set(Calendar.DAY_OF_WEEK, morningCal.get(Calendar.DAY_OF_WEEK));
-        morningCal.set(Calendar.HOUR_OF_DAY, morningCal.get(Calendar.HOUR_OF_DAY));
-        morningCal.set(Calendar.MINUTE, morningCal.get(Calendar.MINUTE)+1);
-        morningCal.set(Calendar.SECOND, morningCal.get(Calendar.SECOND));
+        morningCal.set(Calendar.DAY_OF_WEEK, day);
+        morningCal.set(Calendar.HOUR_OF_DAY, hour);
+        morningCal.set(Calendar.MINUTE, 0);
+        morningCal.set(Calendar.SECOND, 0);
 
         Intent alertIntent = new Intent(this, TimerReceiver.class);
         AlarmManager morningAlarmMan = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -481,6 +528,250 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
             }
+        }
+    }
+
+    private Integer getNightCount() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
+        Integer nightCount = mSharedPreferences.getInt("night counter", 0);
+        return nightCount;
+    }
+
+
+
+    private void getData(DataSnapshot dataSnapshot) {
+
+        //iterates through the dataSnapshot
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+            String usersKey = ds.getKey().toString();
+            if(usersKey.equals("Users")){
+                //gets information from database
+                //makes sure that there is data at the given branch
+                Object typeObject = ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Type").getValue();
+                // Log.e("TypeObject",""+ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Type").getValue());
+                if (typeObject != null){
+                    //gets the specific string needed to analyze
+                    String typeDrink = typeObject.toString();
+
+                    String typeDrinkSub = typeDrink.substring(1, typeDrink.length()-1);
+                    String[] testType = typeDrinkSub.split(",");
+                    typeList = new String[testType.length];
+                    for (int i =0; i<testType.length; i++) {
+                        String[] tempList = testType[i].split("=");
+                        typeList[i] = tempList[1];
+                    }
+//                Log.e("testing", ""+typeList);
+
+                    Integer numWine = 0;
+                    Integer numLiquor = 0;
+                    Integer numBeer = 0;
+
+                    for (int i = 0; i < testType.length; i++ ) {
+
+                        String type = typeList[i];
+
+                        if (type.equals("wine")) {
+                            numWine++;
+                        }
+
+                        else if (type.equals("liquor")) {
+                            numLiquor++;
+                        }
+
+                        else if (type.equals("beer")) {
+                            numBeer++;
+                        }
+                    }
+
+                    //gets number of drinks and gets percent of each type
+                    int numberDrinks = numBeer+numWine+numLiquor;
+                    TextView num_drink_text = (TextView) findViewById(R.id.num_drinks_txt);
+                    num_drink_text.setText(numberDrinks+"");
+
+
+
+                }else{
+                    //if no data was entered from user, sets default value
+                    //populates an empty pie chart if size of drink is null
+                    TextView num_drink_text = (TextView) findViewById(R.id.num_drinks_txt);
+                    num_drink_text.setText("0");
+                }
+
+                //checks to make sure data was actually entered
+                Object sizeObject = ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Size").getValue();
+                if (sizeObject != null){
+                    //splits the string properly to get the necessary data
+                    String sizeDrink = sizeObject.toString();
+                    Log.e("sizeDrink",sizeDrink);
+                    String sizeDrinkSub = sizeDrink.substring(1, sizeDrink.length()-1);
+                    Log.e("sizeDrnkSub", sizeDrinkSub);
+                    String[] test = sizeDrinkSub.split(",");
+                    Log.e("test", ""+test);
+                    sizeList = new String[test.length];
+                    for (int i =0; i<test.length; i++) {
+                        String[] tempList = test[i].split("=");
+                        sizeList[i] = tempList[1];
+                    }
+
+                    //initializes calorie values
+                    Integer calorieWineShot = 100; //i made this up
+                    Integer calorieWineEight = 188;
+                    Integer calorieWineSixteen = 377;
+                    Integer calorieWineTwentyFour = 565;
+
+                    Integer calorieBeerShot = 58; //i don't actually know
+                    Integer calorieBeerEight = 98;
+                    Integer calorieBeerSixteen = 196;
+                    Integer calorieBeerTwentyFour = 294;
+
+
+                    //ALEX HELP ME PLS!!!!!
+                    Integer calorieLiquorShot = 100; //i made this up
+                    Integer calorieLiquorEight = 188;
+                    Integer calorieLiquorSixteen = 377;
+                    Integer calorieLiquorTwentyFour = 565;
+
+                    //initializes default values
+                    totalCalConsumed = 0;
+                    Integer totalOuncesConsumed = 0;
+
+                    //samiksha can you comment this????????
+                    for (int i = 0; i < test.length; i++ ) {
+                        //totalCalConsumed+= i;
+
+                        String type = typeList[i];
+                        String size = sizeList[i];
+
+                        if (!sizeList[i].equals("Shot")) {
+                            Integer sizeOfDrink = Integer.parseInt(sizeList[i]);
+                            totalOuncesConsumed = totalOuncesConsumed + sizeOfDrink;
+                        }
+
+                        else {
+                            totalOuncesConsumed = totalOuncesConsumed + 1;
+                        }
+
+                        if (type.equals("wine")) {
+
+                            if (size.equals("Shot")) {
+                                totalCalConsumed = totalCalConsumed+calorieWineShot;
+                            }
+
+                            else if (size.equals("8")) {
+                                totalCalConsumed = totalCalConsumed+calorieWineEight;
+
+                            }
+                            else if (size.equals("16")) {
+                                totalCalConsumed = totalCalConsumed+calorieWineSixteen;
+
+                            }
+                            else if (size.equals("24")) {
+                                totalCalConsumed = totalCalConsumed+calorieWineTwentyFour;
+                            }
+                        }
+
+                        else if (type.equals("liquor")) {
+
+                            if (size.equals("Shot")) {
+                                totalCalConsumed = totalCalConsumed+calorieLiquorShot;
+                            }
+                            else if (size.equals("8")) {
+                                totalCalConsumed = totalCalConsumed+calorieLiquorEight;
+
+                            }
+                            else if (size.equals("16")) {
+                                totalCalConsumed = totalCalConsumed+calorieLiquorSixteen;
+
+                            }
+                            else if (size.equals("24")) {
+                                totalCalConsumed = totalCalConsumed+calorieLiquorTwentyFour;
+                            }
+                        }
+
+                        else if (type.equals("beer")) {
+
+                            if (size.equals("Shot")) {
+                                totalCalConsumed = totalCalConsumed+calorieBeerShot;
+                            }
+                            else if (size.equals("8")) {
+                                totalCalConsumed = totalCalConsumed+calorieBeerEight;
+
+                            }
+                            else if (size.equals("16")) {
+                                totalCalConsumed = totalCalConsumed+calorieBeerSixteen;
+
+                            }
+                            else if (size.equals("24")) {
+                                totalCalConsumed = totalCalConsumed+calorieBeerTwentyFour;
+                            }
+                        }
+                    }
+
+
+                    //sets the display calories textview
+                    TextView cal_text = (TextView) findViewById(R.id.cal_text);
+                    cal_text.setText(""+totalCalConsumed);
+
+                }else{
+                    //set values to null if size drink is null
+                    TextView cal_text = (TextView) findViewById(R.id.cal_text);
+                    cal_text.setText("0");
+                }
+
+                Object costObject = ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Cost").getValue();
+                if (costObject != null) {
+                    //splits the string properly to get the necessary data
+                    String costDrink = costObject.toString();
+                    //Log.e("costDrink", costDrink);
+                    String costDrinkSub = costDrink.substring(1, costDrink.length() - 1);
+                    //Log.e("costDrinkSub", costDrinkSub);
+                    String[] test = costDrinkSub.split(",");
+                    //Log.e("test", "" + test);
+                    costList = new String[test.length];
+                    for (int i = 0; i < test.length; i++) {
+                        String[] tempList = test[i].split("=");
+                        costList[i] = tempList[1];
+                        //Log.e("costList",costList[i]);
+                    }
+                    for(int i = 0; i < costList.length; i++){
+                        if(costList[i].contains("-")){
+                            String[] tempList = costList[i].split("-");
+                            //Log.e("length",tempList.length+"");
+                            for(int j = 0; j < tempList.length; j++) {
+                                tempList[j] = tempList[j].substring(1, tempList[j].length());
+                            }
+                            Double minCost = 0.00;
+                            Double maxCost = 0.00;
+                            minCost = minCost+(Double.parseDouble(tempList[0]));
+                            maxCost = maxCost+(Double.parseDouble(tempList[1]));
+                            avgCost = avgCost + ((maxCost+minCost)/2);
+                        }else{
+                            if(costList[i].contains("+")){
+                                //16+
+                                String tempString = costList[i].substring(1,costList[i].length()-1);
+                                Double cost = Double.parseDouble(tempString);
+                                avgCost = avgCost + cost;
+                            }else{
+                                //0
+                                String tempString = costList[i].substring(1,costList[i].length());
+                                Double cost = Double.parseDouble(tempString);
+                                avgCost = avgCost + cost;
+                            }
+                        }
+
+
+                    }
+                    String totalCost = "$"+avgCost+"0";
+                    TextView cost_txt = (TextView) findViewById(R.id.cost_text);
+                    cost_txt.setText(totalCost+"");
+                }else{
+                    //Log.e("null","cost object is null");
+                }
+
+            }
+
+
+
         }
     }
 }

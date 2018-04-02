@@ -60,6 +60,8 @@ public class MorningReport extends AppCompatActivity{
     private float[] data = {30.0f, 30.0f, 40.0f};
     private String[] drinkNames = {"beer", "liquor", "wine"};
     private TextView litersDrank;
+    private Double avgCost = 0.00;
+    private String[] costList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,14 +142,12 @@ public class MorningReport extends AppCompatActivity{
         //iterates through the dataSnapshot
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             String usersKey = ds.getKey().toString();
-            Log.e("usersKey",""+usersKey);
             if(usersKey.equals("Users")){
                 //gets information from database
                 //makes sure that there is data at the given branch
                 Object typeObject = ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Type").getValue();
                 // Log.e("TypeObject",""+ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Type").getValue());
                 if (typeObject != null){
-                    Log.e("checking",""+typeObject);
                     //gets the specific string needed to analyze
                     String typeDrink = typeObject.toString();
 
@@ -394,6 +394,57 @@ public class MorningReport extends AppCompatActivity{
                     litersDrank.setText("0");
                     display_calories.setText("0");
                     display_numDrinks.setText(""+numDrinks);
+                }
+
+
+                Object costObject = ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Cost").getValue();
+                if (costObject != null) {
+                    //splits the string properly to get the necessary data
+                    String costDrink = costObject.toString();
+                    //Log.e("costDrink", costDrink);
+                    String costDrinkSub = costDrink.substring(1, costDrink.length() - 1);
+                    //Log.e("costDrinkSub", costDrinkSub);
+                    String[] test = costDrinkSub.split(",");
+                    //Log.e("test", "" + test);
+                    costList = new String[test.length];
+                    for (int i = 0; i < test.length; i++) {
+                        String[] tempList = test[i].split("=");
+                        costList[i] = tempList[1];
+                        //Log.e("costList",costList[i]);
+                    }
+                    for(int i = 0; i < costList.length; i++){
+                        if(costList[i].contains("-")){
+                            String[] tempList = costList[i].split("-");
+                            //Log.e("length",tempList.length+"");
+                            for(int j = 0; j < tempList.length; j++) {
+                                tempList[j] = tempList[j].substring(1, tempList[j].length());
+                            }
+                            Double minCost = 0.00;
+                            Double maxCost = 0.00;
+                            minCost = minCost+(Double.parseDouble(tempList[0]));
+                            maxCost = maxCost+(Double.parseDouble(tempList[1]));
+                            avgCost = avgCost + ((maxCost+minCost)/2);
+                        }else{
+                            if(costList[i].contains("+")){
+                                //16+
+                                String tempString = costList[i].substring(1,costList[i].length()-1);
+                                Double cost = Double.parseDouble(tempString);
+                                avgCost = avgCost + cost;
+                            }else{
+                                //0
+                                String tempString = costList[i].substring(1,costList[i].length());
+                                Double cost = Double.parseDouble(tempString);
+                                avgCost = avgCost + cost;
+                            }
+                        }
+
+
+                    }
+                    String totalCost = "$"+avgCost+"0";
+                    TextView cost_txt = (TextView) findViewById(R.id.costText);
+                    cost_txt.setText(totalCost+"");
+                }else{
+                    //Log.e("null","cost object is null");
                 }
             }
 

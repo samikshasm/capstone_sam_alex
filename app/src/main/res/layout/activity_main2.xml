@@ -569,7 +569,85 @@
 
 
             </LinearLayout>
+            <TextView
+                android:id="@+id/cost_qs"
+                android:text="How much did your drink cost?"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="13dp" />
 
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <RadioGroup
+                    android:id="@+id/radioCost"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    >
+
+                    <RadioButton
+                        android:id="@+id/radio_0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$0.00"
+                        android:buttonTint="@color/green"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:checked="true" />
+
+                    <RadioButton
+                        android:id="@+id/radio_1_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:buttonTint="@color/purple"
+                        android:text="$1.00-$5.00" />
+
+                    <RadioButton
+                        android:id="@+id/radio_6_10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:buttonTint="@color/purple"
+                        android:text="$6.00-$10.00" />
+                    <RadioButton
+                        android:id="@+id/radio_11_15"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:buttonTint="@color/purple"
+                        android:text="$11.00-$15.00" />
+                    <RadioButton
+                        android:id="@+id/radio_16plus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:buttonTint="@color/purple"
+                        android:text="$16.00+" />
+
+                </RadioGroup>
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+            </LinearLayout>
 
             <Button
                 android:layout_marginTop="25dp"

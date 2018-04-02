@@ -279,7 +279,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:id="@+id/second_layout"
-                android:paddingBottom="20dp"
                 android:layout_centerHorizontal="true"
                 android:layout_below="@id/main_layout">
 
@@ -291,6 +290,7 @@
                     android:textStyle="bold"
                     android:textColor="@color/pink"
                     android:text="400"
+                    android:includeFontPadding="false"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
                 <LinearLayout
@@ -316,6 +316,37 @@
 
 
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:layout_below="@id/second_layout"
+                android:id="@+id/cost_layout">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="90dp"
+                    android:src="@drawable/dollar_icon"
+                    android:layout_gravity="center_vertical"
+
+                    />
+
+
+                <TextView
+                    android:id="@+id/costText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="000.00"
+                    android:textSize="75dp"
+                    android:includeFontPadding="false"
+                    android:textStyle="bold"
+                    android:textColor="@color/green"
+                    />
+
+            </LinearLayout>
+
+
             <Button
                 android:id="@+id/switch_to_start"
                 android:layout_width="wrap_content"
@@ -324,7 +355,8 @@
                 android:background="@color/light_blue"
                 android:paddingRight="5dp"
                 android:paddingLeft="5dp"
-                android:layout_below="@+id/second_layout"
+                android:layout_marginTop="50dp"
+                android:layout_below="@+id/cost_layout"
                 android:layout_centerHorizontal="true" />
         </RelativeLayout>
 
