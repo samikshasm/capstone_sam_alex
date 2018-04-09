@@ -26,8 +26,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -38,6 +43,13 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 /**
  * Created by samikshasm on 7/17/17.
@@ -51,6 +63,12 @@ public class StartActivity extends AppCompatActivity {
     private Integer id = 1;
     private String lastActivity;
     private Integer nightCount = 0;
+    private String cancelButMain;
+    private DatabaseReference mReference;
+    private ArrayList<String> controlList;
+    private ArrayList<String> expList;
+    private String group;
+
 
     //new location stuff
     static final Integer LOCATION = 0x1;
@@ -75,6 +93,15 @@ public class StartActivity extends AppCompatActivity {
         if(userIDMA != null) {
             Log.e("User ID Start", userIDMA);
         }
+
+        cancelButMain = getIntent().getStringExtra("Cancel main activity");
+        if(cancelButMain == null){
+            Log.e("null String", "null");
+        }else if(cancelButMain == "main"){
+            Log.e("Cancel main activity", cancelButMain);
+
+        }
+
 
         ImageButton startDrinking = (ImageButton) findViewById(R.id.start_drinking);
         startDrinking.setOnClickListener(new View.OnClickListener() {
@@ -101,6 +128,10 @@ public class StartActivity extends AppCompatActivity {
                 Intent switchToLogin = new Intent(StartActivity.this, LoginActivity.class);
                 switchToLogin.putExtra("sign out", currentUserFromLA);
                 startActivity(switchToLogin);
+                SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
+                SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+                mEditor.putString("Group", "none");
+                mEditor.apply();
                 finish();
             }
         });
@@ -131,6 +162,107 @@ public class StartActivity extends AppCompatActivity {
             startActivity(switchToMorning);
             finish();
         }
+        SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
+        group = mSharedPreferences2.getString("Group","none");
+        if(group.equals("none")){
+            mReference = FirebaseDatabase.getInstance().getReference();
+            mReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    getControlList(dataSnapshot);
+                    getExperimentalList(dataSnapshot);
+                    for(int i = 0; i < expList.size(); i++){
+                        if(expList.get(i).substring(1,expList.get(i).length()).equals(userIDMA)){
+                            group = "experimental";
+                        }
+                    }
+                    for(int i = 0; i < controlList.size(); i++){
+                        if(controlList.get(i).substring(1,controlList.get(i).length()).equals(userIDMA)){
+                            group = "control";
+                        }
+                    }
+                    storeGroup(group);
+                    //Log.e("expList",expList.get(4).substring(1,expList.get(4).length()).length()+"");
+                    //Log.e("userID",userIDMA.length()+"");
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+
+
+        //Log.e("user ID",userIDMA);
+
+
+
+    }
+
+    //function to analyze data received from snapshot
+    private void getControlList(DataSnapshot dataSnapshot) {
+
+        //iterates through the dataSnapshot
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+            String usersKey = ds.getKey().toString();
+            if(usersKey.equals("Users")) {
+                //gets information from database
+                //makes sure that there is data at the given branch
+                Object controlObject = ds.child("Control Group").getValue();
+                //Log.e("TypeObject",""+controlObject);
+                if(controlObject != null){
+                    String controlStr = controlObject.toString();
+                    String controlStrSub = controlStr.substring(1, controlStr.length()-1);
+                    String[] controlList1 = controlStrSub.split(",");
+                    controlList = new ArrayList<String>();
+                    for(int i = 0; i < controlList1.length; i++){
+                        String[] controlList2 = controlList1[i].split("=");
+                        controlList.add(controlList2[0]);
+                    }
+
+                }
+
+            }
+
+        }
+    }
+    private void getExperimentalList(DataSnapshot dataSnapshot) {
+
+        //iterates through the dataSnapshot
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+            String usersKey = ds.getKey().toString();
+            if(usersKey.equals("Users")) {
+                //gets information from database
+                //makes sure that there is data at the given branch
+                Object controlObject = ds.child("Experimental Group").getValue();
+                //Log.e("TypeObject",""+controlObject);
+                if(controlObject != null){
+                    String controlStr = controlObject.toString();
+                    String controlStrSub = controlStr.substring(1, controlStr.length()-1);
+                    String[] controlList1 = controlStrSub.split(",");
+                    expList = new ArrayList<String>();
+                    for(int i = 0; i < controlList1.length; i++){
+                        String[] controlList2 = controlList1[i].split("=");
+                        expList.add(controlList2[0]);
+                    }
+
+                }
+
+            }
+
+        }
+    }
+
+    private void storeGroup(String group){
+        SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putString("Group", group);
+        Log.e("Group",group);
+        mEditor.apply();
     }
 
     private void storeUserID(String string) {
@@ -187,7 +319,7 @@ public class StartActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(StartActivity.this, new String[]{permission}, requestCode);
             }
         } else {
-            Toast.makeText(this, "" + permission + " is already granted.", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "" + permission + " is already granted.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -288,9 +420,9 @@ public class StartActivity extends AppCompatActivity {
                     }*/
             }
 
-            Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
         }else{
-            Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
         }
     }
 

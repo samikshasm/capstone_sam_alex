@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -79,8 +80,10 @@ public class MainActivity extends AppCompatActivity {
     private String[] sizeList;
     private Integer totalCalConsumed;
     private Double avgCost = 0.00;
-
-
+    private String group;
+    private TextView cost_txt;
+    private TextView cal_text;
+    private TextView num_drink_text;
 
 
     public static final String startActivity = "main";
@@ -133,12 +136,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
         //getIntents
         mId = getIntent().getStringExtra("coming from start");
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = mSharedPreferences.getString("user ID", "none");
+
+        cal_text = (TextView) findViewById(R.id.cal_text);
+        num_drink_text = (TextView) findViewById(R.id.num_drinks_txt);
+        cost_txt = (TextView) findViewById(R.id.cost_text);
+
+        SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
+        group = mSharedPreferences2.getString("Group","none");
+        if(group.equals("experimental")){
+            LinearLayout lin1 = (LinearLayout) findViewById(R.id.lin_lay_1);
+            lin1.setVisibility(View.VISIBLE);
+            LinearLayout lin2 = (LinearLayout) findViewById(R.id.lin_layout_2);
+            lin2.setVisibility(View.VISIBLE);
+        }
+        Log.e("Group", userIDMA+","+group);
 
         //tells the app that the current screen is "main"
         //store the current screen in a shared preferences variable
@@ -194,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
                 stopLocationUpdates();
                 unregisterReceiver(broadcastReceiver);
                 Intent goToStart = new Intent(MainActivity.this, StartActivity.class);
-                goToStart.putExtra("Start Activity", startActivity);
+                goToStart.putExtra("Cancel main activity", startActivity);
                 startActivity(goToStart);
                 finish();
             }
@@ -242,19 +257,25 @@ public class MainActivity extends AppCompatActivity {
     //adapted code from Alarm Manager Android Developer page
     private void createMorningAlarm () {
         Calendar morningCal = Calendar.getInstance();
+        long milliseconds = morningCal.getTimeInMillis();
+        morningCal.setTimeInMillis(milliseconds);
         int hour = morningCal.get(Calendar.HOUR_OF_DAY);
         int day;
         if (hour >= 0 && hour < 7){
             day = morningCal.get(Calendar.DAY_OF_WEEK);
         }else{
             day = morningCal.get(Calendar.DAY_OF_WEEK);
-            day = day+1;
+            if(day == 7){
+                day = 0;
+            }else{
+                day = day+1;
+            }
         }
         morningCal.set(Calendar.DAY_OF_WEEK, day);
-        morningCal.set(Calendar.HOUR_OF_DAY, hour);
+        morningCal.set(Calendar.HOUR_OF_DAY, 7);
         morningCal.set(Calendar.MINUTE, 0);
         morningCal.set(Calendar.SECOND, 0);
-
+        Log.e("morningCal set time:",morningCal.get(Calendar.DAY_OF_WEEK)+","+morningCal.get(Calendar.HOUR_OF_DAY));
         Intent alertIntent = new Intent(this, TimerReceiver.class);
         AlarmManager morningAlarmMan = (AlarmManager) getSystemService(ALARM_SERVICE);
         alertIntent.putExtra("broadcast Int", "5");
@@ -585,7 +606,6 @@ public class MainActivity extends AppCompatActivity {
 
                     //gets number of drinks and gets percent of each type
                     int numberDrinks = numBeer+numWine+numLiquor;
-                    TextView num_drink_text = (TextView) findViewById(R.id.num_drinks_txt);
                     num_drink_text.setText(numberDrinks+"");
 
 
@@ -709,12 +729,10 @@ public class MainActivity extends AppCompatActivity {
 
 
                     //sets the display calories textview
-                    TextView cal_text = (TextView) findViewById(R.id.cal_text);
                     cal_text.setText(""+totalCalConsumed);
 
                 }else{
                     //set values to null if size drink is null
-                    TextView cal_text = (TextView) findViewById(R.id.cal_text);
                     cal_text.setText("0");
                 }
 
@@ -762,7 +780,6 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                     String totalCost = "$"+avgCost+"0";
-                    TextView cost_txt = (TextView) findViewById(R.id.cost_text);
                     cost_txt.setText(totalCost+"");
                 }else{
                     //Log.e("null","cost object is null");

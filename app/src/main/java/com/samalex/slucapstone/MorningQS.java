@@ -47,13 +47,14 @@ public class MorningQS extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private String time;
     private String date;
-    private String monoStr = "no";
-    private String friendStr = "no";
-    private String newStr = "no";
-    private String naStr = "no";
-    private Integer counter = 0;
+    private String monoStr = "NA";
+    private String friendStr = "NA";
+    private String newStr = "NA";
+    private String naStr = "NA";
+    private Integer counter = -1;
     private Integer nightCount;
     private String drinkCost ="NA";
+    private String group;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,14 +111,38 @@ public class MorningQS extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = mSharedPreferences.getString("user ID", "none");
 
+        SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
+        group = mSharedPreferences2.getString("Group", "none");
+
         nightCount = getNightCount();
 
 
         //creates all of the onClick listeners for all of the buttons for questions
         View.OnClickListener handler1 = new View.OnClickListener() {
             public void onClick(View view) {
-                Intent switchToMorningReport = new Intent(MorningQS.this, MorningReport.class);
-                startActivity(switchToMorningReport);
+                if(group.equals("experimental")){
+                    Log.e("morningQS", "experimental");
+                    Intent switchToMorningReport = new Intent(MorningQS.this, MorningReport.class);
+                    startActivity(switchToMorningReport);
+                }
+                else if(group.equals("control")){
+                    startActivity1 = "start";
+                    storeScreen(startActivity1);
+                    storeNumDrinks(0);
+                    Intent goToStart = new Intent(MorningQS.this, StartActivity.class);
+                    goToStart.putExtra("Start Activity", startActivity);
+                    startActivity(goToStart);
+                    finish();
+                }else if(group.equals("none")){
+                    startActivity1 = "start";
+                    storeScreen(startActivity1);
+                    storeNumDrinks(0);
+                    Intent goToStart = new Intent(MorningQS.this, StartActivity.class);
+                    goToStart.putExtra("Start Activity", startActivity);
+                    startActivity(goToStart);
+                    finish();
+                }
+
                 writeOralToDB(oral);
                 //writeOralConsentToDB(oralConsentStr);
                 writeVaginalToDB(vaginal);
@@ -338,10 +363,11 @@ public class MorningQS extends AppCompatActivity {
 
         subtract.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                counter--;
                 if (counter == 0){
+                    subtract.setEnabled(false);
                     numPartner.setText("none");
                 }else {
+                    counter--;
                     numPartner.setText(""+counter);
                 }
             }
@@ -402,6 +428,21 @@ public class MorningQS extends AppCompatActivity {
             NotificationManager manager = (NotificationManager) MorningQS.this.getSystemService(Context.NOTIFICATION_SERVICE);
             manager.cancel(notificationId);
         }
+    }
+
+    //function to store the screen
+    private void storeScreen(String string) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putString("currentScreen", string);
+        mEditor.apply();
+    }
+    //function to store the number of drinks
+    private void storeNumDrinks (Integer integer) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putInt("numDrinks", integer);
+        mEditor.apply();
     }
 
 

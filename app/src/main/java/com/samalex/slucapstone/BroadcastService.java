@@ -78,7 +78,7 @@ public class BroadcastService extends Service {
             milliSeconds = NUMBER_OF_MINUTES;
         }
         long millis = milliSeconds--;
-        Log.e("DisplayingLog", ""+millis);
+        //Log.e("DisplayingLog", ""+millis);
         intent.putExtra("milliseconds", String.valueOf(millis));
         sendBroadcast(intent);
     }

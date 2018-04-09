@@ -2,6 +2,7 @@ package com.samalex.slucapstone;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -9,10 +10,12 @@ import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -50,6 +53,12 @@ public class Main2Activity extends AppCompatActivity{
     private String date;
     private Integer nightCount;
     private String drinkCost;
+    private boolean typeCheck = false;
+    private boolean sizeCheck = false;
+    private boolean withCheck = false;
+    private boolean whereCheck = false;
+    private boolean costCheck = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -156,6 +165,7 @@ public class Main2Activity extends AppCompatActivity{
                 wine.setImageResource(R.drawable.new_wine_purple);
                 beer.setImageResource(R.drawable.beer_button_small_green);
                 liquor.setImageResource(R.drawable.liquor_button_small_purple);
+                typeCheck = true;
 
             }
         });
@@ -166,6 +176,7 @@ public class Main2Activity extends AppCompatActivity{
                 wine.setImageResource(R.drawable.new_wine_purple);
                 beer.setImageResource(R.drawable.beer_button_small_purple);
                 liquor.setImageResource(R.drawable.liquor_button_small_green);
+                typeCheck = true;
             }
         });
 
@@ -175,6 +186,8 @@ public class Main2Activity extends AppCompatActivity{
                 wine.setImageResource(R.drawable.wine_button_small_green);
                 beer.setImageResource(R.drawable.beer_button_small_purple);
                 liquor.setImageResource(R.drawable.liquor_button_small_purple);
+                typeCheck = true;
+
             }
         });
 
@@ -185,6 +198,7 @@ public class Main2Activity extends AppCompatActivity{
                 eight.setImageResource(R.drawable.eight_purple);
                 sixteen.setImageResource(R.drawable.sixteen_purple);
                 twentyFour.setImageResource(R.drawable.twenty_four_purple);
+                sizeCheck = true;
 
             }
         });
@@ -196,6 +210,7 @@ public class Main2Activity extends AppCompatActivity{
                 eight.setImageResource(R.drawable.eight_green);
                 sixteen.setImageResource(R.drawable.sixteen_purple);
                 twentyFour.setImageResource(R.drawable.twenty_four_purple);
+                sizeCheck = true;
             }
         });
 
@@ -206,6 +221,7 @@ public class Main2Activity extends AppCompatActivity{
                 eight.setImageResource(R.drawable.eight_purple);
                 sixteen.setImageResource(R.drawable.sixteen_green);
                 twentyFour.setImageResource(R.drawable.twenty_four_purple);
+                sizeCheck = true;
             }
         });
 
@@ -216,6 +232,7 @@ public class Main2Activity extends AppCompatActivity{
                 eight.setImageResource(R.drawable.eight_purple);
                 sixteen.setImageResource(R.drawable.sixteen_purple);
                 twentyFour.setImageResource(R.drawable.twenty_four_green);
+                sizeCheck = true;
             }
         });
 
@@ -226,6 +243,7 @@ public class Main2Activity extends AppCompatActivity{
                 partner.setImageResource(R.drawable.couple_purple);
                 friends.setImageResource(R.drawable.friends_purple);
                 other.setImageResource(R.drawable.other_purple);
+                withCheck = true;
             }
         });
 
@@ -236,6 +254,7 @@ public class Main2Activity extends AppCompatActivity{
                 partner.setImageResource(R.drawable.couple_green);
                 friends.setImageResource(R.drawable.friends_purple);
                 other.setImageResource(R.drawable.other_purple);
+                withCheck = true;
             }
         });
 
@@ -246,6 +265,7 @@ public class Main2Activity extends AppCompatActivity{
                 partner.setImageResource(R.drawable.couple_purple);
                 friends.setImageResource(R.drawable.friends_green);
                 other.setImageResource(R.drawable.other_purple);
+                withCheck = true;
             }
         });
 
@@ -256,6 +276,7 @@ public class Main2Activity extends AppCompatActivity{
                 partner.setImageResource(R.drawable.couple_purple);
                 friends.setImageResource(R.drawable.friends_purple);
                 other.setImageResource(R.drawable.other_green);
+                withCheck = true;
 
             }
         });
@@ -268,6 +289,7 @@ public class Main2Activity extends AppCompatActivity{
                 bar.setImageResource(R.drawable.bar_purple);
                 party.setImageResource(R.drawable.party_purple);
                 otherPlace.setImageResource(R.drawable.other_purple);
+                whereCheck = true;
 
             }
         });
@@ -280,6 +302,7 @@ public class Main2Activity extends AppCompatActivity{
                 bar.setImageResource(R.drawable.bar_purple);
                 party.setImageResource(R.drawable.party_purple);
                 otherPlace.setImageResource(R.drawable.other_purple);
+                whereCheck = true;
 
             }
         });
@@ -292,6 +315,7 @@ public class Main2Activity extends AppCompatActivity{
                 bar.setImageResource(R.drawable.bar_green);
                 party.setImageResource(R.drawable.party_purple);
                 otherPlace.setImageResource(R.drawable.other_purple);
+                whereCheck = true;
 
             }
         });
@@ -304,6 +328,7 @@ public class Main2Activity extends AppCompatActivity{
                 bar.setImageResource(R.drawable.bar_purple);
                 party.setImageResource(R.drawable.party_green);
                 otherPlace.setImageResource(R.drawable.other_purple);
+                whereCheck = true;
             }
         });
 
@@ -315,26 +340,50 @@ public class Main2Activity extends AppCompatActivity{
                 bar.setImageResource(R.drawable.bar_purple);
                 party.setImageResource(R.drawable.party_purple);
                 otherPlace.setImageResource(R.drawable.other_green);
+                whereCheck = true;
 
             }
         });
 
         //onClick listener for submit button
         Button submitBtn = (Button) findViewById(R.id.submitBtn);
+        costCheck = true;
+
         submitBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                writeTypeToDB(typeOfDrink);
-                writeSizeToDB(sizeOfDrink);
-                writeWhoToDB(withWhom);
-                writeWhereToDB(where);
-                // get selected radio button from radioGroup
-                int selectedId = costGroup.getCheckedRadioButtonId();
-                // find the radiobutton by returned id
-                RadioButton costButton;
-                costButton = (RadioButton) findViewById(selectedId);
-                drinkCost = costButton.getText().toString();
-                writeCostToDB(drinkCost);
-                switchToMainActivity(view);
+                if((!whereCheck || !withCheck || !typeCheck || !costCheck || !sizeCheck)){
+                    Log.e("check","false");
+                    AlertDialog.Builder builder;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        builder = new AlertDialog.Builder(Main2Activity.this, R.style.MyDialogTheme);
+                    } else {
+                        builder = new AlertDialog.Builder(Main2Activity.this);
+                    }
+                    builder.setTitle("Try Again")
+                            .setMessage("Please respond to every question!")
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // continue with delete
+                                }
+                            })
+                            .setIcon(R.drawable.white_small_icon)
+                            .show();
+                }else{
+                    Log.e("check","true");
+                    writeTypeToDB(typeOfDrink);
+                    writeSizeToDB(sizeOfDrink);
+                    writeWhoToDB(withWhom);
+                    writeWhereToDB(where);
+                    // get selected radio button from radioGroup
+                    int selectedId = costGroup.getCheckedRadioButtonId();
+                    // find the radiobutton by returned id
+                    RadioButton costButton;
+                    costButton = (RadioButton) findViewById(selectedId);
+                    drinkCost = costButton.getText().toString();
+                    writeCostToDB(drinkCost);
+                    switchToMainActivity(view);
+                }
+
             }
         });
 
