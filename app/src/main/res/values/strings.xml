@@ -32,4 +32,6 @@
     <string name="text_location_permission">we shall see how this workds</string>
     <string name="ok">ok</string>
     <string name="timer_finished">Timer Finished</string>
+    <string name="channel_name">Notification Channel</string>
+    <string name="channel_description">Notification for Boozymeter</string>
 </resources>

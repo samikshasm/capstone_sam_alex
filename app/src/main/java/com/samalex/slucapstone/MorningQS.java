@@ -55,6 +55,8 @@ public class MorningQS extends AppCompatActivity {
     private Integer nightCount;
     private String drinkCost ="NA";
     private String group;
+    private String broadcastInt = "none";
+    public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +117,19 @@ public class MorningQS extends AppCompatActivity {
         group = mSharedPreferences2.getString("Group", "none");
 
         nightCount = getNightCount();
+
+        broadcastInt = getIntent().getStringExtra("broadcast Int");
+        if(broadcastInt != null){
+            int notificationId = Integer.parseInt(broadcastInt);
+            NotificationManager manager = (NotificationManager) MorningQS.this.getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.cancel(notificationId);
+            manager.deleteNotificationChannel(CHANNEL_ID);
+
+        }else{
+            NotificationManager manager = (NotificationManager) MorningQS.this.getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.cancel(5);
+            manager.deleteNotificationChannel(CHANNEL_ID);
+        }
 
 
         //creates all of the onClick listeners for all of the buttons for questions

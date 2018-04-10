@@ -42,7 +42,8 @@ public class TimerReceiver extends BroadcastReceiver {
             //service_intent.putExtra("User ID", userIDMA);
             service_intent.putExtra("initial time", initialTimeStr);
             service_intent.putExtra("broadcast Int", broadcastStr);
-            context.startService(service_intent);
+            //This is where it crashed
+            context.startForegroundService(service_intent);
         }
 
         else if (broadcastID == 4) {

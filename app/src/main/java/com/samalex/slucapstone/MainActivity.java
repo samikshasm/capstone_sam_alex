@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private String initialTimeStr;
     private String startActivity1;
     public static final long ALARM_TIME = 1800000;
-    public static final long PROGRESS_BAR_MAX = 1800;
+    public static final long PROGRESS_BAR_MAX = 60;
     private Integer nightCount;
     private String[] typeList;
     private String[] costList;
@@ -100,8 +100,8 @@ public class MainActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //initialize UI stuff
-        progressBarCircle = (ProgressBar) findViewById(R.id.progressBarCircle);
-        textViewTime = (TextView) findViewById(R.id.textViewTime);
+        //progressBarCircle = (ProgressBar) findViewById(R.id.progressBarCircle);
+        //textViewTime = (TextView) findViewById(R.id.textViewTime);
         imageViewStartStop = (ImageView) findViewById(R.id.imageViewStartStop);
 
         //initializes location client
@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
                 initialTimeStr = Long.toString(initialTime);
                 createAlarms(initialTime);
                 createMorningAlarm();
-                startUIUpdateService(initialTime);
+                //startUIUpdateService(initialTime);
                 startLocationUpdates(userIDMA);
                 mId = "come from qs";
             }
@@ -184,8 +184,8 @@ public class MainActivity extends AppCompatActivity {
                 cancelAlarm(2);
                 cancelAlarm(3);
                 cancelAlarm(4);
-                stopUIUpdateService();
-                startUIUpdateService(notificationTime);
+                //stopUIUpdateService();
+                //startUIUpdateService(notificationTime);
                 createAlarms(notificationTime);
             }
         }
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar goToStart = (Toolbar) findViewById(R.id.go_to_start);
         View.OnClickListener handler1 = new View.OnClickListener() {
             public void onClick(View view) {
-                stopUIUpdateService();
+                //stopUIUpdateService();
                 cancelAlarm(1);
                 cancelAlarm(2);
                 cancelAlarm(3);
@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity1 = "start";
                 storeScreen(startActivity1);
                 stopLocationUpdates();
-                unregisterReceiver(broadcastReceiver);
+                //unregisterReceiver(broadcastReceiver);
                 Intent goToStart = new Intent(MainActivity.this, StartActivity.class);
                 goToStart.putExtra("Cancel main activity", startActivity);
                 startActivity(goToStart);
@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
         imageViewStartStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                unregisterReceiver(broadcastReceiver);
+                //unregisterReceiver(broadcastReceiver);
                 Intent switchToMain2Activity = new Intent(MainActivity.this, Main2Activity.class);
                 startActivity(switchToMain2Activity);
                 finish();
@@ -293,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
         mEditor.apply();
     }
 
-
+/*
     //initializes broadcast receiver to run ui service
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -325,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
         mEditor.putLong("Started Time", startedTimeInMillis);
         mEditor.apply();
     }
-
+*/
 
     //updates the timer ui and sets the progress bar value
     private void testUpdateUI(Intent intent) {
@@ -388,16 +388,16 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         long startedTimeInMillis = getStartedTime();
         //start the ui update service when the app is resumed to update ui timer
-        startUIUpdateService(startedTimeInMillis);
+        //startUIUpdateService(startedTimeInMillis);
         //checks to see which screen is set in the shared preferences screen variable
         SharedPreferences mSharedPreferences1 = getSharedPreferences("screen", MODE_PRIVATE);
         String selectedScreen = mSharedPreferences1.getString("currentScreen", "none");
         //if the screen has been set to start or morning qs, the activity changes
         //receivers and services are stopped and activity is switched back to the start screen
         if (selectedScreen.equals("start") | selectedScreen.equals("morningQS")) {
-            stopUIUpdateService();
+            //stopUIUpdateService();
             stopLocationUpdates();
-            unregisterReceiver(broadcastReceiver);
+            //unregisterReceiver(broadcastReceiver);
             Intent goToStart = new Intent(MainActivity.this, StartActivity.class);
             goToStart.putExtra("Start Activity", startActivity);
             startActivity(goToStart);
@@ -622,11 +622,11 @@ public class MainActivity extends AppCompatActivity {
                 if (sizeObject != null){
                     //splits the string properly to get the necessary data
                     String sizeDrink = sizeObject.toString();
-                    Log.e("sizeDrink",sizeDrink);
+                    //Log.e("sizeDrink",sizeDrink);
                     String sizeDrinkSub = sizeDrink.substring(1, sizeDrink.length()-1);
-                    Log.e("sizeDrnkSub", sizeDrinkSub);
+                    //Log.e("sizeDrnkSub", sizeDrinkSub);
                     String[] test = sizeDrinkSub.split(",");
-                    Log.e("test", ""+test);
+                    //Log.e("test", ""+test);
                     sizeList = new String[test.length];
                     for (int i =0; i<test.length; i++) {
                         String[] tempList = test[i].split("=");

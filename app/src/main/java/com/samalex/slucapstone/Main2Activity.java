@@ -58,6 +58,8 @@ public class Main2Activity extends AppCompatActivity{
     private boolean withCheck = false;
     private boolean whereCheck = false;
     private boolean costCheck = false;
+    private String broadcastInt = "none";
+    public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -100,7 +102,14 @@ public class Main2Activity extends AppCompatActivity{
         final RadioGroup costGroup = (RadioGroup) findViewById(R.id.radioCost);
 
 
+        broadcastInt = getIntent().getStringExtra("broadcast Int");
+        if(broadcastInt != null){
+            int notificationId = Integer.parseInt(broadcastInt);
+            NotificationManager manager = (NotificationManager) Main2Activity.this.getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.cancel(notificationId);
+            manager.deleteNotificationChannel(CHANNEL_ID);
 
+        }
 
 
         drink1_5.setOnClickListener(new View.OnClickListener(){
