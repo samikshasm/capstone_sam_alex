@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -123,12 +124,18 @@ public class MorningQS extends AppCompatActivity {
             int notificationId = Integer.parseInt(broadcastInt);
             NotificationManager manager = (NotificationManager) MorningQS.this.getSystemService(Context.NOTIFICATION_SERVICE);
             manager.cancel(notificationId);
-            manager.deleteNotificationChannel(CHANNEL_ID);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                manager.deleteNotificationChannel(CHANNEL_ID);
+            }
 
         }else{
             NotificationManager manager = (NotificationManager) MorningQS.this.getSystemService(Context.NOTIFICATION_SERVICE);
             manager.cancel(5);
-            manager.deleteNotificationChannel(CHANNEL_ID);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                manager.deleteNotificationChannel(CHANNEL_ID);
+            }
         }
 
 

@@ -73,28 +73,52 @@ public class NotificationService extends Service {
                 channel.enableVibration(true);
                 NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.createNotificationChannel(channel);
+
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.small_statusbar_icon)
+                        //.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.app_icon_small))
+                        .setContentTitle("Boozymeter")
+                        .setContentText("It's been 30 minutes! Have you had a drink?")
+                        .addAction(R.drawable.check_small, "Yes", yesIntent1)
+                        .addAction(R.drawable.cancel_small, "No", noIntent1)
+                        //.setFullScreenIntent(yesIntent1, true)
+                        //.setFullScreenIntent(mainPI, true)
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setAutoCancel(true);
+
+                builder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
+                builder.setDefaults(Notification.DEFAULT_SOUND);
+
+
+                //builder.setContentIntent(mainPI);
+                //NotificationManagerCompat nManager = NotificationManagerCompat.from(this);
+                //nManager.notify(NOTIFICATION_ID, builder.build());
+                startForeground(NOTIFICATION_ID, builder.build());
+
+            }else{
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.small_statusbar_icon)
+                        //.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.app_icon_small))
+                        .setContentTitle("Boozymeter")
+                        .setContentText("It's been 30 minutes! Have you had a drink?")
+                        .addAction(R.drawable.check_small, "Yes", yesIntent1)
+                        .addAction(R.drawable.cancel_small, "No", noIntent1)
+                        //.setFullScreenIntent(yesIntent1, true)
+                        //.setFullScreenIntent(mainPI, true)
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setAutoCancel(true);
+
+                builder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
+                builder.setDefaults(Notification.DEFAULT_SOUND);
+
+
+                //builder.setContentIntent(mainPI);
+                NotificationManagerCompat nManager = NotificationManagerCompat.from(this);
+                nManager.notify(NOTIFICATION_ID, builder.build());
+                //startForeground(NOTIFICATION_ID, builder.build());
+
             }
 
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.small_statusbar_icon)
-                    //.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.app_icon_small))
-                    .setContentTitle("Boozymeter")
-                    .setContentText("It's been 30 minutes! Have you had a drink?")
-                    .addAction(R.drawable.check_small, "Yes", yesIntent1)
-                    .addAction(R.drawable.cancel_small, "No", noIntent1)
-                    //.setFullScreenIntent(yesIntent1, true)
-                    //.setFullScreenIntent(mainPI, true)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setAutoCancel(true);
-
-            builder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
-            builder.setDefaults(Notification.DEFAULT_SOUND);
-
-
-            //builder.setContentIntent(mainPI);
-            //NotificationManagerCompat nManager = NotificationManagerCompat.from(this);
-            //nManager.notify(NOTIFICATION_ID, builder.build());
-            startForeground(NOTIFICATION_ID, builder.build());
 
         }else{
 
@@ -121,9 +145,13 @@ public class NotificationService extends Service {
                     .setAutoCancel(true);
 
             builder.setContentIntent(morningIntent1);
-            //NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-           // nManager.notify(NOTIFICATION_ID, builder.build());
-            startForeground(NOTIFICATION_ID, builder.build());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                startForeground(NOTIFICATION_ID, builder.build());
+            }else{
+                NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                nManager.notify(NOTIFICATION_ID, builder.build());
+            }
+
         }
         return START_NOT_STICKY;
     }

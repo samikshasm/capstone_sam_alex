@@ -70,8 +70,9 @@ public class MainActivity extends AppCompatActivity {
     private long initialTime;
     private String initialTimeStr;
     private String startActivity1;
+    //public static final long ALARM_TIME = 60000;
     public static final long ALARM_TIME = 1800000;
-    public static final long PROGRESS_BAR_MAX = 60;
+    //public static final long PROGRESS_BAR_MAX = 60;
     private Integer nightCount;
     private String[] typeList;
     private String[] costList;
@@ -102,8 +103,9 @@ public class MainActivity extends AppCompatActivity {
         //initialize UI stuff
         //progressBarCircle = (ProgressBar) findViewById(R.id.progressBarCircle);
         //textViewTime = (TextView) findViewById(R.id.textViewTime);
-        imageViewStartStop = (ImageView) findViewById(R.id.imageViewStartStop);
 
+        imageViewStartStop = (ImageView) findViewById(R.id.imageViewStartStop);
+/*
         //initializes location client
         //requests permission from phone to access users location
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -117,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
-        }
+        }*/
         mReference = FirebaseDatabase.getInstance().getReference();
 
         nightCount = getNightCount();
@@ -172,7 +174,9 @@ public class MainActivity extends AppCompatActivity {
                 createAlarms(initialTime);
                 createMorningAlarm();
                 //startUIUpdateService(initialTime);
-                startLocationUpdates(userIDMA);
+                if (ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    startLocationUpdates(userIDMA);
+                }
                 mId = "come from qs";
             }
 
@@ -206,7 +210,9 @@ public class MainActivity extends AppCompatActivity {
                 cancelAlarm(4);
                 startActivity1 = "start";
                 storeScreen(startActivity1);
-                stopLocationUpdates();
+                if (ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    stopLocationUpdates();
+                }
                 //unregisterReceiver(broadcastReceiver);
                 Intent goToStart = new Intent(MainActivity.this, StartActivity.class);
                 goToStart.putExtra("Cancel main activity", startActivity);
@@ -326,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
         mEditor.apply();
     }
 */
-
+/*8
     //updates the timer ui and sets the progress bar value
     private void testUpdateUI(Intent intent) {
         String secondsStr = intent.getStringExtra("milliseconds");
@@ -339,7 +345,7 @@ public class MainActivity extends AppCompatActivity {
         progressBarCircle.setProgress(seconds);
 
     }
-
+*/
     //function to create alarms at given time
     public void createAlarms(long currentTime) {
         long thirty = currentTime + ALARM_TIME;
@@ -396,7 +402,9 @@ public class MainActivity extends AppCompatActivity {
         //receivers and services are stopped and activity is switched back to the start screen
         if (selectedScreen.equals("start") | selectedScreen.equals("morningQS")) {
             //stopUIUpdateService();
-            stopLocationUpdates();
+            if (ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                stopLocationUpdates();
+            }
             //unregisterReceiver(broadcastReceiver);
             Intent goToStart = new Intent(MainActivity.this, StartActivity.class);
             goToStart.putExtra("Start Activity", startActivity);
@@ -415,6 +423,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     //LOOK HERE TO SEE LOCATION STUFF
+
+    /*
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -517,9 +527,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Callback received when a permissions request has been completed.
-     */
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -550,7 +558,7 @@ public class MainActivity extends AppCompatActivity {
                         });
             }
         }
-    }
+    }*/
 
     private Integer getNightCount() {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);

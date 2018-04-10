@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 
 /**
@@ -25,6 +26,9 @@ public class ButtonReceiver extends BroadcastReceiver {
         //cancels notification with given broadcast id
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.cancel(notificationId);
-        manager.deleteNotificationChannel(CHANNEL_ID);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            manager.deleteNotificationChannel(CHANNEL_ID);
+        }
     }
 }

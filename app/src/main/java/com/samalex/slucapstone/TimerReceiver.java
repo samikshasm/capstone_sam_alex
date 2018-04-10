@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -43,7 +44,11 @@ public class TimerReceiver extends BroadcastReceiver {
             service_intent.putExtra("initial time", initialTimeStr);
             service_intent.putExtra("broadcast Int", broadcastStr);
             //This is where it crashed
-            context.startForegroundService(service_intent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(service_intent);
+            }else{
+                context.startService(service_intent);
+            }
         }
 
         else if (broadcastID == 4) {
@@ -66,7 +71,12 @@ public class TimerReceiver extends BroadcastReceiver {
             //service_intent.putExtra("User ID", userIDMA);
             service_intent.putExtra("initial time", initialTimeStr);
             service_intent.putExtra("broadcast Int", broadcastStr);
-            context.startService(service_intent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(service_intent);
+            }else{
+                context.startService(service_intent);
+            }
+
         }
 
 
