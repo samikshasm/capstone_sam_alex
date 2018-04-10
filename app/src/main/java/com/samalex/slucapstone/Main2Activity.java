@@ -107,7 +107,10 @@ public class Main2Activity extends AppCompatActivity{
             int notificationId = Integer.parseInt(broadcastInt);
             NotificationManager manager = (NotificationManager) Main2Activity.this.getSystemService(Context.NOTIFICATION_SERVICE);
             manager.cancel(notificationId);
-            manager.deleteNotificationChannel(CHANNEL_ID);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                manager.deleteNotificationChannel(CHANNEL_ID);
+            }
 
         }
 
