@@ -57,6 +57,14 @@ public class MorningQS extends AppCompatActivity {
     private String drinkCost ="NA";
     private String group;
     private String broadcastInt = "none";
+    private String stress_event = "NA";
+    private String interpersonal = "NA";
+    private String work = "NA";
+    private String financial = "NA";
+    private String health = "NA";
+    private String trauma = "NA";
+    private String stress_other = "NA";
+    private String stress_value = "NA";
     public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
 
     @Override
@@ -69,6 +77,20 @@ public class MorningQS extends AppCompatActivity {
         setContentView(R.layout.morning_qs);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        final TextView oralQS = (TextView) findViewById(R.id.oral_qs);
+        final LinearLayout oralQSLayout = (LinearLayout) findViewById(R.id.oral_qs_layout);
+        final TextView vaginalQS = (TextView) findViewById(R.id.vaginal_qs);
+        final LinearLayout vaginalQSLayout = (LinearLayout) findViewById(R.id.vaginal_layout);
+        final TextView analQS = (TextView) findViewById(R.id.anal_qs);
+        final LinearLayout analQSLayout = (LinearLayout) findViewById(R.id.anal_layout);
+        final TextView numPartQS = (TextView) findViewById(R.id.number_partners_qs);
+        final LinearLayout numPartLayout = (LinearLayout) findViewById(R.id.number_partners_layout);
+        final TextView typePartQS = (TextView) findViewById(R.id.type_partners_qs);
+        final TextView typePartSelect = (TextView) findViewById(R.id.select);
+        final LinearLayout typePartLayout = (LinearLayout) findViewById(R.id.partners_layout);
+
+
 
         Button submit = (Button) findViewById(R.id.submit);
         final ImageButton oralYes = (ImageButton) findViewById(R.id.oral_yes_button);
@@ -97,6 +119,37 @@ public class MorningQS extends AppCompatActivity {
         //final LinearLayout analConsentLayout = (LinearLayout) findViewById(R.id.anal_consent) ;
         final LinearLayout analCondomLayout = (LinearLayout) findViewById(R.id.anal_condom);
         //final LinearLayout oralConsentLayout = (LinearLayout) findViewById(R.id.oral_consent);
+
+        final ImageButton stress_yes = (ImageButton) findViewById(R.id.stress_q1_yes_button);
+        final ImageButton stress_no = (ImageButton) findViewById(R.id.stress_q1_no_button);
+
+        final TextView stress_type = (TextView) findViewById(R.id.stress_type_qs);
+        final TextView stress_select = (TextView) findViewById(R.id.select_stress);
+        final LinearLayout stressTypeLayout = (LinearLayout) findViewById(R.id.type_layout);
+        final TextView value_stress_qs = (TextView) findViewById(R.id.value_stress_qs);
+        final LinearLayout ratingLayout = (LinearLayout) findViewById(R.id.rating_layout);
+
+
+        final CheckBox interpersonal_check = (CheckBox) findViewById(R.id.interpersonal);
+        final CheckBox work_check = (CheckBox) findViewById(R.id.work);
+        final CheckBox financial_check = (CheckBox) findViewById(R.id.financial);
+        final CheckBox health_check = (CheckBox) findViewById(R.id.health);
+        final CheckBox trauma_check = (CheckBox) findViewById(R.id.trauma);
+        final CheckBox other_check = (CheckBox) findViewById(R.id.other_stress);
+
+        final ImageButton stress_1 = (ImageButton) findViewById(R.id.stress_1);
+        final ImageButton stress_2 = (ImageButton) findViewById(R.id.stress_2);
+        final ImageButton stress_3 = (ImageButton) findViewById(R.id.stress_3);
+        final ImageButton stress_4 = (ImageButton) findViewById(R.id.stress_4);
+        final ImageButton stress_5 = (ImageButton) findViewById(R.id.stress_5);
+        final ImageButton stress_6 = (ImageButton) findViewById(R.id.stress_6);
+        final ImageButton stress_7 = (ImageButton) findViewById(R.id.stress_7);
+        final ImageButton stress_8 = (ImageButton) findViewById(R.id.stress_8);
+        final ImageButton stress_9 = (ImageButton) findViewById(R.id.stress_9);
+        final ImageButton stress_10 = (ImageButton) findViewById(R.id.stress_10);
+
+
+
 
         //new stuff
         final Button add = (Button) findViewById(R.id.add_button);
@@ -184,10 +237,301 @@ public class MorningQS extends AppCompatActivity {
                 costButton = (RadioButton) findViewById(selectedId);
                 drinkCost = costButton.getText().toString();
                 writeCostTotaltoDB(drinkCost);
+                writeStressEventToDB(stress_event);
+                writeInterpersonal(interpersonal);
+                writeWorkToDB(work);
+                writeFinancialToDB(financial);
+                writeHealthToDB(health);
+                writeTraumaToDB(trauma);
+                writeStressOtherToDB(stress_other);
+                writeStressValueToDB(stress_value);
                 finish();
             }
         };
         submit.setOnClickListener(handler1);
+
+        stress_yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stress_event="Yes";
+                stress_no.setImageResource(R.drawable.no_button);
+                stress_yes.setImageResource(R.drawable.yes_green);
+                stress_type.setVisibility(View.VISIBLE);
+                stress_select.setVisibility(View.VISIBLE);
+                stressTypeLayout.setVisibility(View.VISIBLE);
+                value_stress_qs.setVisibility(View.VISIBLE);
+                ratingLayout.setVisibility(View.VISIBLE);
+                oralQS.setVisibility(View.VISIBLE);
+                oralQSLayout.setVisibility(View.VISIBLE);
+                vaginalQS.setVisibility(View.VISIBLE);
+                vaginalQSLayout.setVisibility(View.VISIBLE);
+                analQS.setVisibility(View.VISIBLE);
+                analQSLayout.setVisibility(View.VISIBLE);
+                numPartQS.setVisibility(View.VISIBLE);
+                numPartLayout.setVisibility(View.VISIBLE);
+                typePartQS.setVisibility(View.VISIBLE);
+                typePartSelect.setVisibility(View.VISIBLE);
+                typePartLayout.setVisibility(View.VISIBLE);
+
+            }
+        });
+        stress_no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stress_event="No";
+                stress_no.setImageResource(R.drawable.no_green_button);
+                stress_yes.setImageResource(R.drawable.yes_button);
+                stress_type.setVisibility(View.GONE);
+                stress_select.setVisibility(View.GONE);
+                stressTypeLayout.setVisibility(View.GONE);
+                value_stress_qs.setVisibility(View.GONE);
+                ratingLayout.setVisibility(View.GONE);
+                oralQS.setVisibility(View.VISIBLE);
+                oralQSLayout.setVisibility(View.VISIBLE);
+                vaginalQS.setVisibility(View.VISIBLE);
+                vaginalQSLayout.setVisibility(View.VISIBLE);
+                analQS.setVisibility(View.VISIBLE);
+                analQSLayout.setVisibility(View.VISIBLE);
+                numPartQS.setVisibility(View.VISIBLE);
+                numPartLayout.setVisibility(View.VISIBLE);
+                typePartQS.setVisibility(View.VISIBLE);
+                typePartSelect.setVisibility(View.VISIBLE);
+                typePartLayout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        interpersonal_check.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (interpersonal_check.isChecked() == true) {
+                    interpersonal_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    interpersonal = "yes";
+                }else{
+                    interpersonal_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                    interpersonal = "NA";
+                }
+            }
+        });
+
+        financial_check.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (financial_check.isChecked() == true) {
+                    financial_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    financial = "yes";
+                }else{
+                    financial_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                    monoStr = "NA";
+                }
+            }
+        });
+
+        work_check.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (work_check.isChecked() == true) {
+                    work_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    work = "yes";
+                }else{
+                    work_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                    work = "NA";
+                }
+            }
+        });
+
+        health_check.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (health_check.isChecked() == true) {
+                    health_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    health = "yes";
+                }else{
+                    health_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                    health = "NA";
+                }
+            }
+        });
+
+        trauma_check.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (trauma_check.isChecked() == true) {
+                    trauma_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    trauma = "yes";
+                }else{
+                    trauma_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                    trauma = "NA";
+                }
+            }
+        });
+
+        other_check.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (other_check.isChecked() == true) {
+                    other_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    stress_other = "yes";
+                }else{
+                    other_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                    stress_other = "no";
+                }
+            }
+        });
+
+        stress_1.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                stress_value = "1";
+                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_2.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_3.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_4.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_5.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_6.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_7.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_8.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
+
+
+            }
+        });
+        stress_2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                stress_value = "2";
+                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_3.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_4.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_5.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_6.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_7.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_8.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
+
+            }
+        });
+        stress_3.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                stress_value = "3";
+                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_4.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_5.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_6.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_7.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_8.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
+
+            }
+        });
+        stress_4.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                stress_value = "4";
+                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_4.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_5.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_6.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_7.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_8.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
+
+            }
+        });
+        stress_5.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                stress_value = "5";
+                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_4.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_5.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_6.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_7.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_8.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
+
+            }
+        });
+        stress_6.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                stress_value = "6";
+                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_4.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_5.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_6.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_7.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_8.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
+
+            }
+        });
+        stress_7.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                stress_value = "7";
+                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_4.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_5.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_6.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_7.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_8.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
+
+            }
+        });
+        stress_8.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                stress_value = "8";
+                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_4.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_5.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_6.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_7.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_8.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
+                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
+            }
+        });
+        stress_9.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                stress_value = "9";
+                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_4.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_5.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_6.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_7.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_8.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_9.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
+            }
+        });
+        stress_10.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                stress_value = "10";
+                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_4.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_5.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_6.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_7.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_8.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_9.setBackgroundResource(R.drawable.pink_circle_closed);
+                stress_10.setBackgroundResource(R.drawable.pink_circle_closed);
+            }
+        });
+
+
 
         oralNo.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -474,6 +818,48 @@ public class MorningQS extends AppCompatActivity {
         Date currentDate = new Date(currentDateTime);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         time = dateFormat.format(currentDate);
+    }
+    public void writeStressValueToDB(String value){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("StressValue");
+        mRef.setValue(value);
+    }
+
+    public void writeStressEventToDB(String stress_event){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("StressEvent");
+        mRef.setValue(stress_event);
+    }
+
+    public void writeInterpersonal(String interpersonal){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("Interpersonal");
+        mRef.setValue(interpersonal);
+    }
+    public void writeWorkToDB(String work){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("Work");
+        mRef.setValue(work);
+    }
+    public void writeFinancialToDB(String financial){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("Financial");
+        mRef.setValue(financial);
+    }
+    public void writeHealthToDB(String health){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("Health");
+        mRef.setValue(health);
+    }
+    public void writeTraumaToDB(String trauma){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("Trauma");
+        mRef.setValue(trauma);
+    }
+    public void writeStressOtherToDB(String stress_other){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("StressOther");
+        mRef.setValue(stress_other);
     }
 
     public void writeCostTotaltoDB(String drink_cost){
