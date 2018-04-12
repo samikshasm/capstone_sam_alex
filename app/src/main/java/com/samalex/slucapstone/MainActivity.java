@@ -143,6 +143,13 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = mSharedPreferences.getString("user ID", "none");
 
+        if(userIDMA != null) {
+            Log.e("User ID Start", userIDMA);
+        }
+        else if(userIDMA == null | userIDMA.equals("none")){
+            storeScreen("login");
+        }
+
         cal_text = (TextView) findViewById(R.id.cal_text);
         num_drink_text = (TextView) findViewById(R.id.num_drinks_txt);
         cost_txt = (TextView) findViewById(R.id.cost_text);
@@ -272,13 +279,13 @@ public class MainActivity extends AppCompatActivity {
         }else{
             day = morningCal.get(Calendar.DAY_OF_WEEK);
             if(day == 7){
-                day = 0;
+                day = 1;
             }else{
                 day = day+1;
             }
         }
         morningCal.set(Calendar.DAY_OF_WEEK, day);
-        morningCal.set(Calendar.HOUR_OF_DAY, 7);
+        morningCal.set(Calendar.HOUR_OF_DAY, hour);
         morningCal.set(Calendar.MINUTE, 0);
         morningCal.set(Calendar.SECOND, 0);
         Log.e("morningCal set time:",morningCal.get(Calendar.DAY_OF_WEEK)+","+morningCal.get(Calendar.HOUR_OF_DAY));

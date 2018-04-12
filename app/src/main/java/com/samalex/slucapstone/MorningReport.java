@@ -127,7 +127,7 @@ public class MorningReport extends AppCompatActivity{
                 storeScreen(startActivity1);
                 storeNumDrinks(0);
                 totalCalConsumed =0;
-                Intent goToStart = new Intent(MorningReport.this, StartActivity.class);
+                Intent goToStart = new Intent(MorningReport.this, MorningQS.class);
                 goToStart.putExtra("Start Activity", startActivity);
                 startActivity(goToStart);
                 finish();
@@ -158,7 +158,6 @@ public class MorningReport extends AppCompatActivity{
                         String[] tempList = testType[i].split("=");
                         typeList[i] = tempList[1];
                     }
-//                Log.e("testing", ""+typeList);
 
                     Integer numWine = 0;
                     Integer numLiquor = 0;

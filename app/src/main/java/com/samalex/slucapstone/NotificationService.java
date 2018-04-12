@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,6 +30,8 @@ public class NotificationService extends Service {
 
     private Integer counterInt=0;
     public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
+    private String group;
+
 
     @Nullable
     @Override
@@ -133,8 +136,20 @@ public class NotificationService extends Service {
                 NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.createNotificationChannel(channel);
             }
+
+            SharedPreferences groupSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
+            group = groupSharedPreferences.getString("Group","none");
+
+            Intent morningIntent;
+
+            if (group.equals("experimental")) {
+                morningIntent = new Intent(this, MorningReport.class);
+            }
+            else {
+                morningIntent = new Intent(this, MorningQS.class);
+
+            }
             //creates notification that appears when the morning alarm goes off
-            Intent morningIntent = new Intent(this, MorningQS.class);
             morningIntent.putExtra("broadcast Int", broadcastId);
             PendingIntent morningIntent1 = PendingIntent.getActivity(this, 0, morningIntent, PendingIntent.FLAG_ONE_SHOT);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)

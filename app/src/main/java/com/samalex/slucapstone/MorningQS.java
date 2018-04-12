@@ -195,7 +195,7 @@ public class MorningQS extends AppCompatActivity {
         //creates all of the onClick listeners for all of the buttons for questions
         View.OnClickListener handler1 = new View.OnClickListener() {
             public void onClick(View view) {
-                if(group.equals("experimental")){
+              /*  if(group.equals("experimental")){
                     Log.e("morningQS", "experimental");
                     Intent switchToMorningReport = new Intent(MorningQS.this, MorningReport.class);
                     startActivity(switchToMorningReport);
@@ -216,7 +216,7 @@ public class MorningQS extends AppCompatActivity {
                     goToStart.putExtra("Start Activity", startActivity);
                     startActivity(goToStart);
                     finish();
-                }
+                }*/
 
                 writeOralToDB(oral);
                 //writeOralConsentToDB(oralConsentStr);
@@ -245,6 +245,14 @@ public class MorningQS extends AppCompatActivity {
                 writeTraumaToDB(trauma);
                 writeStressOtherToDB(stress_other);
                 writeStressValueToDB(stress_value);
+                finish();
+
+                startActivity1 = "start";
+                storeScreen(startActivity1);
+                storeNumDrinks(0);
+                Intent goToStart = new Intent(MorningQS.this, StartActivity.class);
+                goToStart.putExtra("Start Activity", startActivity);
+                startActivity(goToStart);
                 finish();
             }
         };

@@ -90,8 +90,15 @@ public class StartActivity extends AppCompatActivity {
                 .build();
         //new location stuff
         userIDMA = getIntent().getStringExtra("User ID");
+
+        SharedPreferences userSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
+        userIDMA = userSharedPreferences.getString("user ID", "none");
+
         if(userIDMA != null) {
             Log.e("User ID Start", userIDMA);
+        }
+        else if(userIDMA == null | userIDMA.equals("none")){
+            storeScreen("login");
         }
 
         cancelButMain = getIntent().getStringExtra("Cancel main activity");
@@ -147,21 +154,6 @@ public class StartActivity extends AppCompatActivity {
             }
         });
 
-
-
-        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
-        String selectedScreen = mSharedPreferences.getString("currentScreen","none");
-        if (selectedScreen.equals("main")) {
-            Intent switchToMain = new Intent(StartActivity.this, MainActivity.class);
-            startActivity(switchToMain);
-            finish();
-        }
-
-        else if (selectedScreen.equals("morningQS")){
-            Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
-            startActivity(switchToMorning);
-            finish();
-        }
         SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
         group = mSharedPreferences2.getString("Group","none");
         if(group.equals("none")){
@@ -194,6 +186,42 @@ public class StartActivity extends AppCompatActivity {
                 }
             });
         }
+
+        SharedPreferences groupSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
+        group = groupSharedPreferences.getString("Group","none");
+
+        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
+        String selectedScreen = mSharedPreferences.getString("currentScreen","none");
+        if (selectedScreen.equals("main")) {
+            Intent switchToMain = new Intent(StartActivity.this, MainActivity.class);
+            startActivity(switchToMain);
+            finish();
+        }
+        else if (selectedScreen.equals("morningQS") && group.equals("experimental")){
+            Log.e("is it experimental?", "hi it is");
+            Intent switchToMorning = new Intent(StartActivity.this, MorningReport.class);
+            startActivity(switchToMorning);
+            finish();
+        }
+        else if (selectedScreen.equals("morningQS") && group.equals("control")){
+            Log.e("is it control?", "hi it is");
+            Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
+            startActivity(switchToMorning);
+            finish();
+        }
+        else if (selectedScreen.equals("morningQS") && group.equals("none")){
+            Log.e("is it none?", "hi it is");
+
+            Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
+            startActivity(switchToMorning);
+            finish();
+        }
+        else if (selectedScreen.equals("login")){
+            Intent switchToLogin = new Intent(StartActivity.this, LoginActivity.class);
+            startActivity(switchToLogin);
+            finish();
+        }
+
 
 
 
@@ -289,6 +317,15 @@ public class StartActivity extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
         return nightCount;
+    }
+
+
+    //function to store the current screen to the shared preference screen variable
+    private void storeScreen(String string) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putString("currentScreen", string);
+        mEditor.apply();
     }
 
     @Override
