@@ -172,25 +172,27 @@ public class MorningQS extends AppCompatActivity {
 
         nightCount = getNightCount();
 
-        broadcastInt = getIntent().getStringExtra("broadcast Int");
-        if(broadcastInt != null){
-            int notificationId = Integer.parseInt(broadcastInt);
-            NotificationManager manager = (NotificationManager) MorningQS.this.getSystemService(Context.NOTIFICATION_SERVICE);
-            manager.cancel(notificationId);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-                manager.deleteNotificationChannel(CHANNEL_ID);
-            }
+        if(group.equals("control")){
+            broadcastInt = getIntent().getStringExtra("broadcast Int");
+            if(broadcastInt != null){
+                int notificationId = Integer.parseInt(broadcastInt);
+                NotificationManager manager = (NotificationManager) MorningQS.this.getSystemService(Context.NOTIFICATION_SERVICE);
+                manager.cancel(notificationId);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-        }else{
-            NotificationManager manager = (NotificationManager) MorningQS.this.getSystemService(Context.NOTIFICATION_SERVICE);
-            manager.cancel(5);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    manager.deleteNotificationChannel(CHANNEL_ID);
+                }
 
-                manager.deleteNotificationChannel(CHANNEL_ID);
+            }else{
+                NotificationManager manager = (NotificationManager) MorningQS.this.getSystemService(Context.NOTIFICATION_SERVICE);
+                manager.cancel(5);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                    manager.deleteNotificationChannel(CHANNEL_ID);
+                }
             }
         }
-
 
         //creates all of the onClick listeners for all of the buttons for questions
         View.OnClickListener handler1 = new View.OnClickListener() {

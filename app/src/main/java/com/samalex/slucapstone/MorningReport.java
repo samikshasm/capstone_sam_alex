@@ -1,9 +1,12 @@
 package com.samalex.slucapstone;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
@@ -62,6 +65,9 @@ public class MorningReport extends AppCompatActivity{
     private TextView litersDrank;
     private Double avgCost = 0.00;
     private String[] costList;
+    private String group;
+    private String broadcastInt = "none";
+    public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +140,30 @@ public class MorningReport extends AppCompatActivity{
             }
         };
         goToStart.setOnClickListener(handler1);
+
+        SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
+        group = mSharedPreferences2.getString("Group", "none");
+
+        if(group.equals("experimental")){
+            broadcastInt = getIntent().getStringExtra("broadcast Int");
+            if(broadcastInt != null){
+                int notificationId = Integer.parseInt(broadcastInt);
+                NotificationManager manager = (NotificationManager) MorningReport.this.getSystemService(Context.NOTIFICATION_SERVICE);
+                manager.cancel(notificationId);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                    manager.deleteNotificationChannel(CHANNEL_ID);
+                }
+
+            }else{
+                NotificationManager manager = (NotificationManager) MorningReport.this.getSystemService(Context.NOTIFICATION_SERVICE);
+                manager.cancel(5);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                    manager.deleteNotificationChannel(CHANNEL_ID);
+                }
+            }
+        }
     }
 
     //function to analyze data received from snapshot

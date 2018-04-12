@@ -31,6 +31,7 @@ public class NotificationService extends Service {
     private Integer counterInt=0;
     public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
     private String group;
+    private NotificationCompat.Builder builder;
 
 
     @Nullable
@@ -152,12 +153,24 @@ public class NotificationService extends Service {
             //creates notification that appears when the morning alarm goes off
             morningIntent.putExtra("broadcast Int", broadcastId);
             PendingIntent morningIntent1 = PendingIntent.getActivity(this, 0, morningIntent, PendingIntent.FLAG_ONE_SHOT);
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.small_statusbar_icon)
-                    //.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.app_icon_small))
-                    .setContentTitle("Boozymeter")
-                    .setContentText("Time for morning questionnaire")
-                    .setAutoCancel(true);
+
+            if (group.equals("experimental")) {
+                 builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.small_statusbar_icon)
+                        //.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.app_icon_small))
+                        .setContentTitle("Boozymeter")
+                        .setContentText("View your Morning Report")
+                        .setAutoCancel(true);
+            }
+            else if (group.equals("control") | group.equals("none")) {
+                builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.small_statusbar_icon)
+                        //.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.app_icon_small))
+                        .setContentTitle("Boozymeter")
+                        .setContentText("Time for morning questionnaire")
+                        .setAutoCancel(true);
+            }
+
 
             builder.setContentIntent(morningIntent1);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
