@@ -133,7 +133,7 @@ public class MorningReport extends AppCompatActivity{
                 storeScreen(startActivity1);
                 storeNumDrinks(0);
                 totalCalConsumed =0;
-                Intent goToStart = new Intent(MorningReport.this, MorningQS.class);
+                Intent goToStart = new Intent(MorningReport.this, StartActivity.class);
                 goToStart.putExtra("Start Activity", startActivity);
                 startActivity(goToStart);
                 finish();

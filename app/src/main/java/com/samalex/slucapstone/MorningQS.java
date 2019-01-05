@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -65,6 +66,18 @@ public class MorningQS extends AppCompatActivity {
     private String trauma = "NA";
     private String stress_other = "NA";
     private String stress_value = "NA";
+    private String typeStress = "";
+
+    private String whenStressOccurred = "NA";
+    private String drinklastNight = "NA";
+    private Integer drinksCounter = -1;
+    private String typesOfDrinks = "";
+    private String hangover = "NA";
+    private String analVaginalSex = "NA";
+    private String condom = "NA";
+    private String partner = "NA";
+    private String drugs = "NA";
+    private String typeDrugs = "";
     public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
 
     @Override
@@ -78,7 +91,7 @@ public class MorningQS extends AppCompatActivity {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        final TextView oralQS = (TextView) findViewById(R.id.oral_qs);
+      /*  final TextView oralQS = (TextView) findViewById(R.id.oral_qs);
         final LinearLayout oralQSLayout = (LinearLayout) findViewById(R.id.oral_qs_layout);
         final TextView vaginalQS = (TextView) findViewById(R.id.vaginal_qs);
         final LinearLayout vaginalQSLayout = (LinearLayout) findViewById(R.id.vaginal_layout);
@@ -88,12 +101,77 @@ public class MorningQS extends AppCompatActivity {
         final LinearLayout numPartLayout = (LinearLayout) findViewById(R.id.number_partners_layout);
         final TextView typePartQS = (TextView) findViewById(R.id.type_partners_qs);
         final TextView typePartSelect = (TextView) findViewById(R.id.select);
-        final LinearLayout typePartLayout = (LinearLayout) findViewById(R.id.partners_layout);
+        final LinearLayout typePartLayout = (LinearLayout) findViewById(R.id.partners_layout);*/
 
+
+        //new stuff!!!!!!!!!!
+        //!!!!!!!!!!!!!!!!!!!
+        final ImageButton lastNightDrinkYes = (ImageButton) findViewById(R.id.drinkAlcoholQS_yes);
+        final ImageButton lastNightDrinkNo = (ImageButton) findViewById(R.id.drinkAlcoholQS_no);
+
+        final TextView number_drinks_qs = (TextView) findViewById(R.id.number_drinks_qs);
+        final LinearLayout number_drinks_qs_layout = (LinearLayout) findViewById(R.id.number_drinks_qs_layout);
+        final Button drinks_add = (Button) findViewById(R.id.drinks_add_button);
+        final Button drinks_subtract = (Button) findViewById(R.id.drinks_subtract_button);
+        final TextView drinks_counterText = (TextView) findViewById(R.id.drinks_counter);
+
+        final TextView drink_type = (TextView) findViewById(R.id.drink_type);
+        final TextView select_drink_type = (TextView) findViewById(R.id.select_drink_type);
+        final LinearLayout drink_type_layout = (LinearLayout) findViewById(R.id.drink_type_layout);
+        final CheckBox liquor = (CheckBox) findViewById(R.id.liquor);
+        final CheckBox wine = (CheckBox) findViewById(R.id.wine);
+        final CheckBox beer = (CheckBox) findViewById(R.id.beer);
+
+        final TextView hangover_qs = (TextView) findViewById(R.id.hangover_qs);
+        final LinearLayout hangover_qs_layout = (LinearLayout) findViewById(R.id.hangover_qs_layout);
+        final ImageButton hangoverYes = (ImageButton) findViewById(R.id.hangover_yes);
+        final ImageButton hangoverNo = (ImageButton) findViewById(R.id.hangover_no);
+
+        final TextView drugs_qs = (TextView) findViewById(R.id.drugs);
+        final LinearLayout drugs_layout = (LinearLayout) findViewById(R.id.drugs_layout);
+        final ImageButton drugs_yes = (ImageButton) findViewById(R.id.drugs_yes);
+        final ImageButton drugs_no = (ImageButton) findViewById(R.id.drugs_no);
+
+        final TextView typesOfDrugs_qs = (TextView) findViewById(R.id.typesOfDrugs);
+        final TextView select_drugs = (TextView) findViewById(R.id.select_drugs);
+        final LinearLayout typesOfDrugs_layout = (LinearLayout) findViewById(R.id.typesOfDrugs_layout);
+        final CheckBox ritalin = (CheckBox) findViewById(R.id.ritalin);
+        final CheckBox adderall = (CheckBox) findViewById(R.id.adderall);
+        final CheckBox oxyContin = (CheckBox) findViewById(R.id.oxyContin);
+        final CheckBox vicodin = (CheckBox) findViewById(R.id.vicodin);
+        final CheckBox percocet = (CheckBox) findViewById(R.id.percocet);
+        final CheckBox otherPrescriptionOpioid = (CheckBox) findViewById(R.id.otherPrescriptionOpioid);
+        final CheckBox xanax = (CheckBox) findViewById(R.id.xanax);
+        final CheckBox valium = (CheckBox) findViewById(R.id.valium);
+        final CheckBox otherBenzo = (CheckBox) findViewById(R.id.otherBenzo);
+        final CheckBox marijuana = (CheckBox) findViewById(R.id.marijuana);
+        final CheckBox heroin = (CheckBox) findViewById(R.id.heroin);
+        final CheckBox mdma = (CheckBox) findViewById(R.id.mdma);
+        final CheckBox meth = (CheckBox) findViewById(R.id.meth);
+        final CheckBox otherDrug = (CheckBox) findViewById(R.id.otherDrug);
+
+        final ImageButton analVaginalSexYes = (ImageButton) findViewById(R.id.analVaginalSex_yes);
+        final ImageButton analVaginalSexNo = (ImageButton) findViewById(R.id.analVaginalSex_no);
+
+        final TextView condom_qs = (TextView) findViewById(R.id.condom);
+        final LinearLayout condom_layout = (LinearLayout) findViewById(R.id.condom_layout);
+        final ImageButton condom_yes = (ImageButton) findViewById(R.id.condom_yes);
+        final ImageButton condom_no = (ImageButton) findViewById(R.id.condom_no);
+
+        final TextView sexPartner_qs = (TextView) findViewById(R.id.sexPartner_qs);
+        final LinearLayout sexPartner_qs_layout = (LinearLayout) findViewById(R.id.sexPartner_qs_layout);
+        final RadioGroup partnerGroup = (RadioGroup) findViewById(R.id.radioGroupPartner);
+
+
+        final TextView stressfulEventOccurance = (TextView) findViewById(R.id.stressfulEventOccurance);
+        final LinearLayout stressfulEventOccurance_layout = (LinearLayout) findViewById(R.id.stressfulEventOccurance_layout);
+        final RadioGroup stressGroup = (RadioGroup) findViewById(R.id.radioGroupStress);
 
 
         Button submit = (Button) findViewById(R.id.submit);
-        final ImageButton oralYes = (ImageButton) findViewById(R.id.oral_yes_button);
+
+
+       /* final ImageButton oralYes = (ImageButton) findViewById(R.id.oral_yes_button);
         final ImageButton oralNo = (ImageButton) findViewById(R.id.oral_no_button);
         final ImageButton vaginalYes = (ImageButton) findViewById(R.id.vaginal_yes_button);
         final ImageButton vaginalNo= (ImageButton) findViewById(R.id.vaginal_no_button);
@@ -118,7 +196,7 @@ public class MorningQS extends AppCompatActivity {
         //final LinearLayout vaginalConsentLayout = (LinearLayout) findViewById(R.id.vaginal_consent);
         //final LinearLayout analConsentLayout = (LinearLayout) findViewById(R.id.anal_consent) ;
         final LinearLayout analCondomLayout = (LinearLayout) findViewById(R.id.anal_condom);
-        //final LinearLayout oralConsentLayout = (LinearLayout) findViewById(R.id.oral_consent);
+        //final LinearLayout oralConsentLayout = (LinearLayout) findViewById(R.id.oral_consent);*/
 
         final ImageButton stress_yes = (ImageButton) findViewById(R.id.stress_q1_yes_button);
         final ImageButton stress_no = (ImageButton) findViewById(R.id.stress_q1_no_button);
@@ -148,19 +226,19 @@ public class MorningQS extends AppCompatActivity {
         final ImageButton stress_9 = (ImageButton) findViewById(R.id.stress_9);
         final ImageButton stress_10 = (ImageButton) findViewById(R.id.stress_10);
 
-
-
-
         //new stuff
-        final Button add = (Button) findViewById(R.id.add_button);
+        /*final Button add = (Button) findViewById(R.id.add_button);
         final Button subtract = (Button) findViewById(R.id.subtract_button);
         final TextView numPartner = (TextView) findViewById(R.id.partners_counter);
         final CheckBox monoPartner = (CheckBox) findViewById(R.id.monogamous_partner);
         final CheckBox friendPartner = (CheckBox) findViewById(R.id.friend_partner);
         final CheckBox newPartner = (CheckBox) findViewById(R.id.new_partner);
-        final CheckBox naPartner = (CheckBox) findViewById(R.id.na_partner);
+        final CheckBox naPartner = (CheckBox) findViewById(R.id.na_partner);*/
 
-        final RadioGroup costGroup = (RadioGroup) findViewById(R.id.radioTotalCost);
+        //final RadioGroup costGroup = (RadioGroup) findViewById(R.id.radioTotalCost);
+
+
+
 
 
         //gets shared preferences variable
@@ -221,8 +299,16 @@ public class MorningQS extends AppCompatActivity {
                 }*/
 
                 writeOralToDB(oral);
+                writeLastNightDrink(drinklastNight);
+                writeNumDrinksToDB(drinksCounter);
+                writeTypesDrinksToDB(typesOfDrinks);
+                writeHangoverToDB(hangover);
+                writeDrugsToDB(drugs);
+                writeTypeDrugsToDB(typeDrugs);
+                writeAnalVaginalToDB(analVaginalSex);
+                writeCondomToDB(condom);
                 //writeOralConsentToDB(oralConsentStr);
-                writeVaginalToDB(vaginal);
+                /*writeVaginalToDB(vaginal);
                 writeVaginalCondomToDB(vaginalCondomStr);
                 //writeVaginalConsentToDB(vaginalConsentStr);
                 writeAnalToDB(anal);
@@ -232,33 +318,376 @@ public class MorningQS extends AppCompatActivity {
                 writeMonoPartner(monoStr);
                 writeFriendPartner(friendStr);
                 writeNewPartner(newStr);
-                writeNAPartner(naStr);
-                int selectedId = costGroup.getCheckedRadioButtonId();
+                writeNAPartner(naStr);*/
+
+                if (analVaginalSex=="Yes") {
+                    int partnerSelectedId = partnerGroup.getCheckedRadioButtonId();
+                    RadioButton partnerButton;
+                    partnerButton = (RadioButton) findViewById(partnerSelectedId);
+                    partner = partnerButton.getText().toString();
+                    writePartnerToDB(partner);
+
+                }
+                if (stress_event=="Yes") {
+                    int stressSelectedID = stressGroup.getCheckedRadioButtonId();
+                    RadioButton stressButton;
+                    stressButton = (RadioButton) findViewById(stressSelectedID);
+                    whenStressOccurred = stressButton.getText().toString();
+                    writeStressOccurranceToDB(whenStressOccurred);
+                }
+
+
+               /* int selectedId = costGroup.getCheckedRadioButtonId();
                 // find the radiobutton by returned id
                 RadioButton costButton;
                 costButton = (RadioButton) findViewById(selectedId);
                 drinkCost = costButton.getText().toString();
-                writeCostTotaltoDB(drinkCost);
+                writeCostTotaltoDB(drinkCost);*/
                 writeStressEventToDB(stress_event);
-                writeInterpersonal(interpersonal);
+                /*writeInterpersonal(interpersonal);
                 writeWorkToDB(work);
                 writeFinancialToDB(financial);
                 writeHealthToDB(health);
                 writeTraumaToDB(trauma);
-                writeStressOtherToDB(stress_other);
+                writeStressOtherToDB(stress_other);*/
+                writeTypeStressToDB(typeStress);
                 writeStressValueToDB(stress_value);
                 finish();
 
-                startActivity1 = "start";
-                storeScreen(startActivity1);
-                storeNumDrinks(0);
-                Intent goToStart = new Intent(MorningQS.this, StartActivity.class);
-                goToStart.putExtra("Start Activity", startActivity);
-                startActivity(goToStart);
-                finish();
+                if (group.equals("control")) {
+                    startActivity1 = "start";
+                    storeScreen(startActivity1);
+                    storeNumDrinks(0);
+                    Intent goToStart = new Intent(MorningQS.this, StartActivity.class);
+                    goToStart.putExtra("Start Activity", startActivity);
+                    startActivity(goToStart);
+                    finish();
+                }
+                else if (group.equals("experimental") | group.equals("none")) {
+                    startActivity1 = "morningReport";
+                    storeScreen(startActivity1);
+                    storeNumDrinks(0);
+                    Intent goToStart = new Intent(MorningQS.this, StartActivity.class);
+                    goToStart.putExtra("Start Activity", startActivity);
+                    startActivity(goToStart);
+                    finish();
+                }
             }
         };
         submit.setOnClickListener(handler1);
+
+        lastNightDrinkNo.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                drinklastNight = "No";
+                lastNightDrinkNo.setImageResource(R.drawable.no_green_button);
+                lastNightDrinkYes.setImageResource(R.drawable.yes_button);
+                number_drinks_qs.setVisibility(View.GONE);
+                number_drinks_qs_layout.setVisibility(View.GONE);
+                drink_type.setVisibility(View.GONE);
+                select_drink_type.setVisibility(View.GONE);
+                drink_type_layout.setVisibility(View.GONE);
+                hangover_qs.setVisibility(View.GONE);
+                hangover_qs_layout.setVisibility(View.GONE);
+                drugs_qs.setVisibility(View.GONE);
+                drugs_layout.setVisibility(View.GONE);
+            }
+        });
+
+        lastNightDrinkYes.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                drinklastNight = "Yes";
+                lastNightDrinkNo.setImageResource(R.drawable.no_button);
+                lastNightDrinkYes.setImageResource(R.drawable.yes_green);
+                number_drinks_qs.setVisibility(View.VISIBLE);
+                number_drinks_qs_layout.setVisibility(View.VISIBLE);
+                drink_type.setVisibility(View.VISIBLE);
+                select_drink_type.setVisibility(View.VISIBLE);
+                drink_type_layout.setVisibility(View.VISIBLE);
+                hangover_qs.setVisibility(View.VISIBLE);
+                hangover_qs_layout.setVisibility(View.VISIBLE);
+                drugs_qs.setVisibility(View.VISIBLE);
+                drugs_layout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        drinks_add.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                drinksCounter++;
+                if (drinksCounter == 0){
+                    drinks_counterText.setText("none");
+                }else {
+                    drinks_counterText.setText(""+drinksCounter);
+                }
+            }
+        });
+
+        drinks_subtract.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (drinksCounter == 0){
+                    drinks_subtract.setEnabled(false);
+                    drinks_counterText.setText("none");
+                }else {
+                    drinksCounter--;
+                    drinks_counterText.setText(""+drinksCounter);
+                }
+            }
+        });
+
+        liquor.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (liquor.isChecked() == true) {
+                    liquor.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typesOfDrinks += "Liquor ";
+                }else{
+                    liquor.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+        wine.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (wine.isChecked() == true) {
+                    wine.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typesOfDrinks += "Wine ";
+                }else{
+                    wine.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+        beer.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (beer.isChecked() == true) {
+                    beer.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typesOfDrinks += "Beer ";
+                }else{
+                    beer.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+
+        hangoverNo.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                hangover = "no";
+                hangoverNo.setImageResource(R.drawable.no_green_button);
+                hangoverYes.setImageResource(R.drawable.yes_button);
+
+
+            }
+        });
+
+        hangoverYes.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                hangover = "yes";
+                hangoverNo.setImageResource(R.drawable.no_button);
+                hangoverYes.setImageResource(R.drawable.yes_green);
+            }
+        });
+
+        drugs_no.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                drugs = "no";
+                drugs_no.setImageResource(R.drawable.no_green_button);
+                drugs_yes.setImageResource(R.drawable.yes_button);
+                typesOfDrugs_qs.setVisibility(View.GONE);
+                select_drugs.setVisibility(View.GONE);
+                typesOfDrugs_layout.setVisibility(View.GONE);
+
+            }
+        });
+
+        drugs_yes.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                drugs = "yes";
+                drugs_no.setImageResource(R.drawable.no_button);
+                drugs_yes.setImageResource(R.drawable.yes_green);
+                typesOfDrugs_qs.setVisibility(View.VISIBLE);
+                select_drugs.setVisibility(View.VISIBLE);
+                typesOfDrugs_layout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        ritalin.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (ritalin.isChecked() == true) {
+                    ritalin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typeDrugs += "Ritalin ";
+                }else{
+                    ritalin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+        adderall.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (adderall.isChecked() == true) {
+                    adderall.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typeDrugs += "Adderall ";
+                }else{
+                    adderall.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+        oxyContin.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (oxyContin.isChecked() == true) {
+                    oxyContin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typeDrugs += "OxyContin ";
+                }else{
+                    oxyContin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+        vicodin.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (vicodin.isChecked() == true) {
+                    vicodin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typeDrugs += "Vicodin ";
+                }else{
+                    vicodin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+        percocet.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (percocet.isChecked() == true) {
+                    percocet.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typeDrugs += "Percocet ";
+                }else{
+                    percocet.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+        otherPrescriptionOpioid.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (otherPrescriptionOpioid.isChecked() == true) {
+                    otherPrescriptionOpioid.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typeDrugs += "OtherPrescripOpioid ";
+                }else{
+                    otherPrescriptionOpioid.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+        xanax.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (xanax.isChecked() == true) {
+                    xanax.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typeDrugs += "Xanax ";
+                }else{
+                    xanax.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+        valium.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (valium.isChecked() == true) {
+                    valium.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typeDrugs += "Valium ";
+                }else{
+                    valium.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+        otherBenzo.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (otherBenzo.isChecked() == true) {
+                    otherBenzo.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typeDrugs += "OtherBenzo ";
+                }else{
+                    otherBenzo.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+        marijuana.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (marijuana.isChecked() == true) {
+                    marijuana.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typeDrugs += "Marijuana ";
+                }else{
+                    marijuana.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+        heroin.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (heroin.isChecked() == true) {
+                    heroin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typeDrugs += "Heroin ";
+                }else{
+                    heroin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+        mdma.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (mdma.isChecked() == true) {
+                    mdma.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typeDrugs += "MDMA/Ecstasy ";
+                }else{
+                    mdma.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+        meth.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (meth.isChecked() == true) {
+                    meth.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typeDrugs += "Methamphetamine ";
+                }else{
+                    meth.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+        otherDrug.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (otherDrug.isChecked() == true) {
+                    otherDrug.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                    typeDrugs += "OtherDrug ";
+                }else{
+                    otherDrug.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
+                }
+            }
+        });
+
+
+        analVaginalSexNo.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                analVaginalSex = "No";
+                analVaginalSexNo.setImageResource(R.drawable.no_green_button);
+                analVaginalSexYes.setImageResource(R.drawable.yes_button);
+                condom_qs.setVisibility(View.GONE);
+                condom_layout.setVisibility(View.GONE);
+                sexPartner_qs.setVisibility(View.GONE);
+                sexPartner_qs_layout.setVisibility(View.GONE);
+            }
+        });
+
+        analVaginalSexYes.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                analVaginalSex = "Yes";
+                analVaginalSexNo.setImageResource(R.drawable.no_button);
+                analVaginalSexYes.setImageResource(R.drawable.yes_green);
+                condom_qs.setVisibility(View.VISIBLE);
+                condom_layout.setVisibility(View.VISIBLE);
+                sexPartner_qs.setVisibility(View.VISIBLE);
+                sexPartner_qs_layout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        condom_no.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                condom = "No";
+                condom_no.setImageResource(R.drawable.no_green_button);
+                condom_yes.setImageResource(R.drawable.yes_button);
+
+            }
+        });
+
+        condom_yes.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                condom = "Yes";
+                condom_no.setImageResource(R.drawable.no_button);
+                condom_yes.setImageResource(R.drawable.yes_green);
+
+            }
+        });
 
         stress_yes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -270,8 +699,11 @@ public class MorningQS extends AppCompatActivity {
                 stress_select.setVisibility(View.VISIBLE);
                 stressTypeLayout.setVisibility(View.VISIBLE);
                 value_stress_qs.setVisibility(View.VISIBLE);
+                stressfulEventOccurance.setVisibility(View.VISIBLE);
+                stressfulEventOccurance_layout.setVisibility(View.VISIBLE);
+                stressGroup.setVisibility(View.VISIBLE);
                 ratingLayout.setVisibility(View.VISIBLE);
-                oralQS.setVisibility(View.VISIBLE);
+                /*oralQS.setVisibility(View.VISIBLE);
                 oralQSLayout.setVisibility(View.VISIBLE);
                 vaginalQS.setVisibility(View.VISIBLE);
                 vaginalQSLayout.setVisibility(View.VISIBLE);
@@ -281,7 +713,7 @@ public class MorningQS extends AppCompatActivity {
                 numPartLayout.setVisibility(View.VISIBLE);
                 typePartQS.setVisibility(View.VISIBLE);
                 typePartSelect.setVisibility(View.VISIBLE);
-                typePartLayout.setVisibility(View.VISIBLE);
+                typePartLayout.setVisibility(View.VISIBLE);*/
 
             }
         });
@@ -295,8 +727,11 @@ public class MorningQS extends AppCompatActivity {
                 stress_select.setVisibility(View.GONE);
                 stressTypeLayout.setVisibility(View.GONE);
                 value_stress_qs.setVisibility(View.GONE);
+                stressfulEventOccurance.setVisibility(View.GONE);
+                stressfulEventOccurance_layout.setVisibility(View.GONE);
+                stressGroup.setVisibility(View.GONE);
                 ratingLayout.setVisibility(View.GONE);
-                oralQS.setVisibility(View.VISIBLE);
+                /*oralQS.setVisibility(View.VISIBLE);
                 oralQSLayout.setVisibility(View.VISIBLE);
                 vaginalQS.setVisibility(View.VISIBLE);
                 vaginalQSLayout.setVisibility(View.VISIBLE);
@@ -306,18 +741,20 @@ public class MorningQS extends AppCompatActivity {
                 numPartLayout.setVisibility(View.VISIBLE);
                 typePartQS.setVisibility(View.VISIBLE);
                 typePartSelect.setVisibility(View.VISIBLE);
-                typePartLayout.setVisibility(View.VISIBLE);
+                typePartLayout.setVisibility(View.VISIBLE);*/
             }
         });
+
+
+
 
         interpersonal_check.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if (interpersonal_check.isChecked() == true) {
                     interpersonal_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    interpersonal = "yes";
+                    typeStress += "Interpersonal ";
                 }else{
                     interpersonal_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
-                    interpersonal = "NA";
                 }
             }
         });
@@ -326,10 +763,9 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (financial_check.isChecked() == true) {
                     financial_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    financial = "yes";
+                    typeStress += "Financial ";
                 }else{
                     financial_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
-                    monoStr = "NA";
                 }
             }
         });
@@ -338,10 +774,9 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (work_check.isChecked() == true) {
                     work_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    work = "yes";
+                    typeStress += "Work ";
                 }else{
                     work_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
-                    work = "NA";
                 }
             }
         });
@@ -350,10 +785,9 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (health_check.isChecked() == true) {
                     health_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    health = "yes";
+                    typeStress += "Health ";
                 }else{
                     health_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
-                    health = "NA";
                 }
             }
         });
@@ -362,10 +796,9 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (trauma_check.isChecked() == true) {
                     trauma_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    trauma = "yes";
+                    typeStress += "Trauma ";
                 }else{
                     trauma_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
-                    trauma = "NA";
                 }
             }
         });
@@ -374,10 +807,9 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (other_check.isChecked() == true) {
                     other_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    stress_other = "yes";
+                    typeStress += "Other ";
                 }else{
                     other_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
-                    stress_other = "no";
                 }
             }
         });
@@ -541,7 +973,7 @@ public class MorningQS extends AppCompatActivity {
             }
         });
 
-
+/*
 
         oralNo.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -568,13 +1000,12 @@ public class MorningQS extends AppCompatActivity {
 
             }
         });
-
+*/
         /*oralConsentYes.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 oralConsentStr = "yes";
                 oralConsentNo.setImageResource(R.drawable.no_button);
                 oralConsentYes.setImageResource(R.drawable.yes_green);
-
             }
         });*/
 
@@ -586,7 +1017,7 @@ public class MorningQS extends AppCompatActivity {
             }
         });*/
 
-        vaginalNo.setOnClickListener(new View.OnClickListener() {
+        /*vaginalNo.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 vaginal = "no";
                 vaginalNo.setImageResource(R.drawable.no_green_button);
@@ -637,13 +1068,12 @@ public class MorningQS extends AppCompatActivity {
 
             }
         });
-
+*/
         /*vaginalConsentNo.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 vaginalConsentStr = "no";
                 vaginalConsentNo.setImageResource(R.drawable.no_green_button);
                 vaginalConsentYes.setImageResource(R.drawable.yes_button);
-
             }
         });*/
 
@@ -652,10 +1082,9 @@ public class MorningQS extends AppCompatActivity {
                 vaginalConsentStr = "yes";
                 vaginalConsentNo.setImageResource(R.drawable.no_button);
                 vaginalConsentYes.setImageResource(R.drawable.yes_green);
-
             }
         });*/
-
+/*
         analYes.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 anal = "yes";
@@ -707,13 +1136,12 @@ public class MorningQS extends AppCompatActivity {
 
             }
         });
-
+*/
         /*analConsentNo.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 analConsentStr = "no";
                 analConsentNo.setImageResource(R.drawable.no_green_button);
                 analConsentYes.setImageResource(R.drawable.yes_button);
-
             }
         });*/
 
@@ -722,11 +1150,10 @@ public class MorningQS extends AppCompatActivity {
                 analConsentStr = "yes";
                 analConsentNo.setImageResource(R.drawable.no_button);
                 analConsentYes.setImageResource(R.drawable.yes_green);
-
             }
         });*/
 
-        add.setOnClickListener(new View.OnClickListener() {
+  /*      add.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 counter++;
                 if (counter == 0){
@@ -796,7 +1223,7 @@ public class MorningQS extends AppCompatActivity {
                     naStr = "no";
                 }
             }
-        });
+        });*/
 
         String broadcastID = getIntent().getStringExtra("broadcast Int");
         if (broadcastID != null) {
@@ -831,14 +1258,26 @@ public class MorningQS extends AppCompatActivity {
     }
     public void writeStressValueToDB(String value){
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("StressValue");
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("12StressValue");
         mRef.setValue(value);
     }
 
     public void writeStressEventToDB(String stress_event){
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("StressEvent");
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("10StressEvent");
         mRef.setValue(stress_event);
+    }
+
+    public void writeStressOccurranceToDB(String whenStressOccurred){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("13StressTime");
+        mRef.setValue(whenStressOccurred);
+    }
+
+    public void writeTypeStressToDB(String typeStress){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("11TypeStress");
+        mRef.setValue(typeStress);
     }
 
     public void writeInterpersonal(String interpersonal){
@@ -915,10 +1354,60 @@ public class MorningQS extends AppCompatActivity {
         mRef.setValue(oral);
     }
 
-    public void writeOralConsentToDB(String oralConsent){
+    public void writeLastNightDrink(String drinklastNight){
         getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("oralConsent");
-        mRef.setValue(oralConsent);
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("1EpisodeLastNight");
+        mRef.setValue(drinklastNight);
+    }
+
+    public void writeNumDrinksToDB(int drinksCounter){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("2NumberOfDrinks");
+        mRef.setValue(drinksCounter);
+    }
+
+    public void writeTypesDrinksToDB(String typesOfDrinks){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("3TypesOfDrinks");
+        mRef.setValue(typesOfDrinks);
+    }
+
+
+    public void writeHangoverToDB(String hangover){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("4Hangover");
+        mRef.setValue(hangover);
+    }
+
+    public void writeDrugsToDB(String drugs){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("5Drugs");
+        mRef.setValue(drugs);
+    }
+
+    public void writeTypeDrugsToDB(String typeDrugs){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("6TypeDrugs");
+        mRef.setValue(typeDrugs);
+    }
+
+    public void writeAnalVaginalToDB(String analVaginalSex){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("7AnalVaginalSex");
+        mRef.setValue(analVaginalSex);
+    }
+
+    public void writeCondomToDB(String condom){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("8UsedCondom");
+        mRef.setValue(condom);
+    }
+
+
+    public void writePartnerToDB(String partner){
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("MorningAnswers").child(time).child("9PartnerType");
+        mRef.setValue(partner);
     }
 
     public void writeVaginalToDB (String vaginal) {

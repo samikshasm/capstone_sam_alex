@@ -84,6 +84,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private String currentUserBool;
     private FirebaseUser currentUser;
     private String username;
+    private Integer loginAttempts;
 
 
     @Override
@@ -144,6 +145,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         return selectedScreen;
     }
 
+    private void storeLoginAttempts(Integer integer) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("LoginAttempts", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putInt("login attempts", integer);
+        mEditor.apply();
+    }
+
+    private Integer getLoginAttempts() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("LoginAttempts", MODE_PRIVATE);
+        Integer loginAttempts = mSharedPreferences.getInt("login attempts",0);
+        return loginAttempts;
+    }
 
     private void attemptLogin() {
         //Toast.makeText(LoginActivity.this, "calling attemptLogin()", Toast.LENGTH_SHORT).show();
@@ -197,10 +210,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             currentUserBool = "signed in";
                             UserID = task.getResult().getUser().getUid();
                             storeUserID(username);
-
-                            // Toast.makeText(LoginActivity.this, "us",
-                            //       Toast.LENGTH_SHORT).show();
-
+                            loginAttempts=getLoginAttempts();
+                            //loginAttempts++;
+                            loginAttempts=1;
+                            storeLoginAttempts(loginAttempts);
+                            Log.e("Login Attempts", loginAttempts+"");
                             Log.e("User ID Login", username);
                             intent.putExtra("User ID", username);
                             intent.putExtra("Sign in Boolean", currentUserBool);

@@ -61,6 +61,7 @@ public class NotificationService extends Service {
             yesIntent.putExtra("initial time", initialTimeStr);
             yesIntent.putExtra("broadcast Int", broadcastId);
             PendingIntent yesIntent1 = PendingIntent.getActivity(this, 0, yesIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            Log.e("yesIntent1", ""+yesIntent1);
 
             Intent noIntent = new Intent(this, ButtonReceiver.class);
             noIntent.putExtra("notificationBool", 200);
@@ -143,26 +144,26 @@ public class NotificationService extends Service {
 
             Intent morningIntent;
 
-            if (group.equals("experimental")) {
+            /*if (group.equals("experimental")) {
                 morningIntent = new Intent(this, MorningReport.class);
             }
-            else {
+            else {*/
                 morningIntent = new Intent(this, MorningQS.class);
 
-            }
+            //}
             //creates notification that appears when the morning alarm goes off
             morningIntent.putExtra("broadcast Int", broadcastId);
             PendingIntent morningIntent1 = PendingIntent.getActivity(this, 0, morningIntent, PendingIntent.FLAG_ONE_SHOT);
 
-            if (group.equals("experimental")) {
+           /* if (group.equals("experimental")) {
                  builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.small_statusbar_icon)
                         //.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.app_icon_small))
                         .setContentTitle("Boozymeter")
                         .setContentText("View your Morning Report")
                         .setAutoCancel(true);
-            }
-            else if (group.equals("control") | group.equals("none")) {
+            }*/
+            if (group.equals("control") | group.equals("none") | group.equals("experimental")) {
                 builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.small_statusbar_icon)
                         //.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.app_icon_small))

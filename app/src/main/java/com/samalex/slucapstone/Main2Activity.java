@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -53,12 +54,15 @@ public class Main2Activity extends AppCompatActivity{
     private String date;
     private Integer nightCount;
     private String drinkCost;
+    private Integer drinksCounter=0;
+    private Integer peopleCounter=0;
     private boolean typeCheck = false;
     private boolean sizeCheck = false;
     private boolean withCheck = false;
     private boolean whereCheck = false;
     private boolean costCheck = false;
     private String broadcastInt = "none";
+
     public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
 
     @Override
@@ -101,6 +105,16 @@ public class Main2Activity extends AppCompatActivity{
         final RadioButton drink16plus = (RadioButton) findViewById(R.id.radio_16plus);
         final RadioGroup costGroup = (RadioGroup) findViewById(R.id.radioCost);
 
+        final TextView number_drinks_qs = (TextView) findViewById(R.id.number_drinks_qs);
+        final LinearLayout number_drinks_qs_layout = (LinearLayout) findViewById(R.id.number_drinks_qs_layout);
+        final Button drinks_add = (Button) findViewById(R.id.drinks_add_button);
+        final Button drinks_subtract = (Button) findViewById(R.id.drinks_subtract_button);
+        final TextView drinks_counterText = (TextView) findViewById(R.id.drinks_counter);
+
+        final Button people_qs_add_button = (Button) findViewById(R.id.people_qs_add_button);
+        final Button people_qs_subtract_button = (Button) findViewById(R.id.people_qs_subtract_button);
+        final TextView people_qs_counter = (TextView) findViewById(R.id.people_qs_counter);
+
 
         broadcastInt = getIntent().getStringExtra("broadcast Int");
         if(broadcastInt != null){
@@ -112,6 +126,21 @@ public class Main2Activity extends AppCompatActivity{
                 manager.deleteNotificationChannel(CHANNEL_ID);
             }
 
+        }
+
+        SharedPreferences prefs = getSharedPreferences("NumberSwitchesToMain2Activity", MODE_PRIVATE);
+        Integer restoredText = prefs.getInt("switches", 0);
+
+        Log.e("switches",restoredText+"");
+
+        if(restoredText==1){
+            number_drinks_qs.setVisibility((View.VISIBLE));
+            number_drinks_qs_layout.setVisibility((View.VISIBLE));
+
+        }
+        else{
+            number_drinks_qs.setVisibility((View.GONE));
+            number_drinks_qs_layout.setVisibility((View.GONE));
         }
 
 
@@ -248,6 +277,31 @@ public class Main2Activity extends AppCompatActivity{
             }
         });
 
+        drinks_add.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                drinksCounter++;
+                if (drinksCounter == 0){
+                    drinks_counterText.setText("none");
+                }else {
+                    drinks_counterText.setText(""+drinksCounter);
+                }
+            }
+        });
+
+        drinks_subtract.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (drinksCounter == 0){
+                    drinks_subtract.setEnabled(false);
+                    drinks_counterText.setText("none");
+                }else {
+                    drinksCounter--;
+                    drinks_counterText.setText(""+drinksCounter);
+                }
+            }
+        });
+
+
+
         nobody.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 withWhom = "Nobody";
@@ -290,6 +344,29 @@ public class Main2Activity extends AppCompatActivity{
                 other.setImageResource(R.drawable.other_green);
                 withCheck = true;
 
+            }
+        });
+
+        people_qs_add_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                peopleCounter++;
+                if (peopleCounter == 0){
+                    people_qs_counter.setText("none");
+                }else {
+                    people_qs_counter.setText(""+peopleCounter);
+                }
+            }
+        });
+
+        people_qs_subtract_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (peopleCounter == 0){
+                    people_qs_subtract_button.setEnabled(false);
+                    people_qs_counter.setText("none");
+                }else {
+                    peopleCounter--;
+                    people_qs_counter.setText(""+peopleCounter);
+                }
             }
         });
 
@@ -386,6 +463,8 @@ public class Main2Activity extends AppCompatActivity{
                     writeSizeToDB(sizeOfDrink);
                     writeWhoToDB(withWhom);
                     writeWhereToDB(where);
+                    writePlannedDrinksToDB(drinksCounter);
+                    writeNumberOfPeopleToDB(peopleCounter);
                     // get selected radio button from radioGroup
                     int selectedId = costGroup.getCheckedRadioButtonId();
                     // find the radiobutton by returned id
@@ -421,7 +500,13 @@ public class Main2Activity extends AppCompatActivity{
 
     //function for switching back to the main activity after questions are answered
     public void switchToMainActivity(View view){
+        SharedPreferences settings = getSharedPreferences("NumberSwitchesToMain2Activity", 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt("switches", 2);
+        editor.commit();
+
         Intent switchToMainActivity = new Intent (Main2Activity.this, MainActivity.class);
+
         switchToMainActivity.putExtra("coming from start", "come from qs");
         switchToMainActivity.putExtra("initial time", initialTimeStr);
         startActivity(switchToMainActivity);
@@ -436,6 +521,9 @@ public class Main2Activity extends AppCompatActivity{
         DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
         date = dateFormat.format(currentDate);
         time = timeFormat.format(currentDate);
+
+        Log.e("date: ",""+date);
+        Log.e("time:",""+time);
     }
 
     public void writeCostToDB(String drink_cost){
@@ -470,6 +558,18 @@ public class Main2Activity extends AppCompatActivity{
         mRef.setValue(where);
     }
 
+    public void writePlannedDrinksToDB (Integer drinksCounter) {
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("DrinksPlanned").child("Time: "+time);
+        mRef.setValue(drinksCounter);
+    }
+
+    public void writeNumberOfPeopleToDB (Integer peopleCounter) {
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("NumberOfPeople").child("Time: "+time);
+        mRef.setValue(peopleCounter);
+    }
+
     //stores number of drinks as shared preference variable
     private void storeNumDrinks (Integer integer) {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
@@ -491,4 +591,6 @@ public class Main2Activity extends AppCompatActivity{
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
         return nightCount;
     }
+
+
 }

@@ -3,8 +3,11 @@ package com.samalex.slucapstone;
 import android.*;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -50,6 +53,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by samikshasm on 7/17/17.
@@ -68,6 +73,10 @@ public class StartActivity extends AppCompatActivity {
     private ArrayList<String> controlList;
     private ArrayList<String> expList;
     private String group;
+    private Integer loginAttempts;
+    private long oneWeek;
+    private long twoWeeks;
+
 
 
     //new location stuff
@@ -83,14 +92,117 @@ public class StartActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-
+        //new location stuff
         client = new GoogleApiClient.Builder(this)
                 .addApi(AppIndex.API)
                 .addApi(LocationServices.API)
                 .build();
-        //new location stuff
-        userIDMA = getIntent().getStringExtra("User ID");
 
+        loginAttempts = getLoginAttempts();
+        Calendar cal = Calendar.getInstance();
+        long calMillis = cal.getTimeInMillis();
+
+        if(loginAttempts==1) {
+            /*long time = System.currentTimeMillis();
+            //long oneWeek = 604800000+time;
+            long oneWeek = 60000+time;
+            Log.e("current time",oneWeek+"");*/
+
+            Calendar morningCal = Calendar.getInstance();
+            long currentMillis = morningCal.getTimeInMillis();
+            /*long oneWeek = 604800000+currentMillis;
+            long twoWeeks = 604800000+604800000+currentMillis;*/
+
+            oneWeek = 30000+currentMillis;
+            twoWeeks = 60000+currentMillis;
+            storeOneWeek((int) oneWeek);
+            storeTwoWeeks((int) twoWeeks);
+            /*AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+            Intent myIntent = new Intent(this, GroupAlarmReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, myIntent, 0);
+
+            manager.set(AlarmManager.RTC_WAKEUP,milliseconds, pendingIntent);*/
+            SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
+            group = mSharedPreferences2.getString("Group","none");
+            group = "none";
+            storeGroup(group);
+        }
+        Log.e("loginAttempts", loginAttempts+"");
+
+        Integer temp1 = getOneWeek();
+        Integer temp2 = getTwoWeeks();
+        if(calMillis>=temp1 && calMillis<temp2){
+
+            mReference = FirebaseDatabase.getInstance().getReference();
+            mReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    getControlList(dataSnapshot);
+                    getExperimentalList(dataSnapshot);
+                    for(int i = 0; i < expList.size(); i++){
+                        if(expList.get(i).substring(1,expList.get(i).length()).equals(userIDMA)){
+                            group = "experimental";
+                        }
+                    }
+                    for(int i = 0; i < controlList.size(); i++){
+                        if(controlList.get(i).substring(1,controlList.get(i).length()).equals(userIDMA)){
+                            group = "control";
+                        }
+                    }
+                    storeGroup(group);
+                    //Log.e("expList",expList.get(4).substring(1,expList.get(4).length()).length()+"");
+                    //Log.e("userID",userIDMA.length()+"");
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            Log.e("group: ", group);
+        }
+        /*if(calMillis>=getTwoWeeks()){
+
+            mReference = FirebaseDatabase.getInstance().getReference();
+            mReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    getControlList(dataSnapshot);
+                    getExperimentalList(dataSnapshot);
+                    for(int i = 0; i < expList.size(); i++){
+                        if(expList.get(i).substring(1,expList.get(i).length()).equals(userIDMA)){
+                            group = "control";
+                        }
+                    }
+                    for(int i = 0; i < controlList.size(); i++){
+                        if(controlList.get(i).substring(1,controlList.get(i).length()).equals(userIDMA)){
+                            group = "experimental";
+                        }
+                    }
+                    storeGroup(group);
+                    //Log.e("expList",expList.get(4).substring(1,expList.get(4).length()).length()+"");
+                    //Log.e("userID",userIDMA.length()+"");
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+            Log.e("group: ", group);
+
+        }
+*/
+
+
+
+        userIDMA = getIntent().getStringExtra("User ID");
         SharedPreferences userSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = userSharedPreferences.getString("user ID", "none");
 
@@ -154,7 +266,7 @@ public class StartActivity extends AppCompatActivity {
             }
         });
 
-        SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
+      /*  SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
         group = mSharedPreferences2.getString("Group","none");
         if(group.equals("none")){
             mReference = FirebaseDatabase.getInstance().getReference();
@@ -185,25 +297,31 @@ public class StartActivity extends AppCompatActivity {
 
                 }
             });
-        }
+        }*/
 
-        SharedPreferences groupSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
-        group = groupSharedPreferences.getString("Group","none");
+        SharedPreferences switchesSharedPreferences = getSharedPreferences("NumberSwitchesToMain2Activity", MODE_PRIVATE);
+        SharedPreferences.Editor switchesEditor = switchesSharedPreferences.edit();
+        switchesEditor.putInt("switches", 1);
+        switchesEditor.apply();
+
+       /* SharedPreferences groupSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
+        group = groupSharedPreferences.getString("Group","none");*/
 
         SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
         String selectedScreen = mSharedPreferences.getString("currentScreen","none");
         if (selectedScreen.equals("main")) {
+
             Intent switchToMain = new Intent(StartActivity.this, MainActivity.class);
             startActivity(switchToMain);
             finish();
         }
-        else if (selectedScreen.equals("morningQS") && group.equals("experimental")){
+        else if (selectedScreen.equals("morningReport")){
             Log.e("is it experimental?", "hi it is");
             Intent switchToMorning = new Intent(StartActivity.this, MorningReport.class);
             startActivity(switchToMorning);
             finish();
         }
-        else if (selectedScreen.equals("morningQS") && group.equals("control")){
+        else if (selectedScreen.equals("morningQS")){
             Log.e("is it control?", "hi it is");
             Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
             startActivity(switchToMorning);
@@ -289,7 +407,6 @@ public class StartActivity extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.putString("Group", group);
-        Log.e("Group",group);
         mEditor.apply();
     }
 
@@ -328,6 +445,37 @@ public class StartActivity extends AppCompatActivity {
         mEditor.apply();
     }
 
+    private Integer getLoginAttempts() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("LoginAttempts", MODE_PRIVATE);
+        Integer loginAttempts = mSharedPreferences.getInt("login attempts",0);
+        return loginAttempts;
+    }
+
+    private void storeOneWeek(Integer integer) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("OneWeek", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putInt("one week", integer);
+        mEditor.apply();
+    }
+
+    private Integer getOneWeek() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("OneWeek", MODE_PRIVATE);
+        Integer loginAttempts = mSharedPreferences.getInt("one week",0);
+        return loginAttempts;
+    }
+
+    private void storeTwoWeeks(Integer integer) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("TwoWeeks", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putInt("two weeks", integer);
+        mEditor.apply();
+    }
+
+    private Integer getTwoWeeks() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("TwoWeeks", MODE_PRIVATE);
+        Integer loginAttempts = mSharedPreferences.getInt("two weeks",0);
+        return loginAttempts;
+    }
     @Override
     public void onResume(){
         SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);

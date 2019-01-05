@@ -43,7 +43,7 @@
                 android:id="@+id/type_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="What type of drink did you have?"
+                android:text="What TYPE OF ALCOHOL did you have?"
                 android:textSize="20dp"
                 android:textColor="@color/white"
                 android:layout_marginTop="25dp"
@@ -131,7 +131,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="25dp"
                 android:layout_marginBottom="13dp"
-                android:text="What size was your drink?"
+                android:text="What size was your ALCOHOLIC DRINK?"
                 android:textColor="@color/white"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center"
@@ -283,6 +283,69 @@
 
             </LinearLayout>
 
+
+            <TextView
+                android:id="@+id/number_drinks_qs"
+                android:paddingTop="25dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:gravity="center_horizontal"
+                android:text="How many drinks do you plan on having?" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/number_drinks_qs_layout"
+                android:weightSum="5"
+                android:paddingTop="10dp"
+                android:paddingBottom="20dp"
+                android:orientation="horizontal">
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <Button
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/drinks_subtract_button"
+                    android:text="-"
+                    android:textSize="20sp"
+                    android:layout_weight="1"
+                    android:background="@color/app_background_darker"
+                    android:textColor="@color/pink"/>
+                <TextView
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/drinks_counter"
+                    android:text="none"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:textColor="@color/pink"
+                    android:textSize="20sp"/>
+
+                <Button
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/drinks_add_button"
+                    android:text="+"
+                    android:textSize="20sp"
+                    android:layout_weight="1"
+                    android:background="@color/app_background_darker"
+                    android:textColor="@color/pink"/>
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+
+            </LinearLayout>
+
+
             <TextView
                 android:id="@+id/who_text_view"
                 android:layout_width="wrap_content"
@@ -298,10 +361,12 @@
                 android:orientation="vertical"
                 android:layout_marginBottom="25dp">
 
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:weightSum="3">
+
 
                     <ImageButton
                         android:layout_width="105dp"
@@ -403,6 +468,70 @@
 
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/people_qs"
+                android:paddingTop="25dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:gravity="center_horizontal"
+                android:text="About how many people were you with?" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/people_qs_layout"
+                android:weightSum="5"
+                android:paddingTop="10dp"
+                android:paddingBottom="20dp"
+                android:orientation="horizontal">
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <Button
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/people_qs_subtract_button"
+                    android:text="-"
+                    android:textSize="20sp"
+                    android:layout_weight="1"
+                    android:background="@color/app_background_darker"
+                    android:textColor="@color/pink"/>
+                <TextView
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/people_qs_counter"
+                    android:text="none"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:textColor="@color/pink"
+                    android:textSize="20sp"/>
+
+                <Button
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/people_qs_add_button"
+                    android:text="+"
+                    android:textSize="20sp"
+                    android:layout_weight="1"
+                    android:background="@color/app_background_darker"
+                    android:textColor="@color/pink"/>
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+
+            </LinearLayout>
+            <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
 
             <TextView
                 android:id="@+id/where_text_view"

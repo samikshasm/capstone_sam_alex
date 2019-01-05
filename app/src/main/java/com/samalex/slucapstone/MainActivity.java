@@ -158,11 +158,12 @@ public class MainActivity extends AppCompatActivity {
         group = mSharedPreferences2.getString("Group","none");
         if(group.equals("experimental")){
             LinearLayout lin1 = (LinearLayout) findViewById(R.id.lin_lay_1);
-            lin1.setVisibility(View.VISIBLE);
+            lin1.setVisibility(View.GONE);
             LinearLayout lin2 = (LinearLayout) findViewById(R.id.lin_layout_2);
-            lin2.setVisibility(View.VISIBLE);
+            lin2.setVisibility(View.GONE);
         }
         Log.e("Group", userIDMA+","+group);
+
 
         //tells the app that the current screen is "main"
         //store the current screen in a shared preferences variable
@@ -284,9 +285,13 @@ public class MainActivity extends AppCompatActivity {
                 day = day+1;
             }
         }
-        morningCal.set(Calendar.DAY_OF_WEEK, day);
-        morningCal.set(Calendar.HOUR_OF_DAY, hour);
-        morningCal.set(Calendar.MINUTE, 0);
+        //replace second argument on lines 288 and 289 with variables: day and hour, 290/291 with 0
+        Log.e("day of the week:", ""+morningCal.get(Calendar.DAY_OF_WEEK));
+        Log.e("hour of the week:", ""+hour);
+
+        morningCal.set(Calendar.DAY_OF_WEEK, 3);
+        morningCal.set(Calendar.HOUR_OF_DAY, 22);
+        morningCal.set(Calendar.MINUTE, 15);
         morningCal.set(Calendar.SECOND, 0);
         Log.e("morningCal set time:",morningCal.get(Calendar.DAY_OF_WEEK)+","+morningCal.get(Calendar.HOUR_OF_DAY));
         Intent alertIntent = new Intent(this, TimerReceiver.class);
@@ -306,53 +311,8 @@ public class MainActivity extends AppCompatActivity {
         mEditor.apply();
     }
 
-/*
-    //initializes broadcast receiver to run ui service
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            testUpdateUI(intent);
-        }
-    };
 
 
-    //starts the ui update service in the background
-    public void startUIUpdateService(long startedTime) {
-        //make started time a shared preference
-        Intent intent = new Intent(this, BroadcastService.class);
-        storeStartedTime(startedTime);
-        //intent.putExtra(STARTED_TIME_IN_MILLIS, startedTime);
-        //startService(new Intent(this, BroadcastService.class));
-        startService(intent);
-        registerReceiver(broadcastReceiver, new IntentFilter(BroadcastService.BROADCAST_ACTION));
-    }
-
-    //stops the timer ui update service
-    public void stopUIUpdateService() {
-        stopService(new Intent(this, BroadcastService.class));
-    }
-
-    private void storeStartedTime(long startedTimeInMillis) {
-        SharedPreferences mSharedPreferences = getSharedPreferences("Started Time", MODE_PRIVATE);
-        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-        mEditor.putLong("Started Time", startedTimeInMillis);
-        mEditor.apply();
-    }
-*/
-/*8
-    //updates the timer ui and sets the progress bar value
-    private void testUpdateUI(Intent intent) {
-        String secondsStr = intent.getStringExtra("milliseconds");
-        int seconds = Integer.parseInt(secondsStr);
-        int minutes = seconds / 60;
-        int seconds2 = seconds % 60;
-        String hms = String.format("%02d:%02d", minutes, seconds2);
-        textViewTime.setText(hms);
-        progressBarCircle.setMax((int)PROGRESS_BAR_MAX);
-        progressBarCircle.setProgress(seconds);
-
-    }
-*/
     //function to create alarms at given time
     public void createAlarms(long currentTime) {
         long thirty = currentTime + ALARM_TIME;
@@ -429,143 +389,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //LOOK HERE TO SEE LOCATION STUFF
 
-    /*
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    //checks if the users location is turned on every time the onstart is called
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        //insertDummyLocationWrapper();
-        if (!checkPermissions()) {
-            requestPermissions();
-        } else {
-            getLastLocation();
-        }
-
-    }
-
-
-    //code to check if the user has granted permission for the app to use location
-    //shows snackbar if the user has not granted the phone access for location
-    //adapted code from googleSamples android-play-location open source library
-
-    @SuppressWarnings("MissingPermission")
-    private void getLastLocation() {
-        mFusedLocationClient.getLastLocation().addOnCompleteListener(this, new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                if (task.isSuccessful() && task.getResult() != null) {
-                    mLastLocation = task.getResult();
-
-                } else {
-                    Log.w(TAG, "getLastLocation:exception", task.getException());
-                    showSnackbar(getString(R.string.no_location_detected));
-                }
-            }
-        });
-    }
-
-    private void showSnackbar(final String text) {
-        View container = findViewById(R.id.main_activity_container);
-        if (container != null) {
-            Snackbar.make(container, text, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
-        Snackbar.make(findViewById(android.R.id.content), getString(mainTextStringId), Snackbar.LENGTH_INDEFINITE).setAction(getString(actionStringId), listener).show();
-    }
-
-    private boolean checkPermissions() {
-        int permissionState = ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION);
-        return permissionState == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void startLocationPermissionRequest() {
-        ActivityCompat.requestPermissions(MainActivity.this,
-                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                REQUEST_PERMISSIONS_REQUEST_CODE);
-    }
-
-    private void requestPermissions() {
-        boolean shouldProvideRationale =
-                ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION);
-
-        // Provide an additional rationale to the user. This would happen if the user denied the
-        // request previously, but didn't check the "Don't ask again" checkbox.
-        if (shouldProvideRationale) {
-            Log.i(TAG, "Displaying permission rationale to provide additional context.");
-
-            showSnackbar(R.string.permission_rationale, android.R.string.ok,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            // Request permission
-                            startLocationPermissionRequest();
-                        }
-                    });
-
-        } else {
-            Log.i(TAG, "Requesting permission");
-            // Request permission. It's possible this can be auto answered if device policy
-            // sets the permission in a given state or the user denied the permission
-            // previously and checked "Never ask again".
-            startLocationPermissionRequest();
-        }
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        Log.i(TAG, "onRequestPermissionResult");
-        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.length <= 0) {
-                // If user interaction was interrupted, the permission request is cancelled and you
-                // receive empty arrays.
-                Log.i(TAG, "User interaction was cancelled.");
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted.
-            } else {
-                // Permission denied.
-                showSnackbar(R.string.permission_denied_explanation, R.string.settings,
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // Build intent that displays the App settings screen.
-                                Intent intent = new Intent();
-                                intent.setAction(
-                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package",
-                                        BuildConfig.APPLICATION_ID, null);
-                                intent.setData(uri);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            }
-                        });
-            }
-        }
-    }*/
 
     private Integer getNightCount() {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
