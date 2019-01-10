@@ -283,17 +283,6 @@
 
             </LinearLayout>
 
-
-            <TextView
-                android:id="@+id/number_drinks_qs"
-                android:paddingTop="25dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:gravity="center_horizontal"
-                android:text="How many drinks do you plan on having?" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
