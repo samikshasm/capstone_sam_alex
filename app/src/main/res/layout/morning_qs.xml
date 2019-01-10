@@ -246,7 +246,7 @@
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:gravity="center_horizontal"
-                    android:text="Do you have a HANGOVER from last night’s drinking?"/>
+                    android:text="Do you have a hangover from last night’s drinking?"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -457,7 +457,7 @@
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:gravity="center_horizontal"
-                    android:text="Did you have ANAL or VAGINAL SEX yesterday?"/>
+                    android:text="Did you have anal or vaginal sex yesterday?"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
