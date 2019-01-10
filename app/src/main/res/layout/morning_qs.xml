@@ -130,7 +130,7 @@
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:gravity="center_horizontal"
-                    android:text="How many ALCOHOLIC DRINKS did you have last night?" />
+                    android:text="How many alcoholic drink did you have last night?" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
