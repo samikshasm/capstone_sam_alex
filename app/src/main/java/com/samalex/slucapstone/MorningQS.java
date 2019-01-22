@@ -25,6 +25,8 @@ import com.google.android.gms.vision.text.Line;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.w3c.dom.Text;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -108,6 +110,8 @@ public class MorningQS extends AppCompatActivity {
         //!!!!!!!!!!!!!!!!!!!
         final ImageButton lastNightDrinkYes = (ImageButton) findViewById(R.id.drinkAlcoholQS_yes);
         final ImageButton lastNightDrinkNo = (ImageButton) findViewById(R.id.drinkAlcoholQS_no);
+        final TextView lastNightDrinkYesText = (TextView) findViewById(R.id.drinkAlcoholQS_yesText);
+        final TextView lastNightDrinkNoText = (TextView) findViewById(R.id.drinkAlcoholQS_noText);
 
         final TextView number_drinks_qs = (TextView) findViewById(R.id.number_drinks_qs);
         final LinearLayout number_drinks_qs_layout = (LinearLayout) findViewById(R.id.number_drinks_qs_layout);
@@ -124,13 +128,17 @@ public class MorningQS extends AppCompatActivity {
 
         final TextView hangover_qs = (TextView) findViewById(R.id.hangover_qs);
         final LinearLayout hangover_qs_layout = (LinearLayout) findViewById(R.id.hangover_qs_layout);
+        final TextView hangoverYesText = (TextView) findViewById(R.id.hangover_yesText);
         final ImageButton hangoverYes = (ImageButton) findViewById(R.id.hangover_yes);
+        final TextView hangoverNoText = (TextView) findViewById(R.id.hangover_noText);
         final ImageButton hangoverNo = (ImageButton) findViewById(R.id.hangover_no);
 
         final TextView drugs_qs = (TextView) findViewById(R.id.drugs);
         final LinearLayout drugs_layout = (LinearLayout) findViewById(R.id.drugs_layout);
         final ImageButton drugs_yes = (ImageButton) findViewById(R.id.drugs_yes);
+        final TextView drugs_yesText = (TextView) findViewById(R.id.drugs_yesText);
         final ImageButton drugs_no = (ImageButton) findViewById(R.id.drugs_no);
+        final TextView drugs_noText = (TextView) findViewById(R.id.drugs_noText);
 
         final TextView typesOfDrugs_qs = (TextView) findViewById(R.id.typesOfDrugs);
         final TextView select_drugs = (TextView) findViewById(R.id.select_drugs);
@@ -151,12 +159,16 @@ public class MorningQS extends AppCompatActivity {
         final CheckBox otherDrug = (CheckBox) findViewById(R.id.otherDrug);
 
         final ImageButton analVaginalSexYes = (ImageButton) findViewById(R.id.analVaginalSex_yes);
+        final TextView analVaginalSexYesText = (TextView) findViewById(R.id.analVaginalSex_yesText);
         final ImageButton analVaginalSexNo = (ImageButton) findViewById(R.id.analVaginalSex_no);
+        final TextView analVaginalSexNoText = (TextView) findViewById(R.id.analVaginalSex_noText);
 
         final TextView condom_qs = (TextView) findViewById(R.id.condom);
         final LinearLayout condom_layout = (LinearLayout) findViewById(R.id.condom_layout);
         final ImageButton condom_yes = (ImageButton) findViewById(R.id.condom_yes);
+        final TextView condom_yesText = (TextView) findViewById(R.id.condom_yesText);
         final ImageButton condom_no = (ImageButton) findViewById(R.id.condom_no);
+        final TextView condom_noText = (TextView) findViewById(R.id.condom_noText);
 
         final TextView sexPartner_qs = (TextView) findViewById(R.id.sexPartner_qs);
         final LinearLayout sexPartner_qs_layout = (LinearLayout) findViewById(R.id.sexPartner_qs_layout);
@@ -199,7 +211,9 @@ public class MorningQS extends AppCompatActivity {
         //final LinearLayout oralConsentLayout = (LinearLayout) findViewById(R.id.oral_consent);*/
 
         final ImageButton stress_yes = (ImageButton) findViewById(R.id.stress_q1_yes_button);
+        final TextView stress_yesText = (TextView) findViewById(R.id.stress_q1_yes_text);
         final ImageButton stress_no = (ImageButton) findViewById(R.id.stress_q1_no_button);
+        final TextView stress_noText = (TextView) findViewById(R.id.stress_q1_no_text);
 
         final TextView stress_type = (TextView) findViewById(R.id.stress_type_qs);
         final TextView stress_select = (TextView) findViewById(R.id.select_stress);
@@ -376,11 +390,13 @@ public class MorningQS extends AppCompatActivity {
         };
         submit.setOnClickListener(handler1);
 
-        lastNightDrinkNo.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener onClickDrinkNo = new View.OnClickListener() {
             public void onClick(View view) {
                 drinklastNight = "No";
                 lastNightDrinkNo.setImageResource(R.drawable.no_green_button);
                 lastNightDrinkYes.setImageResource(R.drawable.yes_button);
+                lastNightDrinkNoText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.green));
+                lastNightDrinkYesText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
                 number_drinks_qs.setVisibility(View.GONE);
                 number_drinks_qs_layout.setVisibility(View.GONE);
                 drink_type.setVisibility(View.GONE);
@@ -391,13 +407,17 @@ public class MorningQS extends AppCompatActivity {
                 drugs_qs.setVisibility(View.GONE);
                 drugs_layout.setVisibility(View.GONE);
             }
-        });
+        };
+        lastNightDrinkNo.setOnClickListener(onClickDrinkNo);
+        lastNightDrinkNoText.setOnClickListener(onClickDrinkNo);
 
-        lastNightDrinkYes.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener onClickDrinkYes = new View.OnClickListener() {
             public void onClick(View view) {
                 drinklastNight = "Yes";
                 lastNightDrinkNo.setImageResource(R.drawable.no_button);
                 lastNightDrinkYes.setImageResource(R.drawable.yes_green);
+                lastNightDrinkYesText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.green));
+                lastNightDrinkNoText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
                 number_drinks_qs.setVisibility(View.VISIBLE);
                 number_drinks_qs_layout.setVisibility(View.VISIBLE);
                 drink_type.setVisibility(View.VISIBLE);
@@ -408,7 +428,9 @@ public class MorningQS extends AppCompatActivity {
                 drugs_qs.setVisibility(View.VISIBLE);
                 drugs_layout.setVisibility(View.VISIBLE);
             }
-        });
+        };
+        lastNightDrinkYes.setOnClickListener(onClickDrinkYes);
+        lastNightDrinkYesText.setOnClickListener(onClickDrinkYes);
 
         drinks_add.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -464,46 +486,62 @@ public class MorningQS extends AppCompatActivity {
             }
         });
 
-        hangoverNo.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener onClickHangoverNo = new View.OnClickListener() {
             public void onClick(View view) {
                 hangover = "no";
                 hangoverNo.setImageResource(R.drawable.no_green_button);
                 hangoverYes.setImageResource(R.drawable.yes_button);
 
-
+                hangoverNoText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.green));
+                hangoverYesText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
             }
-        });
+        };
+        hangoverNo.setOnClickListener(onClickHangoverNo);
+        hangoverNoText.setOnClickListener(onClickHangoverNo);
 
-        hangoverYes.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener onClickHangoverYes = new View.OnClickListener() {
             public void onClick(View view) {
                 hangover = "yes";
                 hangoverNo.setImageResource(R.drawable.no_button);
                 hangoverYes.setImageResource(R.drawable.yes_green);
-            }
-        });
 
-        drugs_no.setOnClickListener(new View.OnClickListener() {
+                hangoverNoText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                hangoverYesText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.green));
+            }
+        };
+        hangoverYes.setOnClickListener(onClickHangoverYes);
+        hangoverYesText.setOnClickListener(onClickHangoverYes);
+
+        View.OnClickListener onClickDrugNo = new View.OnClickListener() {
             public void onClick(View view) {
                 drugs = "no";
                 drugs_no.setImageResource(R.drawable.no_green_button);
                 drugs_yes.setImageResource(R.drawable.yes_button);
+                drugs_noText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.green));
+                drugs_yesText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
                 typesOfDrugs_qs.setVisibility(View.GONE);
                 select_drugs.setVisibility(View.GONE);
                 typesOfDrugs_layout.setVisibility(View.GONE);
 
             }
-        });
+        };
+        drugs_no.setOnClickListener(onClickDrugNo);
+        drugs_noText.setOnClickListener(onClickDrugNo);
 
-        drugs_yes.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener onClickDrugYes = new View.OnClickListener() {
             public void onClick(View view) {
                 drugs = "yes";
                 drugs_no.setImageResource(R.drawable.no_button);
                 drugs_yes.setImageResource(R.drawable.yes_green);
+                drugs_noText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                drugs_yesText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.green));
                 typesOfDrugs_qs.setVisibility(View.VISIBLE);
                 select_drugs.setVisibility(View.VISIBLE);
                 typesOfDrugs_layout.setVisibility(View.VISIBLE);
             }
-        });
+        };
+        drugs_yes.setOnClickListener(onClickDrugYes);
+        drugs_yesText.setOnClickListener(onClickDrugYes);
 
         ritalin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -647,54 +685,72 @@ public class MorningQS extends AppCompatActivity {
         });
 
 
-        analVaginalSexNo.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener onClickAnalVaginalSexNo = new View.OnClickListener() {
             public void onClick(View view) {
                 analVaginalSex = "No";
                 analVaginalSexNo.setImageResource(R.drawable.no_green_button);
                 analVaginalSexYes.setImageResource(R.drawable.yes_button);
+                analVaginalSexNoText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.green));
+                analVaginalSexYesText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
                 condom_qs.setVisibility(View.GONE);
                 condom_layout.setVisibility(View.GONE);
                 sexPartner_qs.setVisibility(View.GONE);
                 sexPartner_qs_layout.setVisibility(View.GONE);
             }
-        });
+        };
+        analVaginalSexNo.setOnClickListener(onClickAnalVaginalSexNo);
+        analVaginalSexNoText.setOnClickListener(onClickAnalVaginalSexNo);
 
-        analVaginalSexYes.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener onClickAnalVaginalSexYes = new View.OnClickListener() {
             public void onClick(View view) {
                 analVaginalSex = "Yes";
                 analVaginalSexNo.setImageResource(R.drawable.no_button);
                 analVaginalSexYes.setImageResource(R.drawable.yes_green);
+                analVaginalSexNoText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                analVaginalSexYesText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.green));
                 condom_qs.setVisibility(View.VISIBLE);
                 condom_layout.setVisibility(View.VISIBLE);
                 sexPartner_qs.setVisibility(View.VISIBLE);
                 sexPartner_qs_layout.setVisibility(View.VISIBLE);
             }
-        });
+        };
+        analVaginalSexYes.setOnClickListener(onClickAnalVaginalSexYes);
+        analVaginalSexYesText.setOnClickListener(onClickAnalVaginalSexYes);
 
-        condom_no.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener onClickCondomNo = new View.OnClickListener() {
             public void onClick(View view) {
                 condom = "No";
                 condom_no.setImageResource(R.drawable.no_green_button);
                 condom_yes.setImageResource(R.drawable.yes_button);
 
+                condom_noText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.green));
+                condom_yesText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
             }
-        });
+        };
+        condom_no.setOnClickListener(onClickCondomNo);
+        condom_noText.setOnClickListener(onClickCondomNo);
 
-        condom_yes.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener onClickCondomYes = new View.OnClickListener() {
             public void onClick(View view) {
                 condom = "Yes";
                 condom_no.setImageResource(R.drawable.no_button);
                 condom_yes.setImageResource(R.drawable.yes_green);
 
+                condom_noText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                condom_yesText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.green));
             }
-        });
+        };
+        condom_yes.setOnClickListener(onClickCondomYes);
+        condom_yesText.setOnClickListener(onClickCondomYes);
 
-        stress_yes.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener onClickStressYes = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stress_event="Yes";
+                stress_event = "Yes";
                 stress_no.setImageResource(R.drawable.no_button);
                 stress_yes.setImageResource(R.drawable.yes_green);
+                stress_noText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
+                stress_yesText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.green));
                 stress_type.setVisibility(View.VISIBLE);
                 stress_select.setVisibility(View.VISIBLE);
                 stressTypeLayout.setVisibility(View.VISIBLE);
@@ -716,13 +772,18 @@ public class MorningQS extends AppCompatActivity {
                 typePartLayout.setVisibility(View.VISIBLE);*/
 
             }
-        });
-        stress_no.setOnClickListener(new View.OnClickListener() {
+        };
+        stress_yes.setOnClickListener(onClickStressYes);
+        stress_yesText.setOnClickListener(onClickStressYes);
+
+        View.OnClickListener onClickStressNo = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stress_event="No";
+                stress_event = "No";
                 stress_no.setImageResource(R.drawable.no_green_button);
                 stress_yes.setImageResource(R.drawable.yes_button);
+                stress_noText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.green));
+                stress_yesText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
                 stress_type.setVisibility(View.GONE);
                 stress_select.setVisibility(View.GONE);
                 stressTypeLayout.setVisibility(View.GONE);
@@ -743,7 +804,9 @@ public class MorningQS extends AppCompatActivity {
                 typePartSelect.setVisibility(View.VISIBLE);
                 typePartLayout.setVisibility(View.VISIBLE);*/
             }
-        });
+        };
+        stress_no.setOnClickListener(onClickStressNo);
+        stress_noText.setOnClickListener(onClickStressNo);
 
 
 

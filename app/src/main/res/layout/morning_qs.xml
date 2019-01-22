@@ -109,6 +109,15 @@
                         android:adjustViewBounds="true"
                         android:scaleType="centerInside"/>
 
+                    <TextView
+                        android:id="@+id/drinkAlcoholQS_yesText"
+                        android:text="Yes"
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:textColor="@color/pink"
+                        android:textSize="20dp"
+                        android:gravity="center_vertical"/>
+
                     <ImageButton
                         android:id="@+id/drinkAlcoholQS_no"
                         android:layout_width="50dp"
@@ -118,6 +127,15 @@
                         android:layout_weight="1"
                         android:adjustViewBounds="true"
                         android:scaleType="centerInside"/>
+
+                    <TextView
+                        android:id="@+id/drinkAlcoholQS_noText"
+                        android:text="No"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:textColor="@color/pink"
+                        android:textSize="20dp"
+                        android:gravity="center_vertical"/>
 
                 </LinearLayout>
 
@@ -266,6 +284,15 @@
                         android:adjustViewBounds="true"
                         android:scaleType="centerInside"/>
 
+                    <TextView
+                        android:id="@+id/hangover_yesText"
+                        android:text="Yes"
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:textColor="@color/pink"
+                        android:textSize="20dp"
+                        android:gravity="center_vertical"/>
+
                     <ImageButton
                         android:id="@+id/hangover_no"
                         android:layout_width="50dp"
@@ -275,6 +302,15 @@
                         android:layout_weight="1"
                         android:adjustViewBounds="true"
                         android:scaleType="centerInside"/>
+
+                    <TextView
+                        android:id="@+id/hangover_noText"
+                        android:text="No"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:textColor="@color/pink"
+                        android:textSize="20dp"
+                        android:gravity="center_vertical"/>
 
                 </LinearLayout>
 
@@ -307,6 +343,15 @@
                         android:adjustViewBounds="true"
                         android:scaleType="centerInside"/>
 
+                    <TextView
+                        android:id="@+id/drugs_yesText"
+                        android:text="Yes"
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:textColor="@color/pink"
+                        android:textSize="20dp"
+                        android:gravity="center_vertical"/>
+
                     <ImageButton
                         android:id="@+id/drugs_no"
                         android:layout_width="50dp"
@@ -316,6 +361,15 @@
                         android:layout_weight="1"
                         android:adjustViewBounds="true"
                         android:scaleType="centerInside"/>
+
+                    <TextView
+                        android:id="@+id/drugs_noText"
+                        android:text="No"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:textColor="@color/pink"
+                        android:textSize="20dp"
+                        android:gravity="center_vertical"/>
 
                 </LinearLayout>
 
@@ -476,6 +530,15 @@
                         android:adjustViewBounds="true"
                         android:scaleType="centerInside"/>
 
+                    <TextView
+                        android:id="@+id/analVaginalSex_yesText"
+                        android:text="Yes"
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:textColor="@color/pink"
+                        android:textSize="20dp"
+                        android:gravity="center_vertical"/>
+
                     <ImageButton
                         android:id="@+id/analVaginalSex_no"
                         android:layout_width="50dp"
@@ -485,6 +548,15 @@
                         android:layout_weight="1"
                         android:adjustViewBounds="true"
                         android:scaleType="centerInside"/>
+
+                    <TextView
+                        android:id="@+id/analVaginalSex_noText"
+                        android:text="No"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:textColor="@color/pink"
+                        android:textSize="20dp"
+                        android:gravity="center_vertical"/>
 
                 </LinearLayout>
 
@@ -516,6 +588,14 @@
                         android:layout_weight="1"
                         android:adjustViewBounds="true"
                         android:scaleType="centerInside"/>
+                    <TextView
+                        android:id="@+id/condom_yesText"
+                        android:text="Yes"
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:textColor="@color/pink"
+                        android:textSize="20dp"
+                        android:gravity="center_vertical"/>
 
                     <ImageButton
                         android:id="@+id/condom_no"
@@ -526,6 +606,15 @@
                         android:layout_weight="1"
                         android:adjustViewBounds="true"
                         android:scaleType="centerInside"/>
+
+                    <TextView
+                        android:id="@+id/condom_noText"
+                        android:text="No"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:textColor="@color/pink"
+                        android:textSize="20dp"
+                        android:gravity="center_vertical"/>
 
                 </LinearLayout>
 
@@ -624,6 +713,16 @@
                         android:adjustViewBounds="true"
                         android:scaleType="centerInside"/>
 
+                    <TextView
+                        android:id="@+id/stress_q1_yes_text"
+                        android:text="Yes"
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:textColor="@color/pink"
+                        android:textSize="20dp"
+                        android:gravity="center_vertical"/>
+
+
                     <ImageButton
                         android:id="@+id/stress_q1_no_button"
                         android:layout_width="50dp"
@@ -633,6 +732,15 @@
                         android:layout_weight="1"
                         android:adjustViewBounds="true"
                         android:scaleType="centerInside"/>
+
+                    <TextView
+                        android:id="@+id/stress_q1_no_text"
+                        android:text="No"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:textColor="@color/pink"
+                        android:textSize="20dp"
+                        android:gravity="center_vertical"/>
 
                 </LinearLayout>
 
@@ -1053,6 +1161,31 @@
                         android:layout_height="1dp"
                         android:layout_weight="1"/>
 
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:id="@+id/sidebar_rating_layout"
+                    android:visibility="gone"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_height="wrap_content">
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1"/>
+
+                    <SeekBar
+                        android:id="@+id/seekBarRating"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="88dp"
+                        android:min="1"
+                        android:max="10"
+                        android:tickMark="@color/black">
+                    </SeekBar>NotificationService
                 </LinearLayout>
 
 <!--
