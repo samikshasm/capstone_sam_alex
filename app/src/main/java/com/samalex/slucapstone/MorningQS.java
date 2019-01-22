@@ -72,7 +72,7 @@ public class MorningQS extends AppCompatActivity {
 
     private String whenStressOccurred = "NA";
     private String drinklastNight = "NA";
-    private Integer drinksCounter = -1;
+    private Integer drinksCounter = 0;
     private String typesOfDrinks = "";
     private String hangover = "NA";
     private String analVaginalSex = "NA";
@@ -393,6 +393,7 @@ public class MorningQS extends AppCompatActivity {
         View.OnClickListener onClickDrinkNo = new View.OnClickListener() {
             public void onClick(View view) {
                 drinklastNight = "No";
+                drinksCounter = 0;
                 lastNightDrinkNo.setImageResource(R.drawable.no_green_button);
                 lastNightDrinkYes.setImageResource(R.drawable.yes_button);
                 lastNightDrinkNoText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.green));
@@ -434,23 +435,18 @@ public class MorningQS extends AppCompatActivity {
 
         drinks_add.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                drinks_subtract.setEnabled(true);
                 drinksCounter++;
-                if (drinksCounter == 0){
-                    drinks_counterText.setText("none");
-                }else {
-                    drinks_counterText.setText(""+drinksCounter);
-                }
+                drinks_counterText.setText(""+drinksCounter);
             }
         });
 
         drinks_subtract.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if (drinksCounter == 0){
+                drinksCounter--;
+                drinks_counterText.setText(""+drinksCounter);
+                if (drinksCounter == 0) {
                     drinks_subtract.setEnabled(false);
-                    drinks_counterText.setText("none");
-                }else {
-                    drinksCounter--;
-                    drinks_counterText.setText(""+drinksCounter);
                 }
             }
         });
