@@ -302,23 +302,18 @@ public class Main2Activity extends AppCompatActivity{
 
         people_qs_add_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                people_qs_subtract_button.setEnabled(true);
                 peopleCounter++;
-                if (peopleCounter == 0){
-                    people_qs_counter.setText("none");
-                }else {
-                    people_qs_counter.setText(""+peopleCounter);
-                }
+                people_qs_counter.setText(""+peopleCounter);
             }
         });
 
         people_qs_subtract_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                peopleCounter--;
+                people_qs_counter.setText(""+peopleCounter);
                 if (peopleCounter == 0){
                     people_qs_subtract_button.setEnabled(false);
-                    people_qs_counter.setText("none");
-                }else {
-                    peopleCounter--;
-                    people_qs_counter.setText(""+peopleCounter);
                 }
             }
         });
