@@ -283,58 +283,6 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/number_drinks_qs_layout"
-                android:weightSum="5"
-                android:paddingTop="10dp"
-                android:paddingBottom="20dp"
-                android:orientation="horizontal">
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_weight="1"/>
-
-                <Button
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/drinks_subtract_button"
-                    android:text="-"
-                    android:textSize="20sp"
-                    android:layout_weight="1"
-                    android:background="@color/app_background_darker"
-                    android:textColor="@color/pink"/>
-                <TextView
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/drinks_counter"
-                    android:text="none"
-                    android:gravity="center"
-                    android:layout_weight="1"
-                    android:textColor="@color/pink"
-                    android:textSize="20sp"/>
-
-                <Button
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/drinks_add_button"
-                    android:text="+"
-                    android:textSize="20sp"
-                    android:layout_weight="1"
-                    android:background="@color/app_background_darker"
-                    android:textColor="@color/pink"/>
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_weight="1"/>
-
-
-            </LinearLayout>
-
-
             <TextView
                 android:id="@+id/who_text_view"
                 android:layout_width="wrap_content"

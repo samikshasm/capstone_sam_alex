@@ -105,12 +105,6 @@ public class Main2Activity extends AppCompatActivity{
         final RadioButton drink16plus = (RadioButton) findViewById(R.id.radio_16plus);
         final RadioGroup costGroup = (RadioGroup) findViewById(R.id.radioCost);
 
-        final TextView number_drinks_qs = (TextView) findViewById(R.id.number_drinks_qs);
-        final LinearLayout number_drinks_qs_layout = (LinearLayout) findViewById(R.id.number_drinks_qs_layout);
-        final Button drinks_add = (Button) findViewById(R.id.drinks_add_button);
-        final Button drinks_subtract = (Button) findViewById(R.id.drinks_subtract_button);
-        final TextView drinks_counterText = (TextView) findViewById(R.id.drinks_counter);
-
         final Button people_qs_add_button = (Button) findViewById(R.id.people_qs_add_button);
         final Button people_qs_subtract_button = (Button) findViewById(R.id.people_qs_subtract_button);
         final TextView people_qs_counter = (TextView) findViewById(R.id.people_qs_counter);
@@ -127,22 +121,6 @@ public class Main2Activity extends AppCompatActivity{
             }
 
         }
-
-        SharedPreferences prefs = getSharedPreferences("NumberSwitchesToMain2Activity", MODE_PRIVATE);
-        Integer restoredText = prefs.getInt("switches", 0);
-
-        Log.e("switches",restoredText+"");
-
-        if(restoredText==1){
-            number_drinks_qs.setVisibility((View.VISIBLE));
-            number_drinks_qs_layout.setVisibility((View.VISIBLE));
-
-        }
-        else{
-            number_drinks_qs.setVisibility((View.GONE));
-            number_drinks_qs_layout.setVisibility((View.GONE));
-        }
-
 
         drink1_5.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
@@ -276,31 +254,6 @@ public class Main2Activity extends AppCompatActivity{
                 sizeCheck = true;
             }
         });
-
-        drinks_add.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                drinksCounter++;
-                if (drinksCounter == 0){
-                    drinks_counterText.setText("none");
-                }else {
-                    drinks_counterText.setText(""+drinksCounter);
-                }
-            }
-        });
-
-        drinks_subtract.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                if (drinksCounter == 0){
-                    drinks_subtract.setEnabled(false);
-                    drinks_counterText.setText("none");
-                }else {
-                    drinksCounter--;
-                    drinks_counterText.setText(""+drinksCounter);
-                }
-            }
-        });
-
-
 
         nobody.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
