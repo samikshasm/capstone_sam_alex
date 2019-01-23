@@ -832,781 +832,523 @@
                     android:text="How stressful would you rate the event on a scale of 1 (not at all) to 10 (most stressful)"/>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
                     android:id="@+id/rating_layout"
                     android:visibility="gone"
-                    android:orientation="horizontal"
                     android:layout_gravity="center_horizontal"
-                    android:layout_height="wrap_content">
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center">
-
-                        <ImageButton
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:id="@+id/stress_1"
-                            android:background="@drawable/pink_circle_open" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/stress_1"
-                            android:layout_centerInParent="true"
-                            android:text="1"
-                            android:textSize="15dp"
-                            android:textColor="@color/white"/>
-
-                    </RelativeLayout>
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center">
-
-                        <ImageButton
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:id="@+id/stress_2"
-                            android:background="@drawable/pink_circle_open" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/stress_2"
-                            android:layout_centerInParent="true"
-                            android:text="2"
-                            android:textSize="15dp"
-                            android:textColor="@color/white"/>
-
-                    </RelativeLayout>
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center">
-
-                        <ImageButton
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:id="@+id/stress_3"
-                            android:background="@drawable/pink_circle_open" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/stress_3"
-                            android:layout_centerInParent="true"
-                            android:text="3"
-                            android:textSize="15dp"
-                            android:textColor="@color/white"/>
-
-                    </RelativeLayout>
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center">
-
-                        <ImageButton
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:id="@+id/stress_4"
-                            android:background="@drawable/pink_circle_open" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/stress_4"
-                            android:layout_centerInParent="true"
-                            android:text="4"
-                            android:textSize="15dp"
-                            android:textColor="@color/white"/>
-
-                    </RelativeLayout>
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center">
-
-                        <ImageButton
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:id="@+id/stress_5"
-                            android:background="@drawable/pink_circle_open" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/stress_5"
-                            android:layout_centerInParent="true"
-                            android:text="5"
-                            android:textSize="15dp"
-                            android:textColor="@color/white"/>
-
-                    </RelativeLayout>
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center">
-
-                        <ImageButton
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:id="@+id/stress_6"
-                            android:background="@drawable/pink_circle_open" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/stress_6"
-                            android:layout_centerInParent="true"
-                            android:text="6"
-                            android:textSize="15dp"
-                            android:textColor="@color/white"/>
-
-                    </RelativeLayout>
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center">
-
-                        <ImageButton
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:id="@+id/stress_7"
-                            android:background="@drawable/pink_circle_open" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/stress_7"
-                            android:layout_centerInParent="true"
-                            android:text="7"
-                            android:textSize="15dp"
-                            android:textColor="@color/white"/>
-
-                    </RelativeLayout>
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center">
-
-                        <ImageButton
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:id="@+id/stress_8"
-                            android:background="@drawable/pink_circle_open" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/stress_8"
-                            android:layout_centerInParent="true"
-                            android:text="8"
-                            android:textSize="15dp"
-                            android:textColor="@color/white"/>
-
-                    </RelativeLayout>
-
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center">
-
-                        <ImageButton
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:id="@+id/stress_9"
-                            android:background="@drawable/pink_circle_open" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/stress_9"
-                            android:layout_centerInParent="true"
-                            android:text="9"
-                            android:textSize="15dp"
-                            android:textColor="@color/white"/>
-
-                    </RelativeLayout>
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center">
-
-                        <ImageButton
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:id="@+id/stress_10"
-                            android:background="@drawable/pink_circle_open" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/stress_10"
-                            android:layout_centerInParent="true"
-                            android:text="10"
-                            android:textSize="15dp"
-                            android:textColor="@color/white"/>
-
-                    </RelativeLayout>
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-
-                </LinearLayout>
-
+                <SeekBar
+                    android:id="@+id/stress_rating_slidebar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:min="1"
+                    android:max="10"
+                    android:progress="1"
+                    android:thumb="@drawable/cast_abc_scrubber_control_to_pressed_mtrl_005"
+                    android:thumbTint="@color/pink"
+                    android:tickMark="@drawable/drawable_tickmark"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginRight="24dp"
+                    android:progressDrawable="@drawable/cast_abc_scrubber_primary_mtrl_alpha"/>
 
                 <TextView
-                    android:id="@+id/stressfulEventOccurance"
-                    android:visibility="gone"
-                    android:paddingTop="25dp"
+                    android:id="@+id/stress_rating_text"
+                    android:layout_margin="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:gravity="center_horizontal"
-                    android:text="When did this event take place?"/>
-
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:paddingTop="10dp"
-                    android:id="@+id/stressfulEventOccurance_layout"
-                    android:visibility="gone"
-                    android:orientation="vertical">
-
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-
-                    <RadioGroup
-                        android:id="@+id/radioGroupStress"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        >
-
-
-                        <RadioButton
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/morning"
-                            android:text="Morning"
-                            android:textColor="@color/white"
-                            android:buttonTint="@color/pink"/>
-                        <RadioButton
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/afternoon"
-                            android:text="Afternoon"
-                            android:textColor="@color/white"
-                            android:buttonTint="@color/pink"/>
-                        <RadioButton
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/evening"
-                            android:text="Evening"
-                            android:textColor="@color/white"
-                            android:buttonTint="@color/pink"/>
-
-                    </RadioGroup>
-
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:id="@+id/sidebar_rating_layout"
-                    android:visibility="gone"
-                    android:orientation="horizontal"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_height="wrap_content">
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-
-                    <SeekBar
-                        android:id="@+id/seekBarRating"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginTop="88dp"
-                        android:min="1"
-                        android:max="10"
-                        android:tickMark="@color/black">
-                    </SeekBar>NotificationService
-                </LinearLayout>
-
-<!--
-                <TextView
-                    android:paddingTop="25dp"
-                    android:layout_width="match_parent"
-                    android:id="@+id/oral_qs"
-                    android:visibility="gone"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:gravity="center_horizontal"
-                    android:text="Did you have oral sex yesterday?"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
-                    android:id="@+id/oral_qs_layout"
-                    android:visibility="gone"
-                    android:weightSum="2">
-
-                    <ImageButton
-                        android:id="@+id/oral_yes_button"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@color/app_background"
-                        android:src="@drawable/yes_button"
-                        android:layout_weight="1"
-                        android:adjustViewBounds="true"
-                        android:scaleType="centerInside"/>
-
-                    <ImageButton
-                        android:id="@+id/oral_no_button"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@color/app_background"
-                        android:src="@drawable/no_button"
-                        android:layout_weight="1"
-                        android:adjustViewBounds="true"
-                        android:scaleType="centerInside"/>
-
-                </LinearLayout>
-
-
-                <TextView
-                    android:paddingTop="25dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:id="@+id/vaginal_qs"
-                    android:visibility="gone"
-                    android:gravity="center_horizontal"
-                    android:text="Did you have vaginal sex yesterday?"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
-                    android:id="@+id/vaginal_layout"
-                    android:visibility="gone"
-                    android:weightSum="2">
-
-                    <ImageButton
-                        android:id="@+id/vaginal_yes_button"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@color/app_background"
-                        android:src="@drawable/yes_button"
-                        android:layout_weight="1"
-                        android:adjustViewBounds="true"
-                        android:scaleType="centerInside"/>
-
-                    <ImageButton
-                        android:id="@+id/vaginal_no_button"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@color/app_background"
-                        android:src="@drawable/no_button"
-                        android:layout_weight="1"
-                        android:adjustViewBounds="true"
-                        android:scaleType="centerInside"/>
-
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/vaginal_condom_qs"
-                    android:paddingTop="25dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:gravity="center_horizontal"
-                    android:text="Did you use a condom?"
-                    android:visibility="gone"/>
-
-                <LinearLayout
-                    android:id="@+id/vaginal_condom"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:paddingTop="10dp"
-                    android:weightSum="2">
-
-                    <ImageButton
-                        android:id="@+id/vaginal_condom_yes_button"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@color/app_background"
-                        android:src="@drawable/yes_button"
-                        android:layout_weight="1"
-                        android:adjustViewBounds="true"
-                        android:scaleType="centerInside"/>
-
-                    <ImageButton
-                        android:id="@+id/vaginal_condom_no_button"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@color/app_background"
-                        android:src="@drawable/no_button"
-                        android:layout_weight="1"
-                        android:adjustViewBounds="true"
-                        android:scaleType="centerInside"/>
-
-                </LinearLayout>
-
-                <TextView
-                    android:paddingTop="25dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:gravity="center_horizontal"
-                    android:id="@+id/anal_qs"
-                    android:visibility="gone"
-                    android:text="Did you have anal sex yesterday?"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
-                    android:visibility="gone"
-                    android:id="@+id/anal_layout"
-                    android:weightSum="2">
-
-                    <ImageButton
-                        android:id="@+id/anal_yes_button"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@color/app_background"
-                        android:src="@drawable/yes_button"
-                        android:layout_weight="1"
-                        android:adjustViewBounds="true"
-                        android:scaleType="centerInside"/>
-
-                    <ImageButton
-                        android:id="@+id/anal_no_button"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@color/app_background"
-                        android:src="@drawable/no_button"
-                        android:layout_weight="1"
-                        android:adjustViewBounds="true"
-                        android:scaleType="centerInside"/>
-
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/anal_condom_qs"
-                    android:paddingTop="25dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:gravity="center_horizontal"
-                    android:text="Did you use a condom?"
-                    android:visibility="gone"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/anal_condom"
-                    android:visibility="gone"
-                    android:paddingTop="10dp"
-                    android:weightSum="2">
-
-                    <ImageButton
-                        android:id="@+id/anal_condom_yes_button"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@color/app_background"
-                        android:src="@drawable/yes_button"
-                        android:layout_weight="1"
-                        android:adjustViewBounds="true"
-                        android:scaleType="centerInside"/>
-
-                    <ImageButton
-                        android:id="@+id/anal_condom_no_button"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@color/app_background"
-                        android:src="@drawable/no_button"
-                        android:layout_weight="1"
-                        android:adjustViewBounds="true"
-                        android:scaleType="centerInside"/>
-
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/number_partners_qs"
-                    android:paddingTop="25dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:visibility="gone"
-                    android:gravity="center_horizontal"
-                    android:text="How many sexual partners did you have yesterday?" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/number_partners_layout"
-                    android:visibility="gone"
-                    android:weightSum="5"
-                    android:paddingTop="10dp"
-                    android:orientation="horizontal">
-
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-
-                    <Button
-                        android:layout_width="10dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/subtract_button"
-                        android:text="-"
-                        android:textSize="20sp"
-                        android:layout_weight="1"
-                        android:background="@color/app_background_darker"
-                        android:textColor="@color/pink"/>
-                    <TextView
-                        android:layout_width="40dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/partners_counter"
-                        android:text="none"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:textColor="@color/pink"
-                        android:textSize="20sp"/>
-
-                    <Button
-                        android:layout_width="10dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/add_button"
-                        android:text="+"
-                        android:textSize="20sp"
-                        android:layout_weight="1"
-                        android:background="@color/app_background_darker"
-                        android:textColor="@color/pink"/>
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-
-
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/type_partners_qs"
-                    android:visibility="gone"
-                    android:paddingTop="25dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:gravity="center_horizontal"
-                    android:text="Was your sexual partner a"/>
-
-                <TextView
-                    android:id="@+id/select"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="15sp"
-                    android:gravity="center_horizontal"
-                    android:text="(select all that apply)"/>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:paddingTop="10dp"
-                    android:id="@+id/partners_layout"
-                    android:visibility="gone"
-                    android:orientation="vertical">
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/monogamous_partner"
-                        android:text="Monogamous partner"
-                        android:textColor="@color/white"
-                        android:buttonTint="@color/pink"/>
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/friend_partner"
-                        android:text="Friend (someone you've known)"
-                        android:textColor="@color/white"
-                        android:buttonTint="@color/pink"/>
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/new_partner"
-                        android:text="New Acquaintance"
-                        android:textColor="@color/white"
-                        android:buttonTint="@color/pink"/>
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/na_partner"
-                        android:text="NA"
-                        android:textColor="@color/white"
-                        android:buttonTint="@color/pink"/>
-
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/cost_qs"
-                    android:text="How much did you spend on alcohol yesterday?"
-                    android:textColor="@color/white"
+                    android:textColor="@color/pink"
                     android:textSize="20dp"
-                    android:paddingTop="25dp"
+                    android:textAlignment="center"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/stressfulEventOccurance"
+                android:visibility="gone"
+                android:paddingTop="25dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:gravity="center_horizontal"
+                android:text="When did this event take place?"/>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="10dp"
+                android:id="@+id/stressfulEventOccurance_layout"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <RadioGroup
+                    android:id="@+id/radioGroupStress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:textAlignment="center"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="13dp" />
+                    >
 
-                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent">
 
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
-
-                    <RadioGroup
-                        android:id="@+id/radioTotalCost"
+                    <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        >
+                        android:id="@+id/morning"
+                        android:text="Morning"
+                        android:textColor="@color/white"
+                        android:buttonTint="@color/pink"/>
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/afternoon"
+                        android:text="Afternoon"
+                        android:textColor="@color/white"
+                        android:buttonTint="@color/pink"/>
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/evening"
+                        android:text="Evening"
+                        android:textColor="@color/white"
+                        android:buttonTint="@color/pink"/>
 
-                        <RadioButton
-                            android:id="@+id/radio_Total0"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="$0.00"
-                            android:buttonTint="@color/pink"
-                            android:textColor="@color/white"
-                            android:textSize="20dp"
-                            android:checked="true" />
+                </RadioGroup>
 
-                        <RadioButton
-                            android:id="@+id/radio_1_10_Total"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-                            android:textSize="20dp"
-                            android:buttonTint="@color/pink"
-                            android:text="$1.00-$10.00" />
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
 
-                        <RadioButton
-                            android:id="@+id/radio_11_20_Total"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-                            android:textSize="20dp"
-                            android:buttonTint="@color/pink"
-                            android:text="$11.00-$20.00" />
-                        <RadioButton
-                            android:id="@+id/radio_21_30_Total"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-                            android:textSize="20dp"
-                            android:buttonTint="@color/pink"
-                            android:text="$21.00-$30.00" />
-                        <RadioButton
-                            android:id="@+id/radio_31_40_Total"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-                            android:textSize="20dp"
-                            android:buttonTint="@color/pink"
-                            android:text="$31.00-$40.00" />
-                        <RadioButton
-                            android:id="@+id/radio_41_Totalplus"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-                            android:textSize="20dp"
-                            android:buttonTint="@color/pink"
-                            android:text="$41.00+" />
+            </LinearLayout>
 
-                    </RadioGroup>
 
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"/>
+<!--
+            <TextView
+                android:paddingTop="25dp"
+                android:layout_width="match_parent"
+                android:id="@+id/oral_qs"
+                android:visibility="gone"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:gravity="center_horizontal"
+                android:text="Did you have oral sex yesterday?"/>
 
-                </LinearLayout> -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:id="@+id/oral_qs_layout"
+                android:visibility="gone"
+                android:weightSum="2">
+
+                <ImageButton
+                    android:id="@+id/oral_yes_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/app_background"
+                    android:src="@drawable/yes_button"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerInside"/>
+
+                <ImageButton
+                    android:id="@+id/oral_no_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/app_background"
+                    android:src="@drawable/no_button"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerInside"/>
+
+            </LinearLayout>
+
+
+            <TextView
+                android:paddingTop="25dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:id="@+id/vaginal_qs"
+                android:visibility="gone"
+                android:gravity="center_horizontal"
+                android:text="Did you have vaginal sex yesterday?"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:id="@+id/vaginal_layout"
+                android:visibility="gone"
+                android:weightSum="2">
+
+                <ImageButton
+                    android:id="@+id/vaginal_yes_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/app_background"
+                    android:src="@drawable/yes_button"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerInside"/>
+
+                <ImageButton
+                    android:id="@+id/vaginal_no_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/app_background"
+                    android:src="@drawable/no_button"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerInside"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/vaginal_condom_qs"
+                android:paddingTop="25dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:gravity="center_horizontal"
+                android:text="Did you use a condom?"
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:id="@+id/vaginal_condom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:paddingTop="10dp"
+                android:weightSum="2">
+
+                <ImageButton
+                    android:id="@+id/vaginal_condom_yes_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/app_background"
+                    android:src="@drawable/yes_button"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerInside"/>
+
+                <ImageButton
+                    android:id="@+id/vaginal_condom_no_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/app_background"
+                    android:src="@drawable/no_button"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerInside"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:paddingTop="25dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:gravity="center_horizontal"
+                android:id="@+id/anal_qs"
+                android:visibility="gone"
+                android:text="Did you have anal sex yesterday?"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:visibility="gone"
+                android:id="@+id/anal_layout"
+                android:weightSum="2">
+
+                <ImageButton
+                    android:id="@+id/anal_yes_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/app_background"
+                    android:src="@drawable/yes_button"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerInside"/>
+
+                <ImageButton
+                    android:id="@+id/anal_no_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/app_background"
+                    android:src="@drawable/no_button"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerInside"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/anal_condom_qs"
+                android:paddingTop="25dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:gravity="center_horizontal"
+                android:text="Did you use a condom?"
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/anal_condom"
+                android:visibility="gone"
+                android:paddingTop="10dp"
+                android:weightSum="2">
+
+                <ImageButton
+                    android:id="@+id/anal_condom_yes_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/app_background"
+                    android:src="@drawable/yes_button"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerInside"/>
+
+                <ImageButton
+                    android:id="@+id/anal_condom_no_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/app_background"
+                    android:src="@drawable/no_button"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerInside"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/number_partners_qs"
+                android:paddingTop="25dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:visibility="gone"
+                android:gravity="center_horizontal"
+                android:text="How many sexual partners did you have yesterday?" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/number_partners_layout"
+                android:visibility="gone"
+                android:weightSum="5"
+                android:paddingTop="10dp"
+                android:orientation="horizontal">
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <Button
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/subtract_button"
+                    android:text="-"
+                    android:textSize="20sp"
+                    android:layout_weight="1"
+                    android:background="@color/app_background_darker"
+                    android:textColor="@color/pink"/>
+                <TextView
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/partners_counter"
+                    android:text="none"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:textColor="@color/pink"
+                    android:textSize="20sp"/>
+
+                <Button
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/add_button"
+                    android:text="+"
+                    android:textSize="20sp"
+                    android:layout_weight="1"
+                    android:background="@color/app_background_darker"
+                    android:textColor="@color/pink"/>
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/type_partners_qs"
+                android:visibility="gone"
+                android:paddingTop="25dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:gravity="center_horizontal"
+                android:text="Was your sexual partner a"/>
+
+            <TextView
+                android:id="@+id/select"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:gravity="center_horizontal"
+                android:text="(select all that apply)"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="10dp"
+                android:id="@+id/partners_layout"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/monogamous_partner"
+                    android:text="Monogamous partner"
+                    android:textColor="@color/white"
+                    android:buttonTint="@color/pink"/>
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/friend_partner"
+                    android:text="Friend (someone you've known)"
+                    android:textColor="@color/white"
+                    android:buttonTint="@color/pink"/>
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/new_partner"
+                    android:text="New Acquaintance"
+                    android:textColor="@color/white"
+                    android:buttonTint="@color/pink"/>
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/na_partner"
+                    android:text="NA"
+                    android:textColor="@color/white"
+                    android:buttonTint="@color/pink"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/cost_qs"
+                android:text="How much did you spend on alcohol yesterday?"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                android:paddingTop="25dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="13dp" />
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <RadioGroup
+                    android:id="@+id/radioTotalCost"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    >
+
+                    <RadioButton
+                        android:id="@+id/radio_Total0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$0.00"
+                        android:buttonTint="@color/pink"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:checked="true" />
+
+                    <RadioButton
+                        android:id="@+id/radio_1_10_Total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:buttonTint="@color/pink"
+                        android:text="$1.00-$10.00" />
+
+                    <RadioButton
+                        android:id="@+id/radio_11_20_Total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:buttonTint="@color/pink"
+                        android:text="$11.00-$20.00" />
+                    <RadioButton
+                        android:id="@+id/radio_21_30_Total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:buttonTint="@color/pink"
+                        android:text="$21.00-$30.00" />
+                    <RadioButton
+                        android:id="@+id/radio_31_40_Total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:buttonTint="@color/pink"
+                        android:text="$31.00-$40.00" />
+                    <RadioButton
+                        android:id="@+id/radio_41_Totalplus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:buttonTint="@color/pink"
+                        android:text="$41.00+" />
+
+                </RadioGroup>
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+            </LinearLayout> -->
 
 
             </LinearLayout>

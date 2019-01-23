@@ -7,10 +7,8 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -18,14 +16,11 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.vision.text.Line;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -81,6 +76,28 @@ public class MorningQS extends AppCompatActivity {
     private String drugs = "NA";
     private String typeDrugs = "";
     public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
+
+    private TextView stressRatingSlideBarLabel;
+
+    SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            // updated continuously as the user slides the thumb
+            stressRatingSlideBarLabel.setText("You rate your stress: " + progress + " out of 10");
+
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            // called when the user first touches the SeekBar
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            // called after the user finishes moving the SeekBar
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,7 +195,7 @@ public class MorningQS extends AppCompatActivity {
         final TextView stressfulEventOccurance = (TextView) findViewById(R.id.stressfulEventOccurance);
         final LinearLayout stressfulEventOccurance_layout = (LinearLayout) findViewById(R.id.stressfulEventOccurance_layout);
         final RadioGroup stressGroup = (RadioGroup) findViewById(R.id.radioGroupStress);
-
+        final SeekBar seekBar = (SeekBar) findViewById(R.id.stress_rating_slidebar);
 
         Button submit = (Button) findViewById(R.id.submit);
 
@@ -221,24 +238,12 @@ public class MorningQS extends AppCompatActivity {
         final TextView value_stress_qs = (TextView) findViewById(R.id.value_stress_qs);
         final LinearLayout ratingLayout = (LinearLayout) findViewById(R.id.rating_layout);
 
-
         final CheckBox interpersonal_check = (CheckBox) findViewById(R.id.interpersonal);
         final CheckBox work_check = (CheckBox) findViewById(R.id.work);
         final CheckBox financial_check = (CheckBox) findViewById(R.id.financial);
         final CheckBox health_check = (CheckBox) findViewById(R.id.health);
         final CheckBox trauma_check = (CheckBox) findViewById(R.id.trauma);
         final CheckBox other_check = (CheckBox) findViewById(R.id.other_stress);
-
-        final ImageButton stress_1 = (ImageButton) findViewById(R.id.stress_1);
-        final ImageButton stress_2 = (ImageButton) findViewById(R.id.stress_2);
-        final ImageButton stress_3 = (ImageButton) findViewById(R.id.stress_3);
-        final ImageButton stress_4 = (ImageButton) findViewById(R.id.stress_4);
-        final ImageButton stress_5 = (ImageButton) findViewById(R.id.stress_5);
-        final ImageButton stress_6 = (ImageButton) findViewById(R.id.stress_6);
-        final ImageButton stress_7 = (ImageButton) findViewById(R.id.stress_7);
-        final ImageButton stress_8 = (ImageButton) findViewById(R.id.stress_8);
-        final ImageButton stress_9 = (ImageButton) findViewById(R.id.stress_9);
-        final ImageButton stress_10 = (ImageButton) findViewById(R.id.stress_10);
 
         //new stuff
         /*final Button add = (Button) findViewById(R.id.add_button);
@@ -873,165 +878,6 @@ public class MorningQS extends AppCompatActivity {
             }
         });
 
-        stress_1.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                stress_value = "1";
-                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_2.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_3.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_4.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_5.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_6.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_7.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_8.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
-
-
-            }
-        });
-        stress_2.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                stress_value = "2";
-                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_3.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_4.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_5.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_6.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_7.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_8.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
-
-            }
-        });
-        stress_3.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                stress_value = "3";
-                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_4.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_5.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_6.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_7.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_8.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
-
-            }
-        });
-        stress_4.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                stress_value = "4";
-                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_4.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_5.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_6.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_7.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_8.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
-
-            }
-        });
-        stress_5.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                stress_value = "5";
-                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_4.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_5.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_6.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_7.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_8.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
-
-            }
-        });
-        stress_6.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                stress_value = "6";
-                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_4.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_5.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_6.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_7.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_8.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
-
-            }
-        });
-        stress_7.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                stress_value = "7";
-                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_4.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_5.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_6.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_7.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_8.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
-
-            }
-        });
-        stress_8.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                stress_value = "8";
-                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_4.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_5.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_6.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_7.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_8.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_9.setBackgroundResource(R.drawable.pink_circle_open);
-                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
-            }
-        });
-        stress_9.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                stress_value = "9";
-                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_4.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_5.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_6.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_7.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_8.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_9.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_10.setBackgroundResource(R.drawable.pink_circle_open);
-            }
-        });
-        stress_10.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                stress_value = "10";
-                stress_1.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_2.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_3.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_4.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_5.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_6.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_7.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_8.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_9.setBackgroundResource(R.drawable.pink_circle_closed);
-                stress_10.setBackgroundResource(R.drawable.pink_circle_closed);
-            }
-        });
-
 /*
 
         oralNo.setOnClickListener(new View.OnClickListener() {
@@ -1290,6 +1136,13 @@ public class MorningQS extends AppCompatActivity {
             NotificationManager manager = (NotificationManager) MorningQS.this.getSystemService(Context.NOTIFICATION_SERVICE);
             manager.cancel(notificationId);
         }
+
+        // set a change listener on the SeekBar
+        seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
+
+        int progress = seekBar.getProgress();
+        stressRatingSlideBarLabel = findViewById(R.id.stress_rating_text);
+        stressRatingSlideBarLabel.setText("You rate your stress: " + progress + " out of 10");
     }
 
     //function to store the screen
