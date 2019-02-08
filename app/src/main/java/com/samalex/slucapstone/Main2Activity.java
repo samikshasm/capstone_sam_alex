@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,13 +58,41 @@ public class Main2Activity extends AppCompatActivity{
     private Integer drinksCounter=0;
     private Integer peopleCounter=0;
     private boolean typeCheck = false;
-    private boolean sizeCheck = false;
+//    private boolean sizeCheck = false;
     private boolean withCheck = false;
     private boolean whereCheck = false;
     private boolean costCheck = false;
     private String broadcastInt = "none";
 
     public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
+
+
+    private TextView wineSizeLabel;
+    private TextView beerSizeLabel;
+    private TextView liquorSizeLabel;
+
+    SeekBar.OnSeekBarChangeListener wineSizeChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            // updated continuously as the user slides the thumb
+            wineSizeLabel.setText(progress + " oz.");
+        }
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) { }
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) { }
+    };
+    SeekBar.OnSeekBarChangeListener beerSizeChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            // updated continuously as the user slides the thumb
+            beerSizeLabel.setText(progress + " oz.");
+        }
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) { }
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) { }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -82,10 +111,9 @@ public class Main2Activity extends AppCompatActivity{
         final ImageButton liquor = (ImageButton) findViewById(R.id.liquorBtn);
         final ImageButton wine = (ImageButton) findViewById(R.id.wineBtn);
 
-        final ImageButton shot = (ImageButton) findViewById(R.id.shotBtn);
-        final ImageButton eight = (ImageButton) findViewById(R.id.eight);
-        final ImageButton sixteen = (ImageButton) findViewById(R.id.sixteen);
-        final ImageButton twentyFour = (ImageButton) findViewById(R.id.twentyFour);
+//        final ImageButton eight = (ImageButton) findViewById(R.id.eight);
+//        final ImageButton sixteen = (ImageButton) findViewById(R.id.sixteen);
+//        final ImageButton twentyFour = (ImageButton) findViewById(R.id.twentyFour);
 
         final ImageButton nobody = (ImageButton) findViewById(R.id.nobody);
         final ImageButton partner  = (ImageButton) findViewById(R.id.partner);
@@ -121,6 +149,32 @@ public class Main2Activity extends AppCompatActivity{
             }
 
         }
+
+        final ImageButton liquorSizeSelector = (ImageButton) findViewById(R.id.liquor_size_selector);
+        final SeekBar wineSizeSelector = (SeekBar) findViewById(R.id.wine_size_selector);
+        final SeekBar beerSizeSelector = (SeekBar) findViewById(R.id.beer_size_selector);
+
+        final LinearLayout wineSizeSelectorWrapper = (LinearLayout) findViewById(R.id.wine_size_selector_wrapper);
+        final LinearLayout beerSizeSelectorWrapper = (LinearLayout) findViewById(R.id.beer_size_selector_wrapper);
+        final LinearLayout liquorSizeSelectorWrapper = (LinearLayout) findViewById(R.id.liquor_size_selector_wrapper);
+
+        // set a change listener on the SeekBar
+        wineSizeSelector.setOnSeekBarChangeListener(wineSizeChangeListener);
+        beerSizeSelector.setOnSeekBarChangeListener(beerSizeChangeListener);
+
+
+        int wineSize = wineSizeSelector.getProgress();
+        wineSizeLabel = findViewById(R.id.wine_size_text);
+        wineSizeLabel.setText(wineSize + " oz");
+
+        int beerSize = beerSizeSelector.getProgress();
+        beerSizeLabel = findViewById(R.id.beer_size_text);
+        beerSizeLabel.setText(beerSize + " oz");
+
+        int liquorSize = 1;
+        liquorSizeLabel = findViewById(R.id.liquor_size_text);
+        liquorSizeLabel.setText(liquorSize + " oz (" + liquorSize + " shot)");
+
 
         drink1_5.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
@@ -186,6 +240,10 @@ public class Main2Activity extends AppCompatActivity{
                 liquor.setImageResource(R.drawable.liquor_button_small_purple);
                 typeCheck = true;
 
+                wineSizeSelectorWrapper.setVisibility(View.GONE);
+                beerSizeSelectorWrapper.setVisibility(View.VISIBLE);
+                liquorSizeSelectorWrapper.setVisibility(View.GONE);
+
             }
         });
 
@@ -196,6 +254,10 @@ public class Main2Activity extends AppCompatActivity{
                 beer.setImageResource(R.drawable.beer_button_small_purple);
                 liquor.setImageResource(R.drawable.liquor_button_small_green);
                 typeCheck = true;
+
+                wineSizeSelectorWrapper.setVisibility(View.GONE);
+                beerSizeSelectorWrapper.setVisibility(View.GONE);
+                liquorSizeSelectorWrapper.setVisibility(View.VISIBLE);
             }
         });
 
@@ -207,53 +269,56 @@ public class Main2Activity extends AppCompatActivity{
                 liquor.setImageResource(R.drawable.liquor_button_small_purple);
                 typeCheck = true;
 
+                wineSizeSelectorWrapper.setVisibility(View.VISIBLE);
+                beerSizeSelectorWrapper.setVisibility(View.GONE);
+                liquorSizeSelectorWrapper.setVisibility(View.GONE);
             }
         });
 
-        shot.setOnClickListener(new View.OnClickListener() {
+        liquorSizeSelector.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                sizeOfDrink = "Shot";
-                shot.setImageResource(R.drawable.shot_green);
-                eight.setImageResource(R.drawable.eight_purple);
-                sixteen.setImageResource(R.drawable.sixteen_purple);
-                twentyFour.setImageResource(R.drawable.twenty_four_purple);
-                sizeCheck = true;
+//                sizeOfDrink = "Shot";
+//                shot.setImageResource(R.drawable.shot_green);
+//                eight.setImageResource(R.drawable.eight_purple);
+//                sixteen.setImageResource(R.drawable.sixteen_purple);
+//                twentyFour.setImageResource(R.drawable.twenty_four_purple);
+//                sizeCheck = true;
 
             }
         });
-
-        eight.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                sizeOfDrink = "8";
-                shot.setImageResource(R.drawable.shot_purple);
-                eight.setImageResource(R.drawable.eight_green);
-                sixteen.setImageResource(R.drawable.sixteen_purple);
-                twentyFour.setImageResource(R.drawable.twenty_four_purple);
-                sizeCheck = true;
-            }
-        });
-
-        sixteen.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                sizeOfDrink = "16";
-                shot.setImageResource(R.drawable.shot_purple);
-                eight.setImageResource(R.drawable.eight_purple);
-                sixteen.setImageResource(R.drawable.sixteen_green);
-                twentyFour.setImageResource(R.drawable.twenty_four_purple);
-                sizeCheck = true;
-            }
-        });
-
-        twentyFour.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                sizeOfDrink = "24";
-                shot.setImageResource(R.drawable.shot_purple);
-                eight.setImageResource(R.drawable.eight_purple);
-                sixteen.setImageResource(R.drawable.sixteen_purple);
-                twentyFour.setImageResource(R.drawable.twenty_four_green);
-                sizeCheck = true;
-            }
-        });
+//
+//        eight.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View view) {
+//                sizeOfDrink = "8";
+//                shot.setImageResource(R.drawable.shot_purple);
+//                eight.setImageResource(R.drawable.eight_green);
+//                sixteen.setImageResource(R.drawable.sixteen_purple);
+//                twentyFour.setImageResource(R.drawable.twenty_four_purple);
+//                sizeCheck = true;
+//            }
+//        });
+//
+//        sixteen.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View view) {
+//                sizeOfDrink = "16";
+//                shot.setImageResource(R.drawable.shot_purple);
+//                eight.setImageResource(R.drawable.eight_purple);
+//                sixteen.setImageResource(R.drawable.sixteen_green);
+//                twentyFour.setImageResource(R.drawable.twenty_four_purple);
+//                sizeCheck = true;
+//            }
+//        });
+//
+//        twentyFour.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View view) {
+//                sizeOfDrink = "24";
+//                shot.setImageResource(R.drawable.shot_purple);
+//                eight.setImageResource(R.drawable.eight_purple);
+//                sixteen.setImageResource(R.drawable.sixteen_purple);
+//                twentyFour.setImageResource(R.drawable.twenty_four_green);
+//                sizeCheck = true;
+//            }
+//        });
 
         nobody.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -388,7 +453,8 @@ public class Main2Activity extends AppCompatActivity{
 
         submitBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if((!whereCheck || !withCheck || !typeCheck || !costCheck || !sizeCheck)){
+//                if((!whereCheck || !withCheck || !typeCheck || !costCheck || !sizeCheck)){
+                if((!whereCheck || !withCheck || !typeCheck || !costCheck)){
                     Log.e("check","false");
                     AlertDialog.Builder builder;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

@@ -53,41 +53,43 @@ import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity {
-    private DatabaseReference mDatabase;
-    private String userIDMA;
-    private FusedLocationProviderClient mFusedLocationClient;
+    // constants
+    public static final String startActivity = "main";
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
-    protected Location mLastLocation;
-    private ProgressBar progressBarCircle;
-    private TextView textViewTime;
-    private ImageView imageViewStartStop;
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    private String mId;
+    public static final long ALARM_TIME = 1800000;
+
+    private FusedLocationProviderClient mFusedLocationClient;
+    protected Location mLastLocation;
+    private DatabaseReference mReference;
     private AlarmManager alarmManager;
     private Intent resultIntent;
     private PendingIntent pIntent;
+
+    private String userIDMA;
+    private String mId;
     private long initialTime;
     private String initialTimeStr;
     private String startActivity1;
-    //public static final long ALARM_TIME = 60000;
-    public static final long ALARM_TIME = 1800000;
-    //public static final long PROGRESS_BAR_MAX = 60;
     private Integer nightCount;
     private String[] typeList;
     private String[] costList;
     private String date;
-    private DatabaseReference mReference;
     private String[] sizeList;
     private Integer totalCalConsumed;
     private Double avgCost = 0.00;
     private String group;
+
+    // UI
+    private ProgressBar progressBarCircle;
+    private TextView textViewTime;
+    private ImageView imageViewStartStop;
     private TextView cost_txt;
     private TextView cal_text;
     private TextView num_drink_text;
 
 
-    public static final String startActivity = "main";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
 
         //initialize layout and database
         setContentView(R.layout.activity_main);
-        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //initialize UI stuff
         //progressBarCircle = (ProgressBar) findViewById(R.id.progressBarCircle);
