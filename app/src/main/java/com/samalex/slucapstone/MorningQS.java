@@ -85,7 +85,7 @@ public class MorningQS extends AppCompatActivity {
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             // updated continuously as the user slides the thumb
             stressRatingSlideBarLabel.setText("You rate your stress: " + progress + " out of 10");
-
+            stress_value = progress + "";
         }
 
         @Override
@@ -1143,6 +1143,7 @@ public class MorningQS extends AppCompatActivity {
         int progress = seekBar.getProgress();
         stressRatingSlideBarLabel = findViewById(R.id.stress_rating_text);
         stressRatingSlideBarLabel.setText("You rate your stress: " + progress + " out of 10");
+        stress_value = progress + "";
     }
 
     //function to store the screen
