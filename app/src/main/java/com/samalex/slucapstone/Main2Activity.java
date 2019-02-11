@@ -70,12 +70,16 @@ public class Main2Activity extends AppCompatActivity{
     private TextView wineSizeLabel;
     private TextView beerSizeLabel;
     private TextView liquorSizeLabel;
+    private int wineSize = 0;
+    private int beerSize = 0;
+    private int liquorSize = 0;
 
     SeekBar.OnSeekBarChangeListener wineSizeChangeListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             // updated continuously as the user slides the thumb
             wineSizeLabel.setText(progress + " oz.");
+            wineSize = progress;
         }
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) { }
@@ -87,6 +91,7 @@ public class Main2Activity extends AppCompatActivity{
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             // updated continuously as the user slides the thumb
             beerSizeLabel.setText(progress + " oz.");
+            beerSize = progress;
         }
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) { }
@@ -163,15 +168,15 @@ public class Main2Activity extends AppCompatActivity{
         beerSizeSelector.setOnSeekBarChangeListener(beerSizeChangeListener);
 
 
-        final int wineSize = wineSizeSelector.getProgress();
+        wineSize = wineSizeSelector.getProgress();
         wineSizeLabel = findViewById(R.id.wine_size_text);
         wineSizeLabel.setText(wineSize + " oz");
 
-        final int beerSize = beerSizeSelector.getProgress();
+        beerSize = beerSizeSelector.getProgress();
         beerSizeLabel = findViewById(R.id.beer_size_text);
         beerSizeLabel.setText(beerSize + " oz");
 
-        final int liquorSize = 1;
+        liquorSize = 1;
         liquorSizeLabel = findViewById(R.id.liquor_size_text);
         liquorSizeLabel.setText(liquorSize + " oz (" + liquorSize + " shot)");
 
@@ -243,7 +248,7 @@ public class Main2Activity extends AppCompatActivity{
                 wineSizeSelectorWrapper.setVisibility(View.GONE);
                 beerSizeSelectorWrapper.setVisibility(View.VISIBLE);
                 liquorSizeSelectorWrapper.setVisibility(View.GONE);
-                sizeOfDrink = beerSize + "";
+//                sizeOfDrink = beerSize + "";
             }
         });
 
@@ -259,7 +264,7 @@ public class Main2Activity extends AppCompatActivity{
                 beerSizeSelectorWrapper.setVisibility(View.GONE);
                 liquorSizeSelectorWrapper.setVisibility(View.VISIBLE);
 //                sizeOfDrink = liquorSize + "";
-                sizeOfDrink = "Shot";
+//                sizeOfDrink = "Shot";
             }
         });
 
@@ -274,7 +279,7 @@ public class Main2Activity extends AppCompatActivity{
                 wineSizeSelectorWrapper.setVisibility(View.VISIBLE);
                 beerSizeSelectorWrapper.setVisibility(View.GONE);
                 liquorSizeSelectorWrapper.setVisibility(View.GONE);
-                sizeOfDrink = wineSize + "";
+//                sizeOfDrink = wineSize + "";
             }
         });
 
@@ -476,6 +481,17 @@ public class Main2Activity extends AppCompatActivity{
                             .show();
                 }else{
                     Log.e("check","true");
+                    switch (typeOfDrink) {
+                        case "wine":
+                            sizeOfDrink = wineSize + "";
+                            break;
+                        case "beer":
+                            sizeOfDrink = beerSize + "";
+                            break;
+                        case "liquor":
+                            sizeOfDrink = "Shot";
+                            break;
+                    }
                     writeTypeToDB(typeOfDrink);
                     writeSizeToDB(sizeOfDrink);
                     writeWhoToDB(withWhom);
