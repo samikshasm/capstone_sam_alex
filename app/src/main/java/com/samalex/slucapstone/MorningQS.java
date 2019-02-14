@@ -412,6 +412,9 @@ public class MorningQS extends AppCompatActivity {
                 hangover_qs_layout.setVisibility(View.GONE);
                 drugs_qs.setVisibility(View.GONE);
                 drugs_layout.setVisibility(View.GONE);
+                if(drugs.equals("yes")) {
+                    typesOfDrugs_layout.setVisibility(View.GONE);
+                }
             }
         };
         lastNightDrinkNo.setOnClickListener(onClickDrinkNo);
@@ -433,6 +436,9 @@ public class MorningQS extends AppCompatActivity {
                 hangover_qs_layout.setVisibility(View.VISIBLE);
                 drugs_qs.setVisibility(View.VISIBLE);
                 drugs_layout.setVisibility(View.VISIBLE);
+                if(drugs.equals("yes")) {
+                    typesOfDrugs_layout.setVisibility(View.VISIBLE);
+                }
             }
         };
         lastNightDrinkYes.setOnClickListener(onClickDrinkYes);
