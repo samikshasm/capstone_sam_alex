@@ -274,7 +274,8 @@ public class MainActivity extends AppCompatActivity {
         Calendar morningCal = Calendar.getInstance();
         long milliseconds = morningCal.getTimeInMillis();
         morningCal.setTimeInMillis(milliseconds);
-        int hour = morningCal.get(Calendar.HOUR_OF_DAY);
+//        int hour = morningCal.get(Calendar.HOUR_OF_DAY);
+        int hour = 9;
         int day;
         if (hour >= 0 && hour < 7){
             day = morningCal.get(Calendar.DAY_OF_WEEK);
@@ -290,9 +291,12 @@ public class MainActivity extends AppCompatActivity {
         Log.e("day of the week:", ""+morningCal.get(Calendar.DAY_OF_WEEK));
         Log.e("hour of the week:", ""+hour);
 
-        morningCal.set(Calendar.DAY_OF_WEEK, 3);
-        morningCal.set(Calendar.HOUR_OF_DAY, 22);
-        morningCal.set(Calendar.MINUTE, 15);
+//        morningCal.set(Calendar.DAY_OF_WEEK, 3);
+//        morningCal.set(Calendar.HOUR_OF_DAY, 22);
+//        morningCal.set(Calendar.MINUTE, 15);
+        morningCal.set(Calendar.DAY_OF_WEEK, day);
+        morningCal.set(Calendar.HOUR_OF_DAY, hour);
+        morningCal.set(Calendar.MINUTE, 0);
         morningCal.set(Calendar.SECOND, 0);
         Log.e("morningCal set time:",morningCal.get(Calendar.DAY_OF_WEEK)+","+morningCal.get(Calendar.HOUR_OF_DAY));
         Intent alertIntent = new Intent(this, TimerReceiver.class);
