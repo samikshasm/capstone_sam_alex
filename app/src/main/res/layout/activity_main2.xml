@@ -218,23 +218,20 @@
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center"
                         android:textSize="20dp"/>
-                    <LinearLayout
-                        android:layout_marginTop="24dp"
+                    <SeekBar
+                        android:id="@+id/liquor_size_selector"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="1">
-
-                        <ImageButton
-                            android:layout_width="105dp"
-                            android:layout_height="105dp"
-                            android:background="@color/app_background"
-                            android:src="@drawable/shot_green"
-                            android:adjustViewBounds="true"
-                            android:scaleType="centerInside"
-                            android:layout_weight="1"
-                            android:id="@+id/liquor_size_selector"/>
-                    </LinearLayout>
+                        android:layout_marginLeft="24dp"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginRight="24dp"
+                        android:max="1"
+                        android:min="4"
+                        android:progress="1"
+                        android:progressDrawable="@drawable/cast_abc_scrubber_primary_mtrl_alpha"
+                        android:thumb="@drawable/cast_abc_scrubber_control_to_pressed_mtrl_005"
+                        android:thumbTint="@color/pink"
+                        android:tickMark="@drawable/drawable_tickmark" />
                         <TextView
                             android:id="@+id/liquor_size_text"
                             android:layout_margin="10dp"

@@ -353,60 +353,20 @@ public class MorningReport extends AppCompatActivity{
                             totalOuncesConsumed = totalOuncesConsumed + 1;
                         }
 
+                        int oneServingSize = 1;
+                        int caloriePerOneServing = 100;
+
                         if (type.equals("wine")) {
-
-                            if (size.equals("Shot")) {
-                                totalCalConsumed = totalCalConsumed+calorieWineShot;
-                            }
-
-                            else if (size.equals("8")) {
-                                totalCalConsumed = totalCalConsumed+calorieWineEight;
-
-                            }
-                            else if (size.equals("16")) {
-                                totalCalConsumed = totalCalConsumed+calorieWineSixteen;
-
-                            }
-                            else if (size.equals("24")) {
-                                totalCalConsumed = totalCalConsumed+calorieWineTwentyFour;
-                            }
+                            oneServingSize = 5;
                         }
-
-                        else if (type.equals("liquor")) {
-
-                            if (size.equals("Shot")) {
-                                totalCalConsumed = totalCalConsumed+calorieLiquorShot;
-                            }
-                            else if (size.equals("8")) {
-                                totalCalConsumed = totalCalConsumed+calorieLiquorEight;
-
-                            }
-                            else if (size.equals("16")) {
-                                totalCalConsumed = totalCalConsumed+calorieLiquorSixteen;
-
-                            }
-                            else if (size.equals("24")) {
-                                totalCalConsumed = totalCalConsumed+calorieLiquorTwentyFour;
-                            }
-                        }
-
                         else if (type.equals("beer")) {
-
-                            if (size.equals("Shot")) {
-                                totalCalConsumed = totalCalConsumed+calorieBeerShot;
-                            }
-                            else if (size.equals("8")) {
-                                totalCalConsumed = totalCalConsumed+calorieBeerEight;
-
-                            }
-                            else if (size.equals("16")) {
-                                totalCalConsumed = totalCalConsumed+calorieBeerSixteen;
-
-                            }
-                            else if (size.equals("24")) {
-                                totalCalConsumed = totalCalConsumed+calorieBeerTwentyFour;
-                            }
+                            oneServingSize = 12;
                         }
+                        else if (type.equals("liquor")) {
+                            oneServingSize = 1;
+                        }
+
+                        totalCalConsumed += Integer.parseInt(size) * caloriePerOneServing / oneServingSize;
                     }
 
                     double totalLitersConsumed = (totalOuncesConsumed * 0.03);

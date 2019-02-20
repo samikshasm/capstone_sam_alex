@@ -98,6 +98,18 @@ public class Main2Activity extends AppCompatActivity{
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) { }
     };
+    SeekBar.OnSeekBarChangeListener liquorSizeChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            // updated continuously as the user slides the thumb
+            liquorSizeLabel.setText(liquorSize + " oz (" + liquorSize + " shot(s))");
+            liquorSize = progress;
+        }
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) { }
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) { }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -155,7 +167,7 @@ public class Main2Activity extends AppCompatActivity{
 
         }
 
-        final ImageButton liquorSizeSelector = (ImageButton) findViewById(R.id.liquor_size_selector);
+        final SeekBar liquorSizeSelector = (SeekBar) findViewById(R.id.liquor_size_selector);
         final SeekBar wineSizeSelector = (SeekBar) findViewById(R.id.wine_size_selector);
         final SeekBar beerSizeSelector = (SeekBar) findViewById(R.id.beer_size_selector);
 
@@ -166,6 +178,7 @@ public class Main2Activity extends AppCompatActivity{
         // set a change listener on the SeekBar
         wineSizeSelector.setOnSeekBarChangeListener(wineSizeChangeListener);
         beerSizeSelector.setOnSeekBarChangeListener(beerSizeChangeListener);
+        liquorSizeSelector.setOnSeekBarChangeListener(liquorSizeChangeListener);
 
 
         wineSize = wineSizeSelector.getProgress();
@@ -176,9 +189,9 @@ public class Main2Activity extends AppCompatActivity{
         beerSizeLabel = findViewById(R.id.beer_size_text);
         beerSizeLabel.setText(beerSize + " oz");
 
-        liquorSize = 1;
+        liquorSize = liquorSizeSelector.getProgress();
         liquorSizeLabel = findViewById(R.id.liquor_size_text);
-        liquorSizeLabel.setText(liquorSize + " oz (" + liquorSize + " shot)");
+        liquorSizeLabel.setText(liquorSize + " oz (" + liquorSize + " shot(s))");
 
 
         drink1_5.setOnClickListener(new View.OnClickListener(){
@@ -248,7 +261,6 @@ public class Main2Activity extends AppCompatActivity{
                 wineSizeSelectorWrapper.setVisibility(View.GONE);
                 beerSizeSelectorWrapper.setVisibility(View.VISIBLE);
                 liquorSizeSelectorWrapper.setVisibility(View.GONE);
-//                sizeOfDrink = beerSize + "";
             }
         });
 
@@ -263,8 +275,6 @@ public class Main2Activity extends AppCompatActivity{
                 wineSizeSelectorWrapper.setVisibility(View.GONE);
                 beerSizeSelectorWrapper.setVisibility(View.GONE);
                 liquorSizeSelectorWrapper.setVisibility(View.VISIBLE);
-//                sizeOfDrink = liquorSize + "";
-//                sizeOfDrink = "Shot";
             }
         });
 
@@ -279,54 +289,8 @@ public class Main2Activity extends AppCompatActivity{
                 wineSizeSelectorWrapper.setVisibility(View.VISIBLE);
                 beerSizeSelectorWrapper.setVisibility(View.GONE);
                 liquorSizeSelectorWrapper.setVisibility(View.GONE);
-//                sizeOfDrink = wineSize + "";
             }
         });
-
-//        liquorSizeSelector.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View view) {
-//                sizeOfDrink = "Shot";
-//                shot.setImageResource(R.drawable.shot_green);
-//                eight.setImageResource(R.drawable.eight_purple);
-//                sixteen.setImageResource(R.drawable.sixteen_purple);
-//                twentyFour.setImageResource(R.drawable.twenty_four_purple);
-//                sizeCheck = true;
-//
-//            }
-//        });
-//
-//        eight.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View view) {
-//                sizeOfDrink = "8";
-//                shot.setImageResource(R.drawable.shot_purple);
-//                eight.setImageResource(R.drawable.eight_green);
-//                sixteen.setImageResource(R.drawable.sixteen_purple);
-//                twentyFour.setImageResource(R.drawable.twenty_four_purple);
-//                sizeCheck = true;
-//            }
-//        });
-//
-//        sixteen.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View view) {
-//                sizeOfDrink = "16";
-//                shot.setImageResource(R.drawable.shot_purple);
-//                eight.setImageResource(R.drawable.eight_purple);
-//                sixteen.setImageResource(R.drawable.sixteen_green);
-//                twentyFour.setImageResource(R.drawable.twenty_four_purple);
-//                sizeCheck = true;
-//            }
-//        });
-//
-//        twentyFour.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View view) {
-//                sizeOfDrink = "24";
-//                shot.setImageResource(R.drawable.shot_purple);
-//                eight.setImageResource(R.drawable.eight_purple);
-//                sixteen.setImageResource(R.drawable.sixteen_purple);
-//                twentyFour.setImageResource(R.drawable.twenty_four_green);
-//                sizeCheck = true;
-//            }
-//        });
 
         nobody.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -489,7 +453,7 @@ public class Main2Activity extends AppCompatActivity{
                             sizeOfDrink = beerSize + "";
                             break;
                         case "liquor":
-                            sizeOfDrink = "Shot";
+                            sizeOfDrink = liquorSize + "";
                             break;
                     }
                     writeTypeToDB(typeOfDrink);
