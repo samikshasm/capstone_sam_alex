@@ -320,7 +320,7 @@ public class MorningReport extends AppCompatActivity{
                     Integer totalOuncesConsumed = 0;
 
                     for (int i = 0; i < test.length; i++ ) {
-                        totalCalConsumed+= i;
+//                        totalCalConsumed+= i;
 
                         String type = typeList[i];
                         String size = sizeList[i];
@@ -338,7 +338,7 @@ public class MorningReport extends AppCompatActivity{
                         int caloriePerOneServing = 100;
 
                         if (type.equals("wine")) {
-                            oneServingSize = 5;
+                            oneServingSize = 4;
                         }
                         else if (type.equals("beer")) {
                             oneServingSize = 12;
@@ -410,9 +410,8 @@ public class MorningReport extends AppCompatActivity{
 
 
                     }
-                    String totalCost = "$"+avgCost+"0";
                     TextView cost_txt = (TextView) findViewById(R.id.costText);
-                    cost_txt.setText(totalCost+"");
+                    cost_txt.setText(String.format("%.2f", avgCost));
                 }else{
                     //Log.e("null","cost object is null");
                 }
