@@ -256,10 +256,7 @@ public class StartActivity extends AppCompatActivity {
                 Intent switchToLogin = new Intent(StartActivity.this, LoginActivity.class);
                 switchToLogin.putExtra("sign out", currentUserFromLA);
                 startActivity(switchToLogin);
-                SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
-                SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-                mEditor.putString("Group", "none");
-                mEditor.apply();
+                storeGroup("none");
                 finish();
             }
         });
