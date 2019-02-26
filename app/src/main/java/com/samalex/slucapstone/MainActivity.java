@@ -477,24 +477,6 @@ public class MainActivity extends AppCompatActivity {
                         sizeList[i] = tempList[1];
                     }
 
-                    //initializes calorie values
-                    Integer calorieWineShot = 100; //i made this up
-                    Integer calorieWineEight = 188;
-                    Integer calorieWineSixteen = 377;
-                    Integer calorieWineTwentyFour = 565;
-
-                    Integer calorieBeerShot = 58; //i don't actually know
-                    Integer calorieBeerEight = 98;
-                    Integer calorieBeerSixteen = 196;
-                    Integer calorieBeerTwentyFour = 294;
-
-
-                    //ALEX HELP ME PLS!!!!!
-                    Integer calorieLiquorShot = 100; //i made this up
-                    Integer calorieLiquorEight = 188;
-                    Integer calorieLiquorSixteen = 377;
-                    Integer calorieLiquorTwentyFour = 565;
-
                     //initializes default values
                     totalCalConsumed = 0;
                     Integer totalOuncesConsumed = 0;
@@ -515,60 +497,20 @@ public class MainActivity extends AppCompatActivity {
                             totalOuncesConsumed = totalOuncesConsumed + 1;
                         }
 
+                        int oneServingSize = 1;
+                        int caloriePerOneServing = 100;
+
                         if (type.equals("wine")) {
-
-                            if (size.equals("Shot")) {
-                                totalCalConsumed = totalCalConsumed+calorieWineShot;
-                            }
-
-                            else if (size.equals("8")) {
-                                totalCalConsumed = totalCalConsumed+calorieWineEight;
-
-                            }
-                            else if (size.equals("16")) {
-                                totalCalConsumed = totalCalConsumed+calorieWineSixteen;
-
-                            }
-                            else if (size.equals("24")) {
-                                totalCalConsumed = totalCalConsumed+calorieWineTwentyFour;
-                            }
+                            oneServingSize = 4;
                         }
-
-                        else if (type.equals("liquor")) {
-
-                            if (size.equals("Shot")) {
-                                totalCalConsumed = totalCalConsumed+calorieLiquorShot;
-                            }
-                            else if (size.equals("8")) {
-                                totalCalConsumed = totalCalConsumed+calorieLiquorEight;
-
-                            }
-                            else if (size.equals("16")) {
-                                totalCalConsumed = totalCalConsumed+calorieLiquorSixteen;
-
-                            }
-                            else if (size.equals("24")) {
-                                totalCalConsumed = totalCalConsumed+calorieLiquorTwentyFour;
-                            }
-                        }
-
                         else if (type.equals("beer")) {
-
-                            if (size.equals("Shot")) {
-                                totalCalConsumed = totalCalConsumed+calorieBeerShot;
-                            }
-                            else if (size.equals("8")) {
-                                totalCalConsumed = totalCalConsumed+calorieBeerEight;
-
-                            }
-                            else if (size.equals("16")) {
-                                totalCalConsumed = totalCalConsumed+calorieBeerSixteen;
-
-                            }
-                            else if (size.equals("24")) {
-                                totalCalConsumed = totalCalConsumed+calorieBeerTwentyFour;
-                            }
+                            oneServingSize = 12;
                         }
+                        else if (type.equals("liquor")) {
+                            oneServingSize = 1;
+                        }
+
+                        totalCalConsumed += Integer.parseInt(size) * caloriePerOneServing / oneServingSize;
                     }
 
 
@@ -623,8 +565,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                     }
-                    String totalCost = "$"+avgCost+"0";
-                    cost_txt.setText(totalCost+"");
+                    cost_txt.setText(String.format("%.2f", avgCost));
                 }else{
                     //Log.e("null","cost object is null");
                 }

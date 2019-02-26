@@ -320,7 +320,6 @@ public class MorningReport extends AppCompatActivity{
                     Integer totalOuncesConsumed = 0;
 
                     for (int i = 0; i < test.length; i++ ) {
-//                        totalCalConsumed+= i;
 
                         String type = typeList[i];
                         String size = sizeList[i];
