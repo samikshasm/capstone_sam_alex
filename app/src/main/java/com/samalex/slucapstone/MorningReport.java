@@ -315,29 +315,10 @@ public class MorningReport extends AppCompatActivity{
                         sizeList[i] = tempList[1];
                     }
 
-                    //initializes calorie values
-                    Integer calorieWineShot = 100; //i made this up
-                    Integer calorieWineEight = 188;
-                    Integer calorieWineSixteen = 377;
-                    Integer calorieWineTwentyFour = 565;
-
-                    Integer calorieBeerShot = 58; //i don't actually know
-                    Integer calorieBeerEight = 98;
-                    Integer calorieBeerSixteen = 196;
-                    Integer calorieBeerTwentyFour = 294;
-
-
-                    //ALEX HELP ME PLS!!!!!
-                    Integer calorieLiquorShot = 100; //i made this up
-                    Integer calorieLiquorEight = 188;
-                    Integer calorieLiquorSixteen = 377;
-                    Integer calorieLiquorTwentyFour = 565;
-
                     //initializes default values
                     totalCalConsumed = 0;
                     Integer totalOuncesConsumed = 0;
 
-                    //samiksha can you comment this????????
                     for (int i = 0; i < test.length; i++ ) {
                         totalCalConsumed+= i;
 
