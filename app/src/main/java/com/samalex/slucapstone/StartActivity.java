@@ -272,46 +272,10 @@ public class StartActivity extends AppCompatActivity {
             }
         });
 
-      /*  SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
-        group = mSharedPreferences2.getString("Group","none");
-        if(group.equals("none")){
-            mReference = FirebaseDatabase.getInstance().getReference();
-            mReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    getControlList(dataSnapshot);
-                    getExperimentalList(dataSnapshot);
-                    for(int i = 0; i < expList.size(); i++){
-                        if(expList.get(i).substring(1,expList.get(i).length()).equals(userIDMA)){
-                            group = "experimental";
-                        }
-                    }
-                    for(int i = 0; i < controlList.size(); i++){
-                        if(controlList.get(i).substring(1,controlList.get(i).length()).equals(userIDMA)){
-                            group = "control";
-                        }
-                    }
-                    storeGroup(group);
-                    //Log.e("expList",expList.get(4).substring(1,expList.get(4).length()).length()+"");
-                    //Log.e("userID",userIDMA.length()+"");
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }*/
-
         SharedPreferences switchesSharedPreferences = getSharedPreferences("NumberSwitchesToMain2Activity", MODE_PRIVATE);
         SharedPreferences.Editor switchesEditor = switchesSharedPreferences.edit();
         switchesEditor.putInt("switches", 1);
         switchesEditor.apply();
-
-       /* SharedPreferences groupSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
-        group = groupSharedPreferences.getString("Group","none");*/
 
         SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
         String selectedScreen = mSharedPreferences.getString("currentScreen","none");
