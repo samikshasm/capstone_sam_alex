@@ -85,7 +85,7 @@ public class MorningReport extends AppCompatActivity{
         //gets shared preference variables
         getTime();
         nightCount = getNightCount();
-        numDrinks = getNumDrinks();
+//        numDrinks = getNumDrinks(); // cannot get from SharedPreferences because it's already reset when submitting morning questionnaire
 
         //initializes pie chart and sets basic features
         pieChart = (PieChart) findViewById(R.id.pie_chart);
@@ -111,10 +111,6 @@ public class MorningReport extends AppCompatActivity{
             }
         });
 
-        //gets shared preference information needed
-        SharedPreferences numDrinksSharedPref = getSharedPreferences("numDrinks", MODE_PRIVATE);
-        Integer numberDrinks = numDrinksSharedPref.getInt("numDrinks",0);
-        String numberDrinksStr = numberDrinks.toString();
 
         //initializes ui elements
         display_numDrinks = (TextView) findViewById(R.id.display_numDrinks);
@@ -183,8 +179,9 @@ public class MorningReport extends AppCompatActivity{
 
                     String typeDrinkSub = typeDrink.substring(1, typeDrink.length()-1);
                     String[] testType = typeDrinkSub.split(",");
-                    typeList = new String[testType.length];
-                    for (int i =0; i<testType.length; i++) {
+                    int numDrinksFromDB = testType.length;
+                    typeList = new String[numDrinksFromDB];
+                    for (int i = 0; i< numDrinksFromDB; i++) {
                         String[] tempList = testType[i].split("=");
                         typeList[i] = tempList[1];
                     }
@@ -196,7 +193,7 @@ public class MorningReport extends AppCompatActivity{
                     float percentLiquor = 0;
                     float percentBeer = 0;
 
-                    for (int i = 0; i < testType.length; i++ ) {
+                    for (int i = 0; i < numDrinksFromDB; i++ ) {
 
                         String type = typeList[i];
 
@@ -220,7 +217,7 @@ public class MorningReport extends AppCompatActivity{
                     percentWine = ((float) numWine/ (float) numberDrinks)*100;
 
                     //sets the display drinks textview
-                    display_numDrinks.setText(""+numDrinks);
+                    display_numDrinks.setText(""+numDrinksFromDB);
 
                     //sets the display calories textview
                     display_calories.setText(""+totalCalConsumed);
@@ -266,7 +263,7 @@ public class MorningReport extends AppCompatActivity{
 
                 }else{
                     //if no data was entered from user, sets default value
-                    display_numDrinks.setText(""+numDrinks);
+                    display_numDrinks.setText("0");
                     //populates an empty pie chart if size of drink is null
                     ArrayList<PieEntry> yEntrys = new ArrayList<>();
                     ArrayList<String> xEntrys = new ArrayList<>();
@@ -350,10 +347,7 @@ public class MorningReport extends AppCompatActivity{
                     }
 
                     double totalLitersConsumed = (totalOuncesConsumed * 0.03);
-                    litersDrank.setText (""+totalLitersConsumed);
-
-                    //sets the display drinks textview
-                    display_numDrinks.setText(""+numDrinks);
+                    litersDrank.setText (String.format("%.2f", totalLitersConsumed));
 
                     //sets the display calories textview
                     display_calories.setText(""+totalCalConsumed);
@@ -362,7 +356,6 @@ public class MorningReport extends AppCompatActivity{
                     //set values to null if size drink is null
                     litersDrank.setText("0");
                     display_calories.setText("0");
-                    display_numDrinks.setText(""+numDrinks);
                 }
 
 

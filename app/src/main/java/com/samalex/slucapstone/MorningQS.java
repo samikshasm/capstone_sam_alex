@@ -376,7 +376,7 @@ public class MorningQS extends AppCompatActivity {
                 if (group.equals("control")) {
                     startActivity1 = "start";
                     storeScreen(startActivity1);
-//                    storeNumDrinks(0);
+                    storeNumDrinks(0);
                     Intent goToStart = new Intent(MorningQS.this, StartActivity.class);
                     goToStart.putExtra("Start Activity", startActivity);
                     startActivity(goToStart);
@@ -385,7 +385,7 @@ public class MorningQS extends AppCompatActivity {
                 else if (group.equals("experimental") | group.equals("none")) {
                     startActivity1 = "morningReport";
                     storeScreen(startActivity1);
-//                    storeNumDrinks(0);
+                    storeNumDrinks(0);
                     Intent goToStart = new Intent(MorningQS.this, StartActivity.class);
                     goToStart.putExtra("Start Activity", startActivity);
                     startActivity(goToStart);
