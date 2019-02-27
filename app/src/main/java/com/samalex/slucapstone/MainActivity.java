@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
         long milliseconds = morningCal.getTimeInMillis();
         morningCal.setTimeInMillis(milliseconds);
 
-        boolean debug = true;
+        boolean debug = false;
         if(debug) {
             int day = morningCal.get(Calendar.DAY_OF_WEEK);
             int hour = morningCal.get(Calendar.HOUR_OF_DAY);
