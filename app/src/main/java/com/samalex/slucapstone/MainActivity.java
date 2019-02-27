@@ -274,30 +274,38 @@ public class MainActivity extends AppCompatActivity {
         Calendar morningCal = Calendar.getInstance();
         long milliseconds = morningCal.getTimeInMillis();
         morningCal.setTimeInMillis(milliseconds);
-//        int hour = morningCal.get(Calendar.HOUR_OF_DAY);
-        int hour = 9;
-        int day;
-        if (hour >= 0 && hour < 7){
-            day = morningCal.get(Calendar.DAY_OF_WEEK);
-        }else{
-            day = morningCal.get(Calendar.DAY_OF_WEEK);
-            if(day == 7){
-                day = 1;
-            }else{
-                day = day+1;
-            }
-        }
-        //replace second argument on lines 288 and 289 with variables: day and hour, 290/291 with 0
-        Log.e("day of the week:", ""+morningCal.get(Calendar.DAY_OF_WEEK));
-        Log.e("hour of the week:", ""+hour);
 
-//        morningCal.set(Calendar.DAY_OF_WEEK, 3);
-//        morningCal.set(Calendar.HOUR_OF_DAY, 22);
-//        morningCal.set(Calendar.MINUTE, 15);
-        morningCal.set(Calendar.DAY_OF_WEEK, day);
-        morningCal.set(Calendar.HOUR_OF_DAY, hour);
-        morningCal.set(Calendar.MINUTE, 0);
-        morningCal.set(Calendar.SECOND, 0);
+        boolean debug = true;
+        if(debug) {
+            int day = morningCal.get(Calendar.DAY_OF_WEEK);
+            int hour = morningCal.get(Calendar.HOUR_OF_DAY);
+            int minute = morningCal.get(Calendar.MINUTE);
+
+            morningCal.set(Calendar.DAY_OF_WEEK, day);
+            morningCal.set(Calendar.HOUR_OF_DAY, hour);
+            morningCal.set(Calendar.MINUTE, minute);
+        } else {
+            int hour = 9;
+            int day;
+            if (hour >= 0 && hour < 8) {
+                day = morningCal.get(Calendar.DAY_OF_WEEK);
+            } else {
+                day = morningCal.get(Calendar.DAY_OF_WEEK);
+                if (day == 7) {
+                    day = 1;
+                } else {
+                    day = day + 1;
+                }
+            }
+            //replace second argument on lines 288 and 289 with variables: day and hour, 290/291 with 0
+            Log.e("day of the week:", "" + morningCal.get(Calendar.DAY_OF_WEEK));
+            Log.e("hour of the week:", "" + hour);
+
+            morningCal.set(Calendar.DAY_OF_WEEK, day);
+            morningCal.set(Calendar.HOUR_OF_DAY, hour);
+            morningCal.set(Calendar.MINUTE, 0);
+            morningCal.set(Calendar.SECOND, 0);
+        }
         Log.e("morningCal set time:",morningCal.get(Calendar.DAY_OF_WEEK)+","+morningCal.get(Calendar.HOUR_OF_DAY));
         Intent alertIntent = new Intent(this, TimerReceiver.class);
         AlarmManager morningAlarmMan = (AlarmManager) getSystemService(ALARM_SERVICE);
