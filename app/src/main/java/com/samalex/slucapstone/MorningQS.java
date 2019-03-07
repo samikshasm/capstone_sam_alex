@@ -373,7 +373,7 @@ public class MorningQS extends AppCompatActivity {
                 writeStressValueToDB(stress_value);
                 finish();
 
-                if (group.equals("control")) {
+                if (group.equals("control") | group.equals("none")) {
                     startActivity1 = "start";
                     storeScreen(startActivity1);
                     storeNumDrinks(0);
@@ -382,7 +382,7 @@ public class MorningQS extends AppCompatActivity {
                     startActivity(goToStart);
                     finish();
                 }
-                else if (group.equals("experimental") | group.equals("none")) {
+                else if (group.equals("experimental")) {
                     startActivity1 = "morningReport";
                     storeScreen(startActivity1);
                     storeNumDrinks(0);
