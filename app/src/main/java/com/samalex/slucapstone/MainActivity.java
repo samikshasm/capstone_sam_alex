@@ -157,7 +157,9 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
         group = mSharedPreferences2.getString("Group","none");
-        if(group.equals("experimental")){
+
+        // The "none" and "experimental" groups will not see the real-time updated data
+        if(group.equals("experimental") | group.equals("none")){
             LinearLayout lin1 = (LinearLayout) findViewById(R.id.lin_lay_1);
             lin1.setVisibility(View.GONE);
             LinearLayout lin2 = (LinearLayout) findViewById(R.id.lin_layout_2);
@@ -280,10 +282,12 @@ public class MainActivity extends AppCompatActivity {
             int day = morningCal.get(Calendar.DAY_OF_WEEK);
             int hour = morningCal.get(Calendar.HOUR_OF_DAY);
             int minute = morningCal.get(Calendar.MINUTE);
+            int second = morningCal.get(Calendar.SECOND);
 
             morningCal.set(Calendar.DAY_OF_WEEK, day);
             morningCal.set(Calendar.HOUR_OF_DAY, hour);
             morningCal.set(Calendar.MINUTE, minute);
+            morningCal.set(Calendar.SECOND, +1);
         } else {
             int hour = 9;
             int day;
