@@ -373,6 +373,7 @@ public class MorningQS extends AppCompatActivity {
                 writeStressValueToDB(stress_value);
                 finish();
 
+                // The "none" and "control" group will not see the Morning Summary Report
                 if (group.equals("control") | group.equals("none")) {
                     startActivity1 = "start";
                     storeScreen(startActivity1);
