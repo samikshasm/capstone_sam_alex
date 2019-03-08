@@ -62,6 +62,11 @@ import java.util.Date;
 
 public class StartActivity extends AppCompatActivity {
 
+    public static final int ONE_MINUTE = 60 *1000;
+    public static final int ONE_HOUR = 60 * 60 * 1000;
+    public static final int ONE_DAY = 24 * 60 * 60 * 1000; // 86,400,000 milliseconds in 1 day
+    public static final int TWO_DAY = ONE_DAY * 2;
+
     private String userIDMA;
     private String currentUserFromLA;
     private String startActivity;
@@ -110,10 +115,10 @@ public class StartActivity extends AppCompatActivity {
             Calendar morningCal = Calendar.getInstance();
             long currentMillis = morningCal.getTimeInMillis();
 
-            oneWeek = 86400000+currentMillis;
-            twoWeeks = 172800000+currentMillis;
-           // oneWeek = 60000 +currentMillis;
-           // twoWeeks = 120000 +currentMillis;
+            oneWeek = ONE_DAY +currentMillis;
+            twoWeeks = TWO_DAY +currentMillis;
+//            oneWeek = 60000 +currentMillis;
+//            twoWeeks = 120000 +currentMillis;
             storeOneWeek(oneWeek.longValue());
             storeTwoWeeks(twoWeeks.longValue());
 

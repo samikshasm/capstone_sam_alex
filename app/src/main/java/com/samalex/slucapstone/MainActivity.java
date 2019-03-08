@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         group = mSharedPreferences2.getString("Group","none");
 
         // The "none" and "experimental" groups will not see the real-time updated data
-        if(group.equals("experimental") | group.equals("none")){
+        if(group.equals("experimental") || group.equals("none")){
             LinearLayout lin1 = (LinearLayout) findViewById(R.id.lin_lay_1);
             lin1.setVisibility(View.GONE);
             LinearLayout lin2 = (LinearLayout) findViewById(R.id.lin_layout_2);
