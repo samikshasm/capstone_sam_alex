@@ -102,7 +102,7 @@ public class Main2Activity extends AppCompatActivity{
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             // updated continuously as the user slides the thumb
-            liquorSizeLabel.setText(liquorSize + " oz (" + liquorSize + " shot(s))");
+            liquorSizeLabel.setText(progress + " oz (" + progress + " shot(s))");
             liquorSize = progress;
         }
         @Override
