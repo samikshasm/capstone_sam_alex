@@ -43,6 +43,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 //suna
+import org.w3c.dom.Text;
+
 import static com.samalex.slucapstone.BroadcastService.STARTED_TIME_IN_MILLIS;
 
 import java.text.DateFormat;
@@ -88,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView cost_txt;
     private TextView cal_text;
     private TextView num_drink_text;
-
+    private TextView ongoing_group_value;
 
 
     @Override
@@ -157,6 +159,8 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
         group = mSharedPreferences2.getString("Group","none");
+        ongoing_group_value = (TextView) findViewById(R.id.ongoing_group_value);
+        ongoing_group_value.setText("group = "+group);
 
         // The "none" and "experimental" groups will not see the real-time updated data
         if(group.equals("experimental") || group.equals("none")){
@@ -277,8 +281,9 @@ public class MainActivity extends AppCompatActivity {
         long milliseconds = morningCal.getTimeInMillis();
         morningCal.setTimeInMillis(milliseconds);
 
-        boolean debug = false;
-        if(debug) {
+        BoozymeterApplication application = (BoozymeterApplication) getApplication();
+        boolean isDebug = application.isDebug();
+        if(isDebug) {
             int day = morningCal.get(Calendar.DAY_OF_WEEK);
             int hour = morningCal.get(Calendar.HOUR_OF_DAY);
             int minute = morningCal.get(Calendar.MINUTE);

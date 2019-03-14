@@ -97,6 +97,11 @@ public class StartActivity extends AppCompatActivity {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         super.onCreate(savedInstanceState);
+
+        BoozymeterApplication application = (BoozymeterApplication) getApplication();
+        boolean isDebug = application.isDebug();
+
+
         setContentView(R.layout.activity_start);
         //new location stuff
         client = new GoogleApiClient.Builder(this)
@@ -115,10 +120,14 @@ public class StartActivity extends AppCompatActivity {
             Calendar morningCal = Calendar.getInstance();
             long currentMillis = morningCal.getTimeInMillis();
 
-            oneWeek = ONE_DAY +currentMillis;
-            twoWeeks = TWO_DAY +currentMillis;
-//            oneWeek = 60000 +currentMillis;
-//            twoWeeks = 120000 +currentMillis;
+            if(isDebug) {
+                oneWeek = ONE_MINUTE +currentMillis;
+                twoWeeks = (2 * ONE_MINUTE) +currentMillis;
+            } else {
+                oneWeek = ONE_DAY +currentMillis;
+                twoWeeks = TWO_DAY +currentMillis;
+            }
+            
             storeOneWeek(oneWeek.longValue());
             storeTwoWeeks(twoWeeks.longValue());
 
@@ -271,7 +280,7 @@ public class StartActivity extends AppCompatActivity {
             public void onClick(View view) {
                 new AlertDialog.Builder(StartActivity.this,R.style.MyAlertDialogStyle)
                         //.setTitle("Contact Dr. Shacham")
-                        .setMessage("Email eshacham@slu.edu")
+                        .setMessage("Email eshacham@slu.edu\nYour logged in username: "+getUserID() +"\nOngoing status: "+getGroup())
                        // .setNegativeButton("Ok",null)
                         .setPositiveButton("Ok",null).create().show();
             }
@@ -404,7 +413,7 @@ public class StartActivity extends AppCompatActivity {
         mEditor.apply();
     }
 
-    private String getScreen() {
+    private String getUserID() {
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         String selectedScreen = mSharedPreferences.getString("user ID", "none");
         return selectedScreen;

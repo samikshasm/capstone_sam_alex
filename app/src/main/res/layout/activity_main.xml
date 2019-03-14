@@ -46,7 +46,6 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:orientation="vertical">
-
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -170,7 +169,6 @@
 
             </LinearLayout>
 
-
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/main_activity_container"
                 android:layout_width="wrap_content"
@@ -209,9 +207,18 @@
                     android:layout_marginTop="5dp"/>
 
             </RelativeLayout>
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/ongoing_group_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/aluminum" />
+
         </LinearLayout>
-
-
 
     </RelativeLayout>
 
