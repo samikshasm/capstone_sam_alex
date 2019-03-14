@@ -34,6 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by samikshasm on 7/17/17.
@@ -247,9 +248,15 @@ public class StartActivity extends AppCompatActivity {
         Log.e("temp2", temp2+"");
         Log.e("calmillis", calMillis+"");
 
+        boolean isDuringWeek1 = calMillis < temp1;
+        boolean isDuringWeek2 = calMillis >= temp1 && calMillis < temp2;
+        boolean isDuringWeek3OrAfterward = calMillis >= getTwoWeeks();
 
-        if(calMillis>=temp1 && calMillis<temp2){
-
+        if(isDuringWeek1) {
+            // do nothing
+        }
+        else if(isDuringWeek2){
+            // assign group straightforward (control -> control, experimental -> experimental)
             mReference = FirebaseDatabase.getInstance().getReference();
             mReference.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -285,8 +292,8 @@ public class StartActivity extends AppCompatActivity {
 
             Log.e("group after ", getGroup()+"");
         }
-        if(calMillis>=getTwoWeeks()){
-
+        if(isDuringWeek3OrAfterward){
+            // switch group (control -> experimental, experimental -> control)
             mReference = FirebaseDatabase.getInstance().getReference();
             mReference.addValueEventListener(new ValueEventListener() {
                 @Override
