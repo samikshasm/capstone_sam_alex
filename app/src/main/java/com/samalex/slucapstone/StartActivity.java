@@ -1,41 +1,21 @@
 package com.samalex.slucapstone;
 
-import android.*;
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -54,7 +34,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by samikshasm on 7/17/17.
@@ -93,15 +72,16 @@ public class StartActivity extends AppCompatActivity {
     static final Integer GPS_SETTINGS = 0x7;
 
     @Override
+    protected  void onRestart() {
+        super.onRestart();
+        processInterventionGroup();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         super.onCreate(savedInstanceState);
-
-        BoozymeterApplication application = (BoozymeterApplication) getApplication();
-        boolean isDebug = application.isDebug();
-
-
         setContentView(R.layout.activity_start);
         //new location stuff
         client = new GoogleApiClient.Builder(this)
@@ -109,119 +89,8 @@ public class StartActivity extends AppCompatActivity {
                 .addApi(LocationServices.API)
                 .build();
 
-        loginAttempts = getLoginAttempts();
-        startAttempts = getStartAttempts();
-        startAttempts++;
-        storeStartAttempts(startAttempts);
-        Calendar cal = Calendar.getInstance();
-        long calMillis = cal.getTimeInMillis();
-
-        if(loginAttempts==1 && startAttempts==1) {
-            Calendar morningCal = Calendar.getInstance();
-            long currentMillis = morningCal.getTimeInMillis();
-
-            if(isDebug) {
-                oneWeek = ONE_MINUTE +currentMillis;
-                twoWeeks = (2 * ONE_MINUTE) +currentMillis;
-            } else {
-                oneWeek = ONE_DAY +currentMillis;
-                twoWeeks = TWO_DAY +currentMillis;
-            }
-            
-            storeOneWeek(oneWeek.longValue());
-            storeTwoWeeks(twoWeeks.longValue());
-
-            SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
-            group = mSharedPreferences2.getString("Group","none");
-            group = "none";
-            storeGroup(group);
-        }
-
-       /* Log.e("start attempts", startAttempts+"");
-        Log.e("login attempts", loginAttempts+"");
-        Log.e("group before", group+"");
-        Log.e("oneweek", oneWeek+"");
-        Log.e("twoweeks", twoWeeks+"");*/
-
-        long temp1 = getOneWeek();
-        long temp2 = getTwoWeeks();
-
-        Log.e("temp1", temp1+"");
-        Log.e("temp2", temp2+"");
-        Log.e("calmillis", calMillis+"");
-
-
-        if(calMillis>=temp1 && calMillis<temp2){
-
-            mReference = FirebaseDatabase.getInstance().getReference();
-            mReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    getControlList(dataSnapshot);
-                    getExperimentalList(dataSnapshot);
-                    Log.e("expList", expList+"");
-                    Log.e("controlList", controlList+"");
-
-                    for(int i = 0; i < expList.size(); i++){
-                        if(expList.get(i).substring(1,expList.get(i).length()).equals(userIDMA)){
-                            group = "experimental";
-                        }
-                    }
-                    for(int i = 0; i < controlList.size(); i++){
-                        if(controlList.get(i).substring(1,controlList.get(i).length()).equals(userIDMA)){
-                            group = "control";
-                        }
-                    }
-                    Log.e("group", group+"");
-                    storeGroup(group);
-                    //Log.e("expList",expList.get(4).substring(1,expList.get(4).length()).length()+"");
-                    //Log.e("userID",userIDMA.length()+"");
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-            Log.e("group after ", getGroup()+"");
-        }
-        if(calMillis>=getTwoWeeks()){
-
-            mReference = FirebaseDatabase.getInstance().getReference();
-            mReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    getControlList(dataSnapshot);
-                    getExperimentalList(dataSnapshot);
-                    for(int i = 0; i < expList.size(); i++){
-                        if(expList.get(i).substring(1,expList.get(i).length()).equals(userIDMA)){
-                            group = "control";
-                        }
-                    }
-                    for(int i = 0; i < controlList.size(); i++){
-                        if(controlList.get(i).substring(1,controlList.get(i).length()).equals(userIDMA)){
-                            group = "experimental";
-                        }
-                    }
-                    storeGroup(group);
-                    //Log.e("expList",expList.get(4).substring(1,expList.get(4).length()).length()+"");
-                    //Log.e("userID",userIDMA.length()+"");
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-            Log.e("group: ", getGroup()+"");
-
-        }
-
+        // check if the user should be swapped ti another intervention group
+        processInterventionGroup();
 
 
         userIDMA = getIntent().getStringExtra("User ID");
@@ -331,6 +200,124 @@ public class StartActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private void processInterventionGroup() {
+        BoozymeterApplication application = (BoozymeterApplication) getApplication();
+        boolean isDebug = application.isDebug();
+
+        loginAttempts = getLoginAttempts();
+        startAttempts = getStartAttempts();
+        startAttempts++;
+        storeStartAttempts(startAttempts);
+        Calendar cal = Calendar.getInstance();
+        long calMillis = cal.getTimeInMillis();
+
+        if(loginAttempts==1 && startAttempts==1) {
+            Calendar morningCal = Calendar.getInstance();
+            long currentMillis = morningCal.getTimeInMillis();
+
+            if(isDebug) {
+                oneWeek = ONE_MINUTE +currentMillis;
+                twoWeeks = (2 * ONE_MINUTE) +currentMillis;
+            } else {
+                oneWeek = ONE_DAY +currentMillis;
+                twoWeeks = TWO_DAY +currentMillis;
+            }
+
+            storeOneWeek(oneWeek.longValue());
+            storeTwoWeeks(twoWeeks.longValue());
+
+            SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
+            group = mSharedPreferences2.getString("Group","none");
+            group = "none";
+            storeGroup(group);
+        }
+
+       /* Log.e("start attempts", startAttempts+"");
+        Log.e("login attempts", loginAttempts+"");
+        Log.e("group before", group+"");
+        Log.e("oneweek", oneWeek+"");
+        Log.e("twoweeks", twoWeeks+"");*/
+
+        long temp1 = getOneWeek();
+        long temp2 = getTwoWeeks();
+
+        Log.e("temp1", temp1+"");
+        Log.e("temp2", temp2+"");
+        Log.e("calmillis", calMillis+"");
+
+
+        if(calMillis>=temp1 && calMillis<temp2){
+
+            mReference = FirebaseDatabase.getInstance().getReference();
+            mReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    getControlList(dataSnapshot);
+                    getExperimentalList(dataSnapshot);
+                    Log.e("expList", expList+"");
+                    Log.e("controlList", controlList+"");
+
+                    for(int i = 0; i < expList.size(); i++){
+                        if(expList.get(i).substring(1,expList.get(i).length()).equals(userIDMA)){
+                            group = "experimental";
+                        }
+                    }
+                    for(int i = 0; i < controlList.size(); i++){
+                        if(controlList.get(i).substring(1,controlList.get(i).length()).equals(userIDMA)){
+                            group = "control";
+                        }
+                    }
+                    Log.e("group", group+"");
+                    storeGroup(group);
+                    //Log.e("expList",expList.get(4).substring(1,expList.get(4).length()).length()+"");
+                    //Log.e("userID",userIDMA.length()+"");
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            Log.e("group after ", getGroup()+"");
+        }
+        if(calMillis>=getTwoWeeks()){
+
+            mReference = FirebaseDatabase.getInstance().getReference();
+            mReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    getControlList(dataSnapshot);
+                    getExperimentalList(dataSnapshot);
+                    for(int i = 0; i < expList.size(); i++){
+                        if(expList.get(i).substring(1,expList.get(i).length()).equals(userIDMA)){
+                            group = "control";
+                        }
+                    }
+                    for(int i = 0; i < controlList.size(); i++){
+                        if(controlList.get(i).substring(1,controlList.get(i).length()).equals(userIDMA)){
+                            group = "experimental";
+                        }
+                    }
+                    storeGroup(group);
+                    //Log.e("expList",expList.get(4).substring(1,expList.get(4).length()).length()+"");
+                    //Log.e("userID",userIDMA.length()+"");
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+            Log.e("group: ", getGroup()+"");
+
+        }
     }
 
     //function to analyze data received from snapshot
