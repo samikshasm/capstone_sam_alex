@@ -5,10 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
-
-import java.sql.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by AlexL on 7/19/2017.
