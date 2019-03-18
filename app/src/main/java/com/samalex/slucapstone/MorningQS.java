@@ -201,7 +201,7 @@ public class MorningQS extends AppCompatActivity {
         final CheckBox health_check = (CheckBox) findViewById(R.id.health);
         final CheckBox trauma_check = (CheckBox) findViewById(R.id.trauma);
         final CheckBox other_check = (CheckBox) findViewById(R.id.other_stress);
-        
+
         //gets shared preferences variable
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = mSharedPreferences.getString("user ID", "none");
@@ -211,22 +211,7 @@ public class MorningQS extends AppCompatActivity {
 
         nightCount = getNightCount();
 
-
-        if (group.equals("control")) {
-            NotificationManager manager = (NotificationManager) MorningQS.this.getSystemService(Context.NOTIFICATION_SERVICE);
-            broadcastInt = getIntent().getStringExtra("broadcast Int");
-            int notificationId;
-            if (broadcastInt == null) {
-                notificationId = 5;
-            } else {
-                notificationId = Integer.parseInt(broadcastInt);
-            }
-
-            manager.cancel(notificationId);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                manager.deleteNotificationChannel(CHANNEL_ID);
-            }
-        }
+        dismissMorningQuestionnaireNotification();
 
         //creates all of the onClick listeners for all of the buttons for questions
         View.OnClickListener handler1 = new View.OnClickListener() {
@@ -763,6 +748,22 @@ public class MorningQS extends AppCompatActivity {
         stressRatingSlideBarLabel = findViewById(R.id.stress_rating_text);
         stressRatingSlideBarLabel.setText("You rate your stress: " + progress + " out of 10");
         stress_value = progress + "";
+    }
+
+    private void dismissMorningQuestionnaireNotification() {
+        NotificationManager manager = (NotificationManager) MorningQS.this.getSystemService(Context.NOTIFICATION_SERVICE);
+        broadcastInt = getIntent().getStringExtra("broadcast Int");
+        int notificationId;
+        if (broadcastInt == null) {
+            notificationId = 5;
+        } else {
+            notificationId = Integer.parseInt(broadcastInt);
+        }
+
+        manager.cancel(notificationId);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            manager.deleteNotificationChannel(CHANNEL_ID);
+        }
     }
 
     //function to store the screen

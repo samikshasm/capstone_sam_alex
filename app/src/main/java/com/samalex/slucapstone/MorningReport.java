@@ -138,25 +138,21 @@ public class MorningReport extends AppCompatActivity{
         SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
         group = mSharedPreferences2.getString("Group", "none");
 
-        if(group.equals("experimental")){
-            broadcastInt = getIntent().getStringExtra("broadcast Int");
-            if(broadcastInt != null){
-                int notificationId = Integer.parseInt(broadcastInt);
-                NotificationManager manager = (NotificationManager) MorningReport.this.getSystemService(Context.NOTIFICATION_SERVICE);
-                manager.cancel(notificationId);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        dismissMorningQuestionnaireNotification();
+    }
 
-                    manager.deleteNotificationChannel(CHANNEL_ID);
-                }
-
-            }else{
-                NotificationManager manager = (NotificationManager) MorningReport.this.getSystemService(Context.NOTIFICATION_SERVICE);
-                manager.cancel(5);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-                    manager.deleteNotificationChannel(CHANNEL_ID);
-                }
-            }
+    private void dismissMorningQuestionnaireNotification() {
+        NotificationManager manager = (NotificationManager) MorningReport.this.getSystemService(Context.NOTIFICATION_SERVICE);
+        broadcastInt = getIntent().getStringExtra("broadcast Int");
+        int notificationId;
+        if (broadcastInt == null) {
+            notificationId = 5;
+        } else {
+            notificationId = Integer.parseInt(broadcastInt);
+        }
+        manager.cancel(notificationId);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            manager.deleteNotificationChannel(CHANNEL_ID);
         }
     }
 
