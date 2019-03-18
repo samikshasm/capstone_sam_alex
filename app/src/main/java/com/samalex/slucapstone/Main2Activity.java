@@ -48,7 +48,7 @@ public class Main2Activity extends AppCompatActivity{
     private String date;
     private Integer nightCount;
     private String drinkCost;
-    private Integer drinksCounter=0;
+    private Integer plannedDrinksCounter =0;
     private Integer peopleCounter=0;
     private boolean typeCheck = false;
 //    private boolean sizeCheck = false;
@@ -143,7 +143,10 @@ public class Main2Activity extends AppCompatActivity{
         final RadioButton drink16plus = (RadioButton) findViewById(R.id.radio_16plus);
         final RadioGroup costGroup = (RadioGroup) findViewById(R.id.radioCost);
 
-
+        final LinearLayout planned_num_drinks_layout = findViewById(R.id.planned_num_drinks_layout);
+        final Button drinks_add_button = (Button) findViewById(R.id.drinks_add_button);
+        final Button drinks_subtract_button = (Button) findViewById(R.id.drinks_subtract_button);
+        final TextView drinks_counter = (TextView) findViewById(R.id.drinks_counter);
 
         broadcastInt = getIntent().getStringExtra("broadcast Int");
         if(broadcastInt != null){
@@ -183,6 +186,9 @@ public class Main2Activity extends AppCompatActivity{
         liquorSizeLabel = findViewById(R.id.liquor_size_text);
         liquorSizeLabel.setText(liquorSize + " oz (" + liquorSize + " shot(s))");
 
+        if(getNumDrinks() > 1) {
+            planned_num_drinks_layout.setVisibility(View.GONE);
+        }
 
         drink1_5.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
@@ -327,6 +333,25 @@ public class Main2Activity extends AppCompatActivity{
             }
         });
 
+        drinks_add_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                drinks_subtract_button.setEnabled(true);
+                plannedDrinksCounter++;
+                drinks_counter.setText(""+ plannedDrinksCounter);
+            }
+        });
+
+        drinks_subtract_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                plannedDrinksCounter--;
+                drinks_counter.setText(""+ plannedDrinksCounter);
+                if (plannedDrinksCounter == 0){
+                    drinks_subtract_button.setEnabled(false);
+                }
+            }
+        });
+
+
         home.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 where = "Home";
@@ -432,8 +457,8 @@ public class Main2Activity extends AppCompatActivity{
                     writeSizeToDB(sizeOfDrink);
                     writeWhoToDB(withWhom);
                     writeWhereToDB(where);
-                    writePlannedDrinksToDB(drinksCounter);
-                    writeNumberOfPeopleToDB(peopleCounter);
+                    writePlannedDrinksToDB(plannedDrinksCounter);
+//                    writeNumberOfPeopleToDB(peopleCounter);  // this question is not asked anymore
                     // get selected radio button from radioGroup
                     int selectedId = costGroup.getCheckedRadioButtonId();
                     // find the radiobutton by returned id
@@ -560,6 +585,4 @@ public class Main2Activity extends AppCompatActivity{
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
         return nightCount;
     }
-
-
 }
