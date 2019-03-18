@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             int day;
             int hour = morningCal.get(Calendar.HOUR_OF_DAY);
-            if (hour >= 0 && hour < 9) {
+            if (hour >= 0 && hour < 8) {
                 day = morningCal.get(Calendar.DAY_OF_WEEK);
             } else {
                 day = morningCal.get(Calendar.DAY_OF_WEEK) + 1;
@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("hour of the week:", "" + hour);
 
             morningCal.set(Calendar.DAY_OF_WEEK, day);
-            morningCal.set(Calendar.HOUR_OF_DAY, 9);
+            morningCal.set(Calendar.HOUR_OF_DAY, 8);
             morningCal.set(Calendar.MINUTE, 0);
             morningCal.set(Calendar.SECOND, 0);
         }
