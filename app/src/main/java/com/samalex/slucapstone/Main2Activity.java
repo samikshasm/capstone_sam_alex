@@ -186,8 +186,8 @@ public class Main2Activity extends AppCompatActivity{
         liquorSizeLabel = findViewById(R.id.liquor_size_text);
         liquorSizeLabel.setText(liquorSize + " oz (" + liquorSize + " shot(s))");
 
-        if(getNumDrinks() > 1) {
-            planned_num_drinks_layout.setVisibility(View.GONE);
+        if(getNumDrinks() > 0) {
+            planned_num_drinks_layout.setVisibility(View.GONE); // Ask a question "How much are you planning on drinking" only once. (first time)
         }
 
         drink1_5.setOnClickListener(new View.OnClickListener(){
