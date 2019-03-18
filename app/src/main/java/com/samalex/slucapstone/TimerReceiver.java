@@ -25,58 +25,42 @@ public class TimerReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        //userIDMA = intent.getStringExtra("User ID");
         SharedPreferences getUserID = context.getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = getUserID.getString("user ID", "none");
 
         initialTimeStr = intent.getStringExtra("initial time");
-        //counterStr = intent.getStringExtra("counter");
         broadcastStr = intent.getStringExtra("broadcast Int");
         Log.e("We are in the receiver", broadcastStr);
         broadcastID = Integer.parseInt(broadcastStr);
 
 
-        if(broadcastID < 4) {
+        if (broadcastID < 4) {
             Intent service_intent = new Intent(context, NotificationService.class);
-            //service_intent.putExtra("User ID", userIDMA);
             service_intent.putExtra("initial time", initialTimeStr);
             service_intent.putExtra("broadcast Int", broadcastStr);
-            //This is where it crashed
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(service_intent);
-            }else{
+            } else {
                 context.startService(service_intent);
             }
-        }
-
-        else if (broadcastID == 4) {
+        } else if (broadcastID == 4) {
             SharedPreferences mSharedPreferences = context.getSharedPreferences("screen", MODE_PRIVATE);
             SharedPreferences.Editor mEditor = mSharedPreferences.edit();
             mEditor.putString("currentScreen", "start");
             mEditor.apply();
-
-         /*   SharedPreferences mSharedPreferences1 = context.getSharedPreferences("screen", MODE_PRIVATE);
-            String selectedScreen = mSharedPreferences1.getString("currentScreen","none");
-            Log.e("shared preferences", selectedScreen);*/
-        }
-
-        else if (broadcastID == 5) {
+        } else if (broadcastID == 5) {
             SharedPreferences mSharedPreferences = context.getSharedPreferences("screen", MODE_PRIVATE);
             SharedPreferences.Editor mEditor = mSharedPreferences.edit();
             mEditor.putString("currentScreen", "morningQS");
             mEditor.apply();
             Intent service_intent = new Intent(context, NotificationService.class);
-            //service_intent.putExtra("User ID", userIDMA);
             service_intent.putExtra("initial time", initialTimeStr);
             service_intent.putExtra("broadcast Int", broadcastStr);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(service_intent);
-            }else{
+            } else {
                 context.startService(service_intent);
             }
-
         }
-
-
     }
 }
