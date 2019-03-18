@@ -15,29 +15,23 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class TimerReceiver extends BroadcastReceiver {
 
-    private Integer id;
-    private String userIDMA;
     private String initialTimeStr;
-    private String counterStr;
     private String broadcastStr;
     private Integer broadcastID;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        SharedPreferences getUserID = context.getSharedPreferences("UserID", MODE_PRIVATE);
-        userIDMA = getUserID.getString("user ID", "none");
-
         initialTimeStr = intent.getStringExtra("initial time");
         broadcastStr = intent.getStringExtra("broadcast Int");
         Log.e("We are in the receiver", broadcastStr);
         broadcastID = Integer.parseInt(broadcastStr);
 
-
         if (broadcastID < 4) {
             Intent service_intent = new Intent(context, NotificationService.class);
             service_intent.putExtra("initial time", initialTimeStr);
             service_intent.putExtra("broadcast Int", broadcastStr);
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(service_intent);
             } else {
