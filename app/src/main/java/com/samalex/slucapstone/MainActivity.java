@@ -259,8 +259,15 @@ public class MainActivity extends AppCompatActivity {
         boolean isDebug = application.isDebug();
 
         if (isDebug) {
+            int day = morningCal.get(Calendar.DAY_OF_WEEK);
+            int hour = morningCal.get(Calendar.HOUR_OF_DAY);
+            int minute = morningCal.get(Calendar.MINUTE);
             int second = morningCal.get(Calendar.SECOND);
-            morningCal.set(Calendar.SECOND, second, +3);
+
+            morningCal.set(Calendar.DAY_OF_WEEK, day);
+            morningCal.set(Calendar.HOUR_OF_DAY, hour);
+            morningCal.set(Calendar.MINUTE, minute);
+            morningCal.set(Calendar.SECOND, +3);
         } else {
             int day;
             int hour = morningCal.get(Calendar.HOUR_OF_DAY);
@@ -345,6 +352,7 @@ public class MainActivity extends AppCompatActivity {
     //every time the app resumes, this function is called
     @Override
     public void onResume() {
+        super.onResume();
         long startedTimeInMillis = getStartedTime();
         //start the ui update service when the app is resumed to update ui timer
         //startUIUpdateService(startedTimeInMillis);
@@ -364,7 +372,6 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
-        super.onResume();
     }
 
     private String getCurrentScreen() {
