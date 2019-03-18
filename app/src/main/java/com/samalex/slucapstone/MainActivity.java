@@ -123,10 +123,9 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = mSharedPreferences.getString("user ID", "none");
 
-        if(userIDMA != null) {
+        if (userIDMA != null) {
             Log.e("User ID Start", userIDMA);
-        }
-        else if(userIDMA == null | userIDMA.equals("none")){
+        } else if (userIDMA == null | userIDMA.equals("none")) {
             storeScreen("login");
         }
 
@@ -135,18 +134,18 @@ public class MainActivity extends AppCompatActivity {
         cost_txt = (TextView) findViewById(R.id.cost_text);
 
         SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
-        group = mSharedPreferences2.getString("Group","none");
+        group = mSharedPreferences2.getString("Group", "none");
         ongoing_group_value = (TextView) findViewById(R.id.ongoing_group_value);
-        ongoing_group_value.setText("group = "+group);
+        ongoing_group_value.setText("group = " + group);
 
         // The "none" and "experimental" groups will not see the real-time updated data
-        if(group.equals("experimental") || group.equals("none")){
+        if (group.equals("experimental") || group.equals("none")) {
             LinearLayout lin1 = (LinearLayout) findViewById(R.id.lin_lay_1);
             lin1.setVisibility(View.GONE);
             LinearLayout lin2 = (LinearLayout) findViewById(R.id.lin_layout_2);
             lin2.setVisibility(View.GONE);
         }
-        Log.e("Group", userIDMA+","+group);
+        Log.e("Group", userIDMA + "," + group);
 
 
         //tells the app that the current screen is "main"
@@ -239,13 +238,13 @@ public class MainActivity extends AppCompatActivity {
 
     //starts the location updates service which updates the database at given interval
     //starts BackgroundLocationService class
-    private void startLocationUpdates(String userID){
+    private void startLocationUpdates(String userID) {
         Intent intent = new Intent(MainActivity.this, BackgroundLocationService.class);
         startService(intent);
     }
 
     //stops the location updates service
-    private void stopLocationUpdates(){
+    private void stopLocationUpdates() {
         Intent intent = new Intent(MainActivity.this, BackgroundLocationService.class);
         stopService(intent);
 
@@ -253,46 +252,35 @@ public class MainActivity extends AppCompatActivity {
 
     //creates the morning alarm manager to go off the following morning
     //adapted code from Alarm Manager Android Developer page
-    private void createMorningAlarm () {
+    private void createMorningAlarm() {
         Calendar morningCal = Calendar.getInstance();
-        long milliseconds = morningCal.getTimeInMillis();
-        morningCal.setTimeInMillis(milliseconds);
 
         BoozymeterApplication application = (BoozymeterApplication) getApplication();
         boolean isDebug = application.isDebug();
-        if(isDebug) {
-            int day = morningCal.get(Calendar.DAY_OF_WEEK);
-            int hour = morningCal.get(Calendar.HOUR_OF_DAY);
-            int minute = morningCal.get(Calendar.MINUTE);
-            int second = morningCal.get(Calendar.SECOND);
 
-            morningCal.set(Calendar.DAY_OF_WEEK, day);
-            morningCal.set(Calendar.HOUR_OF_DAY, hour);
-            morningCal.set(Calendar.MINUTE, minute);
-            morningCal.set(Calendar.SECOND, +1);
+        if (isDebug) {
+            int second = morningCal.get(Calendar.SECOND);
+            morningCal.set(Calendar.SECOND, second, +3);
         } else {
-            int hour = 9;
             int day;
-            if (hour >= 0 && hour < 8) {
+            int hour = morningCal.get(Calendar.HOUR_OF_DAY);
+            if (hour >= 0 && hour < 9) {
                 day = morningCal.get(Calendar.DAY_OF_WEEK);
             } else {
-                day = morningCal.get(Calendar.DAY_OF_WEEK);
-                if (day == 7) {
-                    day = 1;
-                } else {
-                    day = day + 1;
-                }
+                day = morningCal.get(Calendar.DAY_OF_WEEK) + 1;
             }
-            //replace second argument on lines 288 and 289 with variables: day and hour, 290/291 with 0
+
             Log.e("day of the week:", "" + morningCal.get(Calendar.DAY_OF_WEEK));
             Log.e("hour of the week:", "" + hour);
 
             morningCal.set(Calendar.DAY_OF_WEEK, day);
-            morningCal.set(Calendar.HOUR_OF_DAY, hour);
+            morningCal.set(Calendar.HOUR_OF_DAY, 9);
             morningCal.set(Calendar.MINUTE, 0);
             morningCal.set(Calendar.SECOND, 0);
         }
-        Log.e("morningCal set time:",morningCal.get(Calendar.DAY_OF_WEEK)+","+morningCal.get(Calendar.HOUR_OF_DAY));
+
+        Log.e("morningCal set time:", morningCal.get(Calendar.DAY_OF_WEEK) + "," + morningCal.get(Calendar.HOUR_OF_DAY));
+
         Intent alertIntent = new Intent(this, TimerReceiver.class);
         AlarmManager morningAlarmMan = (AlarmManager) getSystemService(ALARM_SERVICE);
         alertIntent.putExtra("broadcast Int", "5");
@@ -311,22 +299,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     //function to create alarms at given time
     public void createAlarms(long currentTime) {
         long thirty = currentTime + ALARM_TIME;
         //1800000
         startAlarm(thirty, 1);
 
-        long sixty = currentTime + (ALARM_TIME*2);
+        long sixty = currentTime + (ALARM_TIME * 2);
         //3600000
         startAlarm(sixty, 2);
 
-        long ninety = currentTime + (ALARM_TIME*3);
+        long ninety = currentTime + (ALARM_TIME * 3);
         //5400000
         startAlarm(ninety, 3);
 
-        long one = currentTime + (ALARM_TIME*4);
+        long one = currentTime + (ALARM_TIME * 4);
         //7200000
         startAlarm(one, 4);
     }
@@ -388,8 +375,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
     private Integer getNightCount() {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
@@ -397,25 +382,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     private void getData(DataSnapshot dataSnapshot) {
 
         //iterates through the dataSnapshot
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             String usersKey = ds.getKey().toString();
-            if(usersKey.equals("Users")){
+            if (usersKey.equals("Users")) {
                 //gets information from database
                 //makes sure that there is data at the given branch
-                Object typeObject = ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Type").getValue();
+                Object typeObject = ds.child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Type").getValue();
                 // Log.e("TypeObject",""+ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Type").getValue());
-                if (typeObject != null){
+                if (typeObject != null) {
                     //gets the specific string needed to analyze
                     String typeDrink = typeObject.toString();
 
-                    String typeDrinkSub = typeDrink.substring(1, typeDrink.length()-1);
+                    String typeDrinkSub = typeDrink.substring(1, typeDrink.length() - 1);
                     String[] testType = typeDrinkSub.split(",");
                     typeList = new String[testType.length];
-                    for (int i =0; i<testType.length; i++) {
+                    for (int i = 0; i < testType.length; i++) {
                         String[] tempList = testType[i].split("=");
                         typeList[i] = tempList[1];
                     }
@@ -425,30 +409,25 @@ public class MainActivity extends AppCompatActivity {
                     Integer numLiquor = 0;
                     Integer numBeer = 0;
 
-                    for (int i = 0; i < testType.length; i++ ) {
+                    for (int i = 0; i < testType.length; i++) {
 
                         String type = typeList[i];
 
                         if (type.equals("wine")) {
                             numWine++;
-                        }
-
-                        else if (type.equals("liquor")) {
+                        } else if (type.equals("liquor")) {
                             numLiquor++;
-                        }
-
-                        else if (type.equals("beer")) {
+                        } else if (type.equals("beer")) {
                             numBeer++;
                         }
                     }
 
                     //gets number of drinks and gets percent of each type
-                    int numberDrinks = numBeer+numWine+numLiquor;
-                    num_drink_text.setText(numberDrinks+"");
+                    int numberDrinks = numBeer + numWine + numLiquor;
+                    num_drink_text.setText(numberDrinks + "");
 
 
-
-                }else{
+                } else {
                     //if no data was entered from user, sets default value
                     //populates an empty pie chart if size of drink is null
                     TextView num_drink_text = (TextView) findViewById(R.id.num_drinks_txt);
@@ -456,17 +435,17 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 //checks to make sure data was actually entered
-                Object sizeObject = ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Size").getValue();
-                if (sizeObject != null){
+                Object sizeObject = ds.child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Size").getValue();
+                if (sizeObject != null) {
                     //splits the string properly to get the necessary data
                     String sizeDrink = sizeObject.toString();
                     //Log.e("sizeDrink",sizeDrink);
-                    String sizeDrinkSub = sizeDrink.substring(1, sizeDrink.length()-1);
+                    String sizeDrinkSub = sizeDrink.substring(1, sizeDrink.length() - 1);
                     //Log.e("sizeDrnkSub", sizeDrinkSub);
                     String[] test = sizeDrinkSub.split(",");
                     //Log.e("test", ""+test);
                     sizeList = new String[test.length];
-                    for (int i =0; i<test.length; i++) {
+                    for (int i = 0; i < test.length; i++) {
                         String[] tempList = test[i].split("=");
                         sizeList[i] = tempList[1];
                     }
@@ -476,7 +455,7 @@ public class MainActivity extends AppCompatActivity {
                     Integer totalOuncesConsumed = 0;
 
                     //samiksha can you comment this????????
-                    for (int i = 0; i < test.length; i++ ) {
+                    for (int i = 0; i < test.length; i++) {
                         //totalCalConsumed+= i;
 
                         String type = typeList[i];
@@ -485,9 +464,7 @@ public class MainActivity extends AppCompatActivity {
                         if (!sizeList[i].equals("Shot")) {
                             Integer sizeOfDrink = Integer.parseInt(sizeList[i]);
                             totalOuncesConsumed = totalOuncesConsumed + sizeOfDrink;
-                        }
-
-                        else {
+                        } else {
                             totalOuncesConsumed = totalOuncesConsumed + 1;
                         }
 
@@ -496,11 +473,9 @@ public class MainActivity extends AppCompatActivity {
 
                         if (type.equals("wine")) {
                             oneServingSize = 4;
-                        }
-                        else if (type.equals("beer")) {
+                        } else if (type.equals("beer")) {
                             oneServingSize = 12;
-                        }
-                        else if (type.equals("liquor")) {
+                        } else if (type.equals("liquor")) {
                             oneServingSize = 1;
                         }
 
@@ -509,14 +484,14 @@ public class MainActivity extends AppCompatActivity {
 
 
                     //sets the display calories textview
-                    cal_text.setText(""+totalCalConsumed);
+                    cal_text.setText("" + totalCalConsumed);
 
-                }else{
+                } else {
                     //set values to null if size drink is null
                     cal_text.setText("0");
                 }
 
-                Object costObject = ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Cost").getValue();
+                Object costObject = ds.child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Cost").getValue();
                 if (costObject != null) {
                     //splits the string properly to get the necessary data
                     String costDrink = costObject.toString();
@@ -531,27 +506,27 @@ public class MainActivity extends AppCompatActivity {
                         costList[i] = tempList[1];
                         //Log.e("costList",costList[i]);
                     }
-                    for(int i = 0; i < costList.length; i++){
-                        if(costList[i].contains("-")){
+                    for (int i = 0; i < costList.length; i++) {
+                        if (costList[i].contains("-")) {
                             String[] tempList = costList[i].split("-");
                             //Log.e("length",tempList.length+"");
-                            for(int j = 0; j < tempList.length; j++) {
+                            for (int j = 0; j < tempList.length; j++) {
                                 tempList[j] = tempList[j].substring(1, tempList[j].length());
                             }
                             Double minCost = 0.00;
                             Double maxCost = 0.00;
-                            minCost = minCost+(Double.parseDouble(tempList[0]));
-                            maxCost = maxCost+(Double.parseDouble(tempList[1]));
-                            avgCost = avgCost + ((maxCost+minCost)/2);
-                        }else{
-                            if(costList[i].contains("+")){
+                            minCost = minCost + (Double.parseDouble(tempList[0]));
+                            maxCost = maxCost + (Double.parseDouble(tempList[1]));
+                            avgCost = avgCost + ((maxCost + minCost) / 2);
+                        } else {
+                            if (costList[i].contains("+")) {
                                 //16+
-                                String tempString = costList[i].substring(1,costList[i].length()-1);
+                                String tempString = costList[i].substring(1, costList[i].length() - 1);
                                 Double cost = Double.parseDouble(tempString);
                                 avgCost = avgCost + cost;
-                            }else{
+                            } else {
                                 //0
-                                String tempString = costList[i].substring(1,costList[i].length());
+                                String tempString = costList[i].substring(1, costList[i].length());
                                 Double cost = Double.parseDouble(tempString);
                                 avgCost = avgCost + cost;
                             }
@@ -560,12 +535,11 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                     cost_txt.setText(String.format("%.2f", avgCost));
-                }else{
+                } else {
                     //Log.e("null","cost object is null");
                 }
 
             }
-
 
 
         }
