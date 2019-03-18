@@ -103,10 +103,10 @@ public class MorningQS extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-
         //initializes variables
         super.onCreate(savedInstanceState);
         setContentView(R.layout.morning_qs);
+        storeScreen("morningQS");
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
