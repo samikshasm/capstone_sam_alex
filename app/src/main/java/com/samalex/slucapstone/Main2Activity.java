@@ -143,9 +143,6 @@ public class Main2Activity extends AppCompatActivity{
         final RadioButton drink16plus = (RadioButton) findViewById(R.id.radio_16plus);
         final RadioGroup costGroup = (RadioGroup) findViewById(R.id.radioCost);
 
-        final Button people_qs_add_button = (Button) findViewById(R.id.people_qs_add_button);
-        final Button people_qs_subtract_button = (Button) findViewById(R.id.people_qs_subtract_button);
-        final TextView people_qs_counter = (TextView) findViewById(R.id.people_qs_counter);
 
 
         broadcastInt = getIntent().getStringExtra("broadcast Int");
@@ -327,24 +324,6 @@ public class Main2Activity extends AppCompatActivity{
                 other.setImageResource(R.drawable.other_green);
                 withCheck = true;
 
-            }
-        });
-
-        people_qs_add_button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                people_qs_subtract_button.setEnabled(true);
-                peopleCounter++;
-                people_qs_counter.setText(""+peopleCounter);
-            }
-        });
-
-        people_qs_subtract_button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                peopleCounter--;
-                people_qs_counter.setText(""+peopleCounter);
-                if (peopleCounter == 0){
-                    people_qs_subtract_button.setEnabled(false);
-                }
             }
         });
 
