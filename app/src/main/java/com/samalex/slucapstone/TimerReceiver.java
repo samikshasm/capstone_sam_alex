@@ -38,15 +38,10 @@ public class TimerReceiver extends BroadcastReceiver {
                 context.startService(service_intent);
             }
         } else if (broadcastID == 4) {
-            SharedPreferences mSharedPreferences = context.getSharedPreferences("screen", MODE_PRIVATE);
-            SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-            mEditor.putString("currentScreen", "start");
-            mEditor.apply();
+            storeScreen("start", context);
         } else if (broadcastID == 5) {
-            SharedPreferences mSharedPreferences = context.getSharedPreferences("screen", MODE_PRIVATE);
-            SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-            mEditor.putString("currentScreen", "morningQS");
-            mEditor.apply();
+            storeScreen("morningQS", context);
+
             Intent service_intent = new Intent(context, NotificationService.class);
             service_intent.putExtra("initial time", initialTimeStr);
             service_intent.putExtra("broadcast Int", broadcastStr);
@@ -56,5 +51,12 @@ public class TimerReceiver extends BroadcastReceiver {
                 context.startService(service_intent);
             }
         }
+    }
+
+    private void storeScreen(String start, Context context) {
+        SharedPreferences mSharedPreferences = context.getSharedPreferences("screen", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putString("currentScreen", start);
+        mEditor.apply();
     }
 }

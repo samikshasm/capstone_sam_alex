@@ -349,8 +349,7 @@ public class MainActivity extends AppCompatActivity {
         //start the ui update service when the app is resumed to update ui timer
         //startUIUpdateService(startedTimeInMillis);
         //checks to see which screen is set in the shared preferences screen variable
-        SharedPreferences mSharedPreferences1 = getSharedPreferences("screen", MODE_PRIVATE);
-        String selectedScreen = mSharedPreferences1.getString("currentScreen", "none");
+        String selectedScreen = getCurrentScreen();
         //if the screen has been set to start or morning qs, the activity changes
         //receivers and services are stopped and activity is switched back to the start screen
         if (selectedScreen.equals("start") | selectedScreen.equals("morningQS")) {
@@ -366,6 +365,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         super.onResume();
+    }
+
+    private String getCurrentScreen() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
+        return mSharedPreferences.getString("currentScreen", "none");
     }
 
     private long getStartedTime() {

@@ -162,10 +162,8 @@ public class StartActivity extends AppCompatActivity {
         switchesEditor.putInt("switches", 1);
         switchesEditor.apply();
 
-        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
-        String selectedScreen = mSharedPreferences.getString("currentScreen", "none");
+        String selectedScreen = getCurrentScreen();
         if (selectedScreen.equals("main")) {
-
             Intent switchToMain = new Intent(StartActivity.this, MainActivity.class);
             startActivity(switchToMain);
             finish();
@@ -179,12 +177,6 @@ public class StartActivity extends AppCompatActivity {
             Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
             startActivity(switchToMorning);
             finish();
-        } else if (selectedScreen.equals("morningQS") && group.equals("none")) {
-            Log.e("is it none?", "hi it is");
-
-            Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
-            startActivity(switchToMorning);
-            finish();
         } else if (selectedScreen.equals("login")) {
             Intent switchToLogin = new Intent(StartActivity.this, LoginActivity.class);
             startActivity(switchToLogin);
@@ -194,7 +186,11 @@ public class StartActivity extends AppCompatActivity {
 
         //Log.e("user ID",userIDMA);
 
+    }
 
+    private String getCurrentScreen() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
+        return mSharedPreferences.getString("currentScreen", "none");
     }
 
     private void processInterventionGroup() {
@@ -451,8 +447,7 @@ public class StartActivity extends AppCompatActivity {
 
     @Override
     public void onResume() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
-        String selectedScreen = mSharedPreferences.getString("currentScreen", "none");
+        String selectedScreen = getCurrentScreen();
         if (selectedScreen.equals("morningQS")) {
             Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
             startActivity(switchToMorning);

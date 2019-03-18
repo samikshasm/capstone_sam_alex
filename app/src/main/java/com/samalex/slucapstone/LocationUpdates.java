@@ -67,10 +67,8 @@ public class LocationUpdates extends IntentService {
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 time = dateFormat.format(currentDate);
                 text = latitude + "&" + longitude;
+                String selectedScreen = getCurrentScreen();
 
-                //gets relevant shared preference variables
-                SharedPreferences mSharedPreferences1 = getSharedPreferences("screen", MODE_PRIVATE);
-                String selectedScreen = mSharedPreferences1.getString("currentScreen","none");
                 Log.e("selectedScreen", selectedScreen);
 
                 //only writes to the database if the current screen is main
@@ -79,6 +77,19 @@ public class LocationUpdates extends IntentService {
                 }
             }
         }
+    }
+
+    private String getCurrentScreen() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
+        return mSharedPreferences.getString("currentScreen","none");
+    }
+
+    //function to store the screen
+    private void storeScreen(String string) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putString("currentScreen", string);
+        mEditor.apply();
     }
 
     //function to write to the database
