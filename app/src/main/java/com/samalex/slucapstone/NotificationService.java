@@ -20,11 +20,12 @@ import android.util.Log;
  */
 
 public class NotificationService extends Service {
-    final public static int MORNING_QUESTIONNAIRE_NOTIFICATION_ID = 5;
     final public static int THIRTY_MINUTE_NOTIFICATION_ID = 1;
     final public static int SIXTY_MINUTE_NOTIFICATION_ID = 2;
     final public static int NINETY_MINUTE_NOTIFICATION_ID = 3;
     final public static int HUNDRED_TWENTY_MINUTE_NOTIFICATION_ID = 4;
+    final public static int MORNING_QUESTIONNAIRE_NOTIFICATION_ID = 5;
+    final public static int EVENING_REMINDER_NOTIFICATION_ID = 6;
 
     private Integer counterInt = 0;
     public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
@@ -46,6 +47,9 @@ public class NotificationService extends Service {
         int notificationId = Integer.parseInt(broadcastId);
 
         switch (notificationId) {
+            case EVENING_REMINDER_NOTIFICATION_ID:
+                notifyEveningReminder(notificationId, broadcastId);
+                break;
             case MORNING_QUESTIONNAIRE_NOTIFICATION_ID:
                 notifyTimeForMorningQuestionnaire(notificationId, broadcastId);
                 break;
@@ -127,7 +131,7 @@ public class NotificationService extends Service {
                     .setContentText("It's been 30 minutes! Have you had a drink?")
                     .addAction(R.drawable.check_small, "Yes", yesIntent1)
                     .addAction(R.drawable.cancel_small, "No", noIntent1)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setAutoCancel(true);
 
             builder.setVibrate(new long[]{1000, 1000, 1000, 1000, 1000});
@@ -154,4 +158,34 @@ public class NotificationService extends Service {
         }
     }
 
+    private void notifyEveningReminder(int notificationId, String broadcastId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription(description);
+            channel.enableLights(true);
+            channel.enableVibration(true);
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        Intent eveningReminderIntent = new Intent(this, StartActivity.class);
+        eveningReminderIntent.putExtra("broadcast Int", broadcastId);
+        PendingIntent eveningReminderPendingIntent = PendingIntent.getActivity(this, 0, eveningReminderIntent, PendingIntent.FLAG_ONE_SHOT);
+        builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.small_statusbar_icon)
+                .setContentTitle("Boozymeter")
+                .setContentText("Are you going to have a drink today?")
+                .setAutoCancel(true);
+        builder.setContentIntent(eveningReminderPendingIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForeground(notificationId, builder.build());
+        } else {
+            NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            nManager.notify(notificationId, builder.build());
+        }
+    }
 }

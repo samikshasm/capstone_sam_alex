@@ -50,6 +50,15 @@ public class TimerReceiver extends BroadcastReceiver {
             } else {
                 context.startService(service_intent);
             }
+        } else if(broadcastID == NotificationService.EVENING_REMINDER_NOTIFICATION_ID) {
+            Intent service_intent = new Intent(context, NotificationService.class);
+            service_intent.putExtra("initial time", initialTimeStr);
+            service_intent.putExtra("broadcast Int", broadcastStr);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(service_intent);
+            } else {
+                context.startService(service_intent);
+            }
         }
     }
 
