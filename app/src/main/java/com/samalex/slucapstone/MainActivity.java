@@ -266,8 +266,8 @@ public class MainActivity extends AppCompatActivity {
 
             morningCal.set(Calendar.DAY_OF_WEEK, day);
             morningCal.set(Calendar.HOUR_OF_DAY, hour);
-            morningCal.set(Calendar.MINUTE, minute);
-            morningCal.set(Calendar.SECOND, second+15);
+            morningCal.set(Calendar.MINUTE, minute+2);
+            morningCal.set(Calendar.SECOND, second);
         } else {
             int day;
             int hour = morningCal.get(Calendar.HOUR_OF_DAY);
