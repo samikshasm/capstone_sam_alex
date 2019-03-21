@@ -16,6 +16,7 @@
     </android.support.v7.widget.Toolbar>
 
     <ImageView
+        android:id="@+id/app_header_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:paddingTop="5dp"

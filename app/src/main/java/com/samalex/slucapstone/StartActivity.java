@@ -3,11 +3,13 @@ package com.samalex.slucapstone;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -17,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -113,6 +116,23 @@ public class StartActivity extends AppCompatActivity {
 
         }
 
+        ImageView appHeaderBar = findViewById(R.id.app_header_bar);
+        appHeaderBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(StartActivity.this, R.style.MyDialogTheme);
+                builder.setTitle("Logs for testing")
+                        .setMessage("username: " +userIDMA
+                        + "\ngroup: " + getGroup())
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // continue with delete
+                            }
+                        })
+                        .setIcon(R.drawable.white_small_icon)
+                        .show();
+            }
+        });
 
         ImageButton startDrinking = (ImageButton) findViewById(R.id.start_drinking);
         startDrinking.setOnClickListener(new View.OnClickListener() {
