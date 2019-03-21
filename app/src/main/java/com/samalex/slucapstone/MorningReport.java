@@ -8,7 +8,6 @@ import android.content.pm.ActivityInfo;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -31,7 +30,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by AlexL on 7/29/2017.
@@ -85,7 +83,7 @@ public class MorningReport extends AppCompatActivity{
         //gets shared preference variables
         getTime();
         nightCount = getNightCount();
-        numDrinks = getNumDrinks();
+//        numDrinks = getNumDrinks(); // cannot get from SharedPreferences because it's already reset when submitting morning questionnaire
 
         //initializes pie chart and sets basic features
         pieChart = (PieChart) findViewById(R.id.pie_chart);
@@ -111,10 +109,6 @@ public class MorningReport extends AppCompatActivity{
             }
         });
 
-        //gets shared preference information needed
-        SharedPreferences numDrinksSharedPref = getSharedPreferences("numDrinks", MODE_PRIVATE);
-        Integer numberDrinks = numDrinksSharedPref.getInt("numDrinks",0);
-        String numberDrinksStr = numberDrinks.toString();
 
         //initializes ui elements
         display_numDrinks = (TextView) findViewById(R.id.display_numDrinks);
@@ -133,7 +127,7 @@ public class MorningReport extends AppCompatActivity{
                 storeScreen(startActivity1);
                 storeNumDrinks(0);
                 totalCalConsumed =0;
-                Intent goToStart = new Intent(MorningReport.this, MorningQS.class);
+                Intent goToStart = new Intent(MorningReport.this, StartActivity.class);
                 goToStart.putExtra("Start Activity", startActivity);
                 startActivity(goToStart);
                 finish();
@@ -144,25 +138,21 @@ public class MorningReport extends AppCompatActivity{
         SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
         group = mSharedPreferences2.getString("Group", "none");
 
-        if(group.equals("experimental")){
-            broadcastInt = getIntent().getStringExtra("broadcast Int");
-            if(broadcastInt != null){
-                int notificationId = Integer.parseInt(broadcastInt);
-                NotificationManager manager = (NotificationManager) MorningReport.this.getSystemService(Context.NOTIFICATION_SERVICE);
-                manager.cancel(notificationId);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        dismissMorningQuestionnaireNotification();
+    }
 
-                    manager.deleteNotificationChannel(CHANNEL_ID);
-                }
-
-            }else{
-                NotificationManager manager = (NotificationManager) MorningReport.this.getSystemService(Context.NOTIFICATION_SERVICE);
-                manager.cancel(5);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-                    manager.deleteNotificationChannel(CHANNEL_ID);
-                }
-            }
+    private void dismissMorningQuestionnaireNotification() {
+        NotificationManager manager = (NotificationManager) MorningReport.this.getSystemService(Context.NOTIFICATION_SERVICE);
+        broadcastInt = getIntent().getStringExtra("broadcast Int");
+        int notificationId;
+        if (broadcastInt == null) {
+            notificationId = 5;
+        } else {
+            notificationId = Integer.parseInt(broadcastInt);
+        }
+        manager.cancel(notificationId);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            manager.deleteNotificationChannel(CHANNEL_ID);
         }
     }
 
@@ -183,8 +173,9 @@ public class MorningReport extends AppCompatActivity{
 
                     String typeDrinkSub = typeDrink.substring(1, typeDrink.length()-1);
                     String[] testType = typeDrinkSub.split(",");
-                    typeList = new String[testType.length];
-                    for (int i =0; i<testType.length; i++) {
+                    int numDrinksFromDB = testType.length;
+                    typeList = new String[numDrinksFromDB];
+                    for (int i = 0; i< numDrinksFromDB; i++) {
                         String[] tempList = testType[i].split("=");
                         typeList[i] = tempList[1];
                     }
@@ -196,7 +187,7 @@ public class MorningReport extends AppCompatActivity{
                     float percentLiquor = 0;
                     float percentBeer = 0;
 
-                    for (int i = 0; i < testType.length; i++ ) {
+                    for (int i = 0; i < numDrinksFromDB; i++ ) {
 
                         String type = typeList[i];
 
@@ -220,7 +211,7 @@ public class MorningReport extends AppCompatActivity{
                     percentWine = ((float) numWine/ (float) numberDrinks)*100;
 
                     //sets the display drinks textview
-                    display_numDrinks.setText(""+numDrinks);
+                    display_numDrinks.setText(""+numDrinksFromDB);
 
                     //sets the display calories textview
                     display_calories.setText(""+totalCalConsumed);
@@ -266,7 +257,7 @@ public class MorningReport extends AppCompatActivity{
 
                 }else{
                     //if no data was entered from user, sets default value
-                    display_numDrinks.setText(""+numDrinks);
+                    display_numDrinks.setText("0");
                     //populates an empty pie chart if size of drink is null
                     ArrayList<PieEntry> yEntrys = new ArrayList<>();
                     ArrayList<String> xEntrys = new ArrayList<>();
@@ -315,31 +306,11 @@ public class MorningReport extends AppCompatActivity{
                         sizeList[i] = tempList[1];
                     }
 
-                    //initializes calorie values
-                    Integer calorieWineShot = 100; //i made this up
-                    Integer calorieWineEight = 188;
-                    Integer calorieWineSixteen = 377;
-                    Integer calorieWineTwentyFour = 565;
-
-                    Integer calorieBeerShot = 58; //i don't actually know
-                    Integer calorieBeerEight = 98;
-                    Integer calorieBeerSixteen = 196;
-                    Integer calorieBeerTwentyFour = 294;
-
-
-                    //ALEX HELP ME PLS!!!!!
-                    Integer calorieLiquorShot = 100; //i made this up
-                    Integer calorieLiquorEight = 188;
-                    Integer calorieLiquorSixteen = 377;
-                    Integer calorieLiquorTwentyFour = 565;
-
                     //initializes default values
                     totalCalConsumed = 0;
                     Integer totalOuncesConsumed = 0;
 
-                    //samiksha can you comment this????????
                     for (int i = 0; i < test.length; i++ ) {
-                        totalCalConsumed+= i;
 
                         String type = typeList[i];
                         String size = sizeList[i];
@@ -353,67 +324,24 @@ public class MorningReport extends AppCompatActivity{
                             totalOuncesConsumed = totalOuncesConsumed + 1;
                         }
 
+                        int oneServingSize = 1;
+                        int caloriePerOneServing = 100;
+
                         if (type.equals("wine")) {
-
-                            if (size.equals("Shot")) {
-                                totalCalConsumed = totalCalConsumed+calorieWineShot;
-                            }
-
-                            else if (size.equals("8")) {
-                                totalCalConsumed = totalCalConsumed+calorieWineEight;
-
-                            }
-                            else if (size.equals("16")) {
-                                totalCalConsumed = totalCalConsumed+calorieWineSixteen;
-
-                            }
-                            else if (size.equals("24")) {
-                                totalCalConsumed = totalCalConsumed+calorieWineTwentyFour;
-                            }
+                            oneServingSize = 4;
                         }
-
-                        else if (type.equals("liquor")) {
-
-                            if (size.equals("Shot")) {
-                                totalCalConsumed = totalCalConsumed+calorieLiquorShot;
-                            }
-                            else if (size.equals("8")) {
-                                totalCalConsumed = totalCalConsumed+calorieLiquorEight;
-
-                            }
-                            else if (size.equals("16")) {
-                                totalCalConsumed = totalCalConsumed+calorieLiquorSixteen;
-
-                            }
-                            else if (size.equals("24")) {
-                                totalCalConsumed = totalCalConsumed+calorieLiquorTwentyFour;
-                            }
-                        }
-
                         else if (type.equals("beer")) {
-
-                            if (size.equals("Shot")) {
-                                totalCalConsumed = totalCalConsumed+calorieBeerShot;
-                            }
-                            else if (size.equals("8")) {
-                                totalCalConsumed = totalCalConsumed+calorieBeerEight;
-
-                            }
-                            else if (size.equals("16")) {
-                                totalCalConsumed = totalCalConsumed+calorieBeerSixteen;
-
-                            }
-                            else if (size.equals("24")) {
-                                totalCalConsumed = totalCalConsumed+calorieBeerTwentyFour;
-                            }
+                            oneServingSize = 12;
                         }
+                        else if (type.equals("liquor")) {
+                            oneServingSize = 1;
+                        }
+
+                        totalCalConsumed += Integer.parseInt(size) * caloriePerOneServing / oneServingSize;
                     }
 
                     double totalLitersConsumed = (totalOuncesConsumed * 0.03);
-                    litersDrank.setText (""+totalLitersConsumed);
-
-                    //sets the display drinks textview
-                    display_numDrinks.setText(""+numDrinks);
+                    litersDrank.setText (String.format("%.2f", totalLitersConsumed));
 
                     //sets the display calories textview
                     display_calories.setText(""+totalCalConsumed);
@@ -422,7 +350,6 @@ public class MorningReport extends AppCompatActivity{
                     //set values to null if size drink is null
                     litersDrank.setText("0");
                     display_calories.setText("0");
-                    display_numDrinks.setText(""+numDrinks);
                 }
 
 
@@ -469,9 +396,8 @@ public class MorningReport extends AppCompatActivity{
 
 
                     }
-                    String totalCost = "$"+avgCost+"0";
                     TextView cost_txt = (TextView) findViewById(R.id.costText);
-                    cost_txt.setText(totalCost+"");
+                    cost_txt.setText(String.format("%.2f", avgCost));
                 }else{
                     //Log.e("null","cost object is null");
                 }

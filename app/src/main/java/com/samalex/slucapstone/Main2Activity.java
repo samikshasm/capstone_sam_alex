@@ -6,25 +6,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.res.Resources;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -53,13 +48,61 @@ public class Main2Activity extends AppCompatActivity{
     private String date;
     private Integer nightCount;
     private String drinkCost;
+    private Integer plannedDrinksCounter =0;
+    private Integer peopleCounter=0;
     private boolean typeCheck = false;
-    private boolean sizeCheck = false;
+//    private boolean sizeCheck = false;
     private boolean withCheck = false;
     private boolean whereCheck = false;
     private boolean costCheck = false;
     private String broadcastInt = "none";
+
     public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
+
+
+    private TextView wineSizeLabel;
+    private TextView beerSizeLabel;
+    private TextView liquorSizeLabel;
+    private int wineSize = 0;
+    private int beerSize = 0;
+    private int liquorSize = 0;
+
+    SeekBar.OnSeekBarChangeListener wineSizeChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            // updated continuously as the user slides the thumb
+            wineSizeLabel.setText(progress + " oz.");
+            wineSize = progress;
+        }
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) { }
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) { }
+    };
+    SeekBar.OnSeekBarChangeListener beerSizeChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            // updated continuously as the user slides the thumb
+            beerSizeLabel.setText(progress + " oz.");
+            beerSize = progress;
+        }
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) { }
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) { }
+    };
+    SeekBar.OnSeekBarChangeListener liquorSizeChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            // updated continuously as the user slides the thumb
+            liquorSizeLabel.setText(progress + " oz (" + progress + " shot(s))");
+            liquorSize = progress;
+        }
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) { }
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) { }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -78,10 +121,9 @@ public class Main2Activity extends AppCompatActivity{
         final ImageButton liquor = (ImageButton) findViewById(R.id.liquorBtn);
         final ImageButton wine = (ImageButton) findViewById(R.id.wineBtn);
 
-        final ImageButton shot = (ImageButton) findViewById(R.id.shotBtn);
-        final ImageButton eight = (ImageButton) findViewById(R.id.eight);
-        final ImageButton sixteen = (ImageButton) findViewById(R.id.sixteen);
-        final ImageButton twentyFour = (ImageButton) findViewById(R.id.twentyFour);
+//        final ImageButton eight = (ImageButton) findViewById(R.id.eight);
+//        final ImageButton sixteen = (ImageButton) findViewById(R.id.sixteen);
+//        final ImageButton twentyFour = (ImageButton) findViewById(R.id.twentyFour);
 
         final ImageButton nobody = (ImageButton) findViewById(R.id.nobody);
         final ImageButton partner  = (ImageButton) findViewById(R.id.partner);
@@ -101,6 +143,10 @@ public class Main2Activity extends AppCompatActivity{
         final RadioButton drink16plus = (RadioButton) findViewById(R.id.radio_16plus);
         final RadioGroup costGroup = (RadioGroup) findViewById(R.id.radioCost);
 
+        final LinearLayout planned_num_drinks_layout = findViewById(R.id.planned_num_drinks_layout);
+        final Button drinks_add_button = (Button) findViewById(R.id.drinks_add_button);
+        final Button drinks_subtract_button = (Button) findViewById(R.id.drinks_subtract_button);
+        final TextView drinks_counter = (TextView) findViewById(R.id.drinks_counter);
 
         broadcastInt = getIntent().getStringExtra("broadcast Int");
         if(broadcastInt != null){
@@ -114,6 +160,35 @@ public class Main2Activity extends AppCompatActivity{
 
         }
 
+        final SeekBar liquorSizeSelector = (SeekBar) findViewById(R.id.liquor_size_selector);
+        final SeekBar wineSizeSelector = (SeekBar) findViewById(R.id.wine_size_selector);
+        final SeekBar beerSizeSelector = (SeekBar) findViewById(R.id.beer_size_selector);
+
+        final LinearLayout wineSizeSelectorWrapper = (LinearLayout) findViewById(R.id.wine_size_selector_wrapper);
+        final LinearLayout beerSizeSelectorWrapper = (LinearLayout) findViewById(R.id.beer_size_selector_wrapper);
+        final LinearLayout liquorSizeSelectorWrapper = (LinearLayout) findViewById(R.id.liquor_size_selector_wrapper);
+
+        // set a change listener on the SeekBar
+        wineSizeSelector.setOnSeekBarChangeListener(wineSizeChangeListener);
+        beerSizeSelector.setOnSeekBarChangeListener(beerSizeChangeListener);
+        liquorSizeSelector.setOnSeekBarChangeListener(liquorSizeChangeListener);
+
+
+        wineSize = wineSizeSelector.getProgress();
+        wineSizeLabel = findViewById(R.id.wine_size_text);
+        wineSizeLabel.setText(wineSize + " oz");
+
+        beerSize = beerSizeSelector.getProgress();
+        beerSizeLabel = findViewById(R.id.beer_size_text);
+        beerSizeLabel.setText(beerSize + " oz");
+
+        liquorSize = liquorSizeSelector.getProgress();
+        liquorSizeLabel = findViewById(R.id.liquor_size_text);
+        liquorSizeLabel.setText(liquorSize + " oz (" + liquorSize + " shot(s))");
+
+        if(getNumDrinks() > 0) {
+            planned_num_drinks_layout.setVisibility(View.GONE); // Ask a question "How much are you planning on drinking" only once. (first time)
+        }
 
         drink1_5.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
@@ -179,6 +254,9 @@ public class Main2Activity extends AppCompatActivity{
                 liquor.setImageResource(R.drawable.liquor_button_small_purple);
                 typeCheck = true;
 
+                wineSizeSelectorWrapper.setVisibility(View.GONE);
+                beerSizeSelectorWrapper.setVisibility(View.VISIBLE);
+                liquorSizeSelectorWrapper.setVisibility(View.GONE);
             }
         });
 
@@ -189,6 +267,10 @@ public class Main2Activity extends AppCompatActivity{
                 beer.setImageResource(R.drawable.beer_button_small_purple);
                 liquor.setImageResource(R.drawable.liquor_button_small_green);
                 typeCheck = true;
+
+                wineSizeSelectorWrapper.setVisibility(View.GONE);
+                beerSizeSelectorWrapper.setVisibility(View.GONE);
+                liquorSizeSelectorWrapper.setVisibility(View.VISIBLE);
             }
         });
 
@@ -200,51 +282,9 @@ public class Main2Activity extends AppCompatActivity{
                 liquor.setImageResource(R.drawable.liquor_button_small_purple);
                 typeCheck = true;
 
-            }
-        });
-
-        shot.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                sizeOfDrink = "Shot";
-                shot.setImageResource(R.drawable.shot_green);
-                eight.setImageResource(R.drawable.eight_purple);
-                sixteen.setImageResource(R.drawable.sixteen_purple);
-                twentyFour.setImageResource(R.drawable.twenty_four_purple);
-                sizeCheck = true;
-
-            }
-        });
-
-        eight.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                sizeOfDrink = "8";
-                shot.setImageResource(R.drawable.shot_purple);
-                eight.setImageResource(R.drawable.eight_green);
-                sixteen.setImageResource(R.drawable.sixteen_purple);
-                twentyFour.setImageResource(R.drawable.twenty_four_purple);
-                sizeCheck = true;
-            }
-        });
-
-        sixteen.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                sizeOfDrink = "16";
-                shot.setImageResource(R.drawable.shot_purple);
-                eight.setImageResource(R.drawable.eight_purple);
-                sixteen.setImageResource(R.drawable.sixteen_green);
-                twentyFour.setImageResource(R.drawable.twenty_four_purple);
-                sizeCheck = true;
-            }
-        });
-
-        twentyFour.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                sizeOfDrink = "24";
-                shot.setImageResource(R.drawable.shot_purple);
-                eight.setImageResource(R.drawable.eight_purple);
-                sixteen.setImageResource(R.drawable.sixteen_purple);
-                twentyFour.setImageResource(R.drawable.twenty_four_green);
-                sizeCheck = true;
+                wineSizeSelectorWrapper.setVisibility(View.VISIBLE);
+                beerSizeSelectorWrapper.setVisibility(View.GONE);
+                liquorSizeSelectorWrapper.setVisibility(View.GONE);
             }
         });
 
@@ -292,6 +332,25 @@ public class Main2Activity extends AppCompatActivity{
 
             }
         });
+
+        drinks_add_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                drinks_subtract_button.setEnabled(true);
+                plannedDrinksCounter++;
+                drinks_counter.setText(""+ plannedDrinksCounter);
+            }
+        });
+
+        drinks_subtract_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                plannedDrinksCounter--;
+                drinks_counter.setText(""+ plannedDrinksCounter);
+                if (plannedDrinksCounter == 0){
+                    drinks_subtract_button.setEnabled(false);
+                }
+            }
+        });
+
 
         home.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -363,7 +422,8 @@ public class Main2Activity extends AppCompatActivity{
 
         submitBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if((!whereCheck || !withCheck || !typeCheck || !costCheck || !sizeCheck)){
+//                if((!whereCheck || !withCheck || !typeCheck || !costCheck || !sizeCheck)){
+                if((!whereCheck || !withCheck || !typeCheck || !costCheck)){
                     Log.e("check","false");
                     AlertDialog.Builder builder;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -382,10 +442,23 @@ public class Main2Activity extends AppCompatActivity{
                             .show();
                 }else{
                     Log.e("check","true");
+                    switch (typeOfDrink) {
+                        case "wine":
+                            sizeOfDrink = wineSize + "";
+                            break;
+                        case "beer":
+                            sizeOfDrink = beerSize + "";
+                            break;
+                        case "liquor":
+                            sizeOfDrink = liquorSize + "";
+                            break;
+                    }
                     writeTypeToDB(typeOfDrink);
                     writeSizeToDB(sizeOfDrink);
                     writeWhoToDB(withWhom);
                     writeWhereToDB(where);
+                    writePlannedDrinksToDB(plannedDrinksCounter);
+//                    writeNumberOfPeopleToDB(peopleCounter);  // this question is not asked anymore
                     // get selected radio button from radioGroup
                     int selectedId = costGroup.getCheckedRadioButtonId();
                     // find the radiobutton by returned id
@@ -421,7 +494,13 @@ public class Main2Activity extends AppCompatActivity{
 
     //function for switching back to the main activity after questions are answered
     public void switchToMainActivity(View view){
+        SharedPreferences settings = getSharedPreferences("NumberSwitchesToMain2Activity", 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt("switches", 2);
+        editor.commit();
+
         Intent switchToMainActivity = new Intent (Main2Activity.this, MainActivity.class);
+
         switchToMainActivity.putExtra("coming from start", "come from qs");
         switchToMainActivity.putExtra("initial time", initialTimeStr);
         startActivity(switchToMainActivity);
@@ -436,6 +515,9 @@ public class Main2Activity extends AppCompatActivity{
         DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
         date = dateFormat.format(currentDate);
         time = timeFormat.format(currentDate);
+
+        Log.e("date: ",""+date);
+        Log.e("time:",""+time);
     }
 
     public void writeCostToDB(String drink_cost){
@@ -468,6 +550,18 @@ public class Main2Activity extends AppCompatActivity{
         getTime();
         DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Where").child("Time: "+time);
         mRef.setValue(where);
+    }
+
+    public void writePlannedDrinksToDB (Integer drinksCounter) {
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("DrinksPlanned").child("Time: "+time);
+        mRef.setValue(drinksCounter);
+    }
+
+    public void writeNumberOfPeopleToDB (Integer peopleCounter) {
+        getTime();
+        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("NumberOfPeople").child("Time: "+time);
+        mRef.setValue(peopleCounter);
     }
 
     //stores number of drinks as shared preference variable

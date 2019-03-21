@@ -1,38 +1,26 @@
 package com.samalex.slucapstone;
 
-import android.*;
-import android.accounts.Account;
-import android.accounts.AccountManager;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.ImageView;
 
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -50,12 +38,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Map;
 
 /**
  * Created by samikshasm on 7/17/17.
  */
 
 public class StartActivity extends AppCompatActivity {
+
+    public static final int ONE_MINUTE = 60 * 1000;
+    public static final int ONE_HOUR = 60 * 60 * 1000;
+    public static final int ONE_DAY = 24 * 60 * 60 * 1000; // 86,400,000 milliseconds in 1 day
+    public static final int TWO_DAY = ONE_DAY * 2;
 
     private String userIDMA;
     private String currentUserFromLA;
@@ -68,6 +63,10 @@ public class StartActivity extends AppCompatActivity {
     private ArrayList<String> controlList;
     private ArrayList<String> expList;
     private String group;
+    private Integer loginAttempts;
+    private Integer startAttempts;
+    private Number oneWeek;
+    private Number twoWeeks;
 
 
     //new location stuff
@@ -78,37 +77,62 @@ public class StartActivity extends AppCompatActivity {
     static final Integer GPS_SETTINGS = 0x7;
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        processInterventionGroup();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-
+        //new location stuff
         client = new GoogleApiClient.Builder(this)
                 .addApi(AppIndex.API)
                 .addApi(LocationServices.API)
                 .build();
-        //new location stuff
-        userIDMA = getIntent().getStringExtra("User ID");
 
+        // check if the user should be swapped ti another intervention group
+        processInterventionGroup();
+
+
+        userIDMA = getIntent().getStringExtra("User ID");
         SharedPreferences userSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = userSharedPreferences.getString("user ID", "none");
 
-        if(userIDMA != null) {
+        if (userIDMA != null) {
             Log.e("User ID Start", userIDMA);
-        }
-        else if(userIDMA == null | userIDMA.equals("none")){
+        } else if (userIDMA == null | userIDMA.equals("none")) {
             storeScreen("login");
         }
 
         cancelButMain = getIntent().getStringExtra("Cancel main activity");
-        if(cancelButMain == null){
+        if (cancelButMain == null) {
             Log.e("null String", "null");
-        }else if(cancelButMain == "main"){
+        } else if (cancelButMain == "main") {
             Log.e("Cancel main activity", cancelButMain);
 
         }
 
+        ImageView appHeaderBar = findViewById(R.id.app_header_bar);
+        appHeaderBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(StartActivity.this, R.style.MyDialogTheme);
+                builder.setTitle("Logs for testing")
+                        .setMessage("username: " +userIDMA
+                        + "\ngroup: " + getGroup())
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // continue with delete
+                            }
+                        })
+                        .setIcon(R.drawable.white_small_icon)
+                        .show();
+            }
+        });
 
         ImageButton startDrinking = (ImageButton) findViewById(R.id.start_drinking);
         startDrinking.setOnClickListener(new View.OnClickListener() {
@@ -132,13 +156,11 @@ public class StartActivity extends AppCompatActivity {
             public void onClick(View view) {
                 storeUserID("none");
                 currentUserFromLA = "signed out";
+                storeStartAttempts(0);
                 Intent switchToLogin = new Intent(StartActivity.this, LoginActivity.class);
                 switchToLogin.putExtra("sign out", currentUserFromLA);
                 startActivity(switchToLogin);
-                SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
-                SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-                mEditor.putString("Group", "none");
-                mEditor.apply();
+                storeGroup("none");
                 finish();
             }
         });
@@ -146,17 +168,100 @@ public class StartActivity extends AppCompatActivity {
         ImageButton contact = (ImageButton) findViewById(R.id.contact);
         contact.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                new AlertDialog.Builder(StartActivity.this,R.style.MyAlertDialogStyle)
+                new AlertDialog.Builder(StartActivity.this, R.style.MyAlertDialogStyle)
                         //.setTitle("Contact Dr. Shacham")
-                        .setMessage("Email eshacham@slu.edu")
-                       // .setNegativeButton("Ok",null)
-                        .setPositiveButton("Ok",null).create().show();
+                        .setMessage("Email eshacham@slu.edu\nYour logged in username: " + getUserID() + "\nOngoing status: " + getGroup())
+                        // .setNegativeButton("Ok",null)
+                        .setPositiveButton("Ok", null).create().show();
             }
         });
 
-        SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
-        group = mSharedPreferences2.getString("Group","none");
-        if(group.equals("none")){
+        SharedPreferences switchesSharedPreferences = getSharedPreferences("NumberSwitchesToMain2Activity", MODE_PRIVATE);
+        SharedPreferences.Editor switchesEditor = switchesSharedPreferences.edit();
+        switchesEditor.putInt("switches", 1);
+        switchesEditor.apply();
+
+        String selectedScreen = getCurrentScreen();
+        if (selectedScreen.equals("main")) {
+            Intent switchToMain = new Intent(StartActivity.this, MainActivity.class);
+            startActivity(switchToMain);
+            finish();
+        } else if (selectedScreen.equals("morningReport")) {
+            Log.e("is it experimental?", "hi it is");
+            Intent switchToMorning = new Intent(StartActivity.this, MorningReport.class);
+            startActivity(switchToMorning);
+            finish();
+        } else if (selectedScreen.equals("morningQS")) {
+            Log.e("is it control?", "hi it is");
+            Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
+            startActivity(switchToMorning);
+            finish();
+        } else if (selectedScreen.equals("login")) {
+            Intent switchToLogin = new Intent(StartActivity.this, LoginActivity.class);
+            startActivity(switchToLogin);
+            finish();
+        }
+
+
+        //Log.e("user ID",userIDMA);
+
+    }
+
+    private String getCurrentScreen() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
+        return mSharedPreferences.getString("currentScreen", "none");
+    }
+
+    private void processInterventionGroup() {
+        BoozymeterApplication application = (BoozymeterApplication) getApplication();
+        boolean isDebug = application.isDebug();
+
+        loginAttempts = getLoginAttempts();
+        startAttempts = getStartAttempts();
+        startAttempts++;
+        storeStartAttempts(startAttempts);
+        Calendar cal = Calendar.getInstance();
+        long currentTime = cal.getTimeInMillis();
+
+        if (loginAttempts == 1 && startAttempts == 1) {
+            Calendar morningCal = Calendar.getInstance();
+            long currentMillis = morningCal.getTimeInMillis();
+
+            if (isDebug) {
+                oneWeek = ONE_MINUTE + currentMillis;
+                twoWeeks = (2 * ONE_MINUTE) + currentMillis;
+            } else {
+                oneWeek = ONE_DAY + currentMillis;
+                twoWeeks = TWO_DAY + currentMillis;
+            }
+
+            storeOneWeek(oneWeek.longValue());
+            storeTwoWeeks(twoWeeks.longValue());
+            storeGroup("none");
+        }
+
+       /* Log.e("start attempts", startAttempts+"");
+        Log.e("login attempts", loginAttempts+"");
+        Log.e("group before", group+"");
+        Log.e("oneweek", oneWeek+"");
+        Log.e("twoweeks", twoWeeks+"");*/
+
+        long oneWeek = getOneWeek();
+        long twoWeeks = getTwoWeeks();
+
+        Log.e("oneWeek", oneWeek + "");
+        Log.e("twoWeeks", twoWeeks + "");
+        Log.e("calmillis", currentTime + "");
+
+        boolean isDuringWeek1 = currentTime < oneWeek;
+        boolean isDuringWeek2 = currentTime >= oneWeek && currentTime < twoWeeks;
+        boolean isDuringWeek3OrAfterward = currentTime >= getTwoWeeks();
+
+//        if(isDuringWeek1) {
+//            // do nothing
+//        }
+        if (isDuringWeek2) {
+            // assign group straightforward (control -> control, experimental -> experimental)
             mReference = FirebaseDatabase.getInstance().getReference();
             mReference.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -164,16 +269,22 @@ public class StartActivity extends AppCompatActivity {
 
                     getControlList(dataSnapshot);
                     getExperimentalList(dataSnapshot);
-                    for(int i = 0; i < expList.size(); i++){
-                        if(expList.get(i).substring(1,expList.get(i).length()).equals(userIDMA)){
+                    Log.e("expList", expList + "");
+                    Log.e("controlList", controlList + "");
+
+                    for (int i = 0; i < expList.size(); i++) {
+                        if (expList.get(i).equals(userIDMA)) {
                             group = "experimental";
+                            break;
                         }
                     }
-                    for(int i = 0; i < controlList.size(); i++){
-                        if(controlList.get(i).substring(1,controlList.get(i).length()).equals(userIDMA)){
+                    for (int i = 0; i < controlList.size(); i++) {
+                        if (controlList.get(i).equals(userIDMA)) {
                             group = "control";
+                            break;
                         }
                     }
+                    Log.e("group", group + "");
                     storeGroup(group);
                     //Log.e("expList",expList.get(4).substring(1,expList.get(4).length()).length()+"");
                     //Log.e("userID",userIDMA.length()+"");
@@ -185,50 +296,43 @@ public class StartActivity extends AppCompatActivity {
 
                 }
             });
+
+            Log.e("group after ", getGroup() + "");
         }
+        if (isDuringWeek3OrAfterward) {
+            // switch group (control -> experimental, experimental -> control)
+            mReference = FirebaseDatabase.getInstance().getReference();
+            mReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-        SharedPreferences groupSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
-        group = groupSharedPreferences.getString("Group","none");
+                    getControlList(dataSnapshot);
+                    getExperimentalList(dataSnapshot);
+                    for (int i = 0; i < expList.size(); i++) {
+                        if (expList.get(i).equals(userIDMA)) {
+                            group = "control";
+                            break;
+                        }
+                    }
+                    for (int i = 0; i < controlList.size(); i++) {
+                        if (controlList.get(i).equals(userIDMA)) {
+                            group = "experimental";
+                            break;
+                        }
+                    }
+                    storeGroup(group);
+                    //Log.e("expList",expList.get(4).substring(1,expList.get(4).length()).length()+"");
+                    //Log.e("userID",userIDMA.length()+"");
+                }
 
-        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
-        String selectedScreen = mSharedPreferences.getString("currentScreen","none");
-        if (selectedScreen.equals("main")) {
-            Intent switchToMain = new Intent(StartActivity.this, MainActivity.class);
-            startActivity(switchToMain);
-            finish();
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+            Log.e("group: ", getGroup() + "");
+
         }
-        else if (selectedScreen.equals("morningQS") && group.equals("experimental")){
-            Log.e("is it experimental?", "hi it is");
-            Intent switchToMorning = new Intent(StartActivity.this, MorningReport.class);
-            startActivity(switchToMorning);
-            finish();
-        }
-        else if (selectedScreen.equals("morningQS") && group.equals("control")){
-            Log.e("is it control?", "hi it is");
-            Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
-            startActivity(switchToMorning);
-            finish();
-        }
-        else if (selectedScreen.equals("morningQS") && group.equals("none")){
-            Log.e("is it none?", "hi it is");
-
-            Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
-            startActivity(switchToMorning);
-            finish();
-        }
-        else if (selectedScreen.equals("login")){
-            Intent switchToLogin = new Intent(StartActivity.this, LoginActivity.class);
-            startActivity(switchToLogin);
-            finish();
-        }
-
-
-
-
-        //Log.e("user ID",userIDMA);
-
-
-
     }
 
     //function to analyze data received from snapshot
@@ -237,60 +341,49 @@ public class StartActivity extends AppCompatActivity {
         //iterates through the dataSnapshot
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             String usersKey = ds.getKey().toString();
-            if(usersKey.equals("Users")) {
+            if (usersKey.equals("Users")) {
                 //gets information from database
                 //makes sure that there is data at the given branch
-                Object controlObject = ds.child("Control Group").getValue();
-                //Log.e("TypeObject",""+controlObject);
-                if(controlObject != null){
-                    String controlStr = controlObject.toString();
-                    String controlStrSub = controlStr.substring(1, controlStr.length()-1);
-                    String[] controlList1 = controlStrSub.split(",");
-                    controlList = new ArrayList<String>();
-                    for(int i = 0; i < controlList1.length; i++){
-                        String[] controlList2 = controlList1[i].split("=");
-                        controlList.add(controlList2[0]);
-                    }
-
+                Map<String, Map<String, String>> controlJSON = (Map<String, Map<String, String>>) ds.child("Control Group").getValue();
+                if (controlJSON == null) {
+                    controlList = new ArrayList<>();
+                } else {
+                    controlList = new ArrayList<>(controlJSON.keySet());
                 }
-
             }
-
         }
     }
+
     private void getExperimentalList(DataSnapshot dataSnapshot) {
 
         //iterates through the dataSnapshot
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             String usersKey = ds.getKey().toString();
-            if(usersKey.equals("Users")) {
+            if (usersKey.equals("Users")) {
                 //gets information from database
                 //makes sure that there is data at the given branch
-                Object controlObject = ds.child("Experimental Group").getValue();
-                //Log.e("TypeObject",""+controlObject);
-                if(controlObject != null){
-                    String controlStr = controlObject.toString();
-                    String controlStrSub = controlStr.substring(1, controlStr.length()-1);
-                    String[] controlList1 = controlStrSub.split(",");
-                    expList = new ArrayList<String>();
-                    for(int i = 0; i < controlList1.length; i++){
-                        String[] controlList2 = controlList1[i].split("=");
-                        expList.add(controlList2[0]);
-                    }
-
+                Map<String, Map<String, String>> experimentalJSON = (Map<String, Map<String, String>>) ds.child("Experimental Group").getValue();
+                if (experimentalJSON == null) {
+                    expList = new ArrayList<>();
+                } else {
+                    expList = new ArrayList<>(experimentalJSON.keySet());
                 }
-
             }
 
         }
     }
 
-    private void storeGroup(String group){
+    private void storeGroup(String group) {
         SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.putString("Group", group);
-        Log.e("Group",group);
         mEditor.apply();
+    }
+
+    private String getGroup() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
+        String group = mSharedPreferences.getString("Group", "none");
+        return group;
     }
 
     private void storeUserID(String string) {
@@ -307,7 +400,7 @@ public class StartActivity extends AppCompatActivity {
         mEditor.apply();
     }
 
-    private String getScreen() {
+    private String getUserID() {
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         String selectedScreen = mSharedPreferences.getString("user ID", "none");
         return selectedScreen;
@@ -328,11 +421,53 @@ public class StartActivity extends AppCompatActivity {
         mEditor.apply();
     }
 
+    private Integer getLoginAttempts() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("LoginAttempts", MODE_PRIVATE);
+        Integer loginAttempts = mSharedPreferences.getInt("login attempts", 0);
+        return loginAttempts;
+    }
+
+    private void storeOneWeek(long integer) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("OneWeek", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putLong("one week", integer);
+        mEditor.apply();
+    }
+
+    private long getOneWeek() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("OneWeek", MODE_PRIVATE);
+        return mSharedPreferences.getLong("one week", 0);
+    }
+
+    private void storeTwoWeeks(long integer) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("TwoWeeks", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putLong("two weeks", integer);
+        mEditor.apply();
+    }
+
+    private long getTwoWeeks() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("TwoWeeks", MODE_PRIVATE);
+        return mSharedPreferences.getLong("two weeks", 0);
+    }
+
+    private void storeStartAttempts(Integer integer) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("StartAttempts", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putInt("start attempts", integer);
+        mEditor.apply();
+    }
+
+    private Integer getStartAttempts() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("StartAttempts", MODE_PRIVATE);
+        Integer startAttempts = mSharedPreferences.getInt("start attempts", 0);
+        return startAttempts;
+    }
+
     @Override
-    public void onResume(){
-        SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
-        String selectedScreen = mSharedPreferences.getString("currentScreen","none");
-        if (selectedScreen.equals("morningQS")){
+    public void onResume() {
+        String selectedScreen = getCurrentScreen();
+        if (selectedScreen.equals("morningQS")) {
             Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
             startActivity(switchToMorning);
             finish();
@@ -374,7 +509,7 @@ public class StartActivity extends AppCompatActivity {
         client.disconnect();
     }
 
-    private void askForGPS(){
+    private void askForGPS() {
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setInterval(30 * 1000);
@@ -404,10 +539,10 @@ public class StartActivity extends AppCompatActivity {
     }
 
 
-    public void ask(){
+    public void ask() {
         /*switch (v.getId()){
             case R.id.location:*/
-        askForPermission(android.Manifest.permission.ACCESS_FINE_LOCATION,LOCATION);
+        askForPermission(android.Manifest.permission.ACCESS_FINE_LOCATION, LOCATION);
                 /*break;
             default:
                 break;
@@ -417,7 +552,7 @@ public class StartActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
                 //Location
                 case 1:
@@ -458,7 +593,7 @@ public class StartActivity extends AppCompatActivity {
             }
 
             //Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
-        }else{
+        } else {
             //Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
         }
     }

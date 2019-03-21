@@ -15,6 +15,7 @@
     <color name="base">#AAAAAA</color>
     <color name="iron">#CCCCCC</color>
     <color name="white">#FFFFFF</color>
+
     <color name="app_background">#344A5F</color>
     <color name="app_background_darker">#283E54</color>
     <color name="light_blue">#62CAE2</color>
@@ -24,3 +25,4 @@
     <color name="green">#4EBA75</color>
     <color name="purple">#818DC6</color>
 </resources>
+
