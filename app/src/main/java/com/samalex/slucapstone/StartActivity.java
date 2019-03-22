@@ -107,7 +107,8 @@ public class StartActivity extends AppCompatActivity {
         initializeLocationServiceClient();
 
         if (isFirstLogin()) {
-
+            storeCurrentCycle(0);
+            
             // Pre-compute a new table for this user
             long canonicalUserStartTime = calculateUserStartTime(
                     Calendar.getInstance(),
