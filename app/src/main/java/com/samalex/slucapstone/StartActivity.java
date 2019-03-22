@@ -306,7 +306,7 @@ public class StartActivity extends AppCompatActivity {
     private InterventionMap getInterventionMap() {
         SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
         Gson gson = new Gson();
-        String json = mSharedPreferences.getString("intervention_map", "");
+        String json = mSharedPreferences.getString("intervention_map", "{}");
         InterventionMap map = gson.fromJson(json, InterventionMap.class);
         return map;
     }
@@ -321,7 +321,8 @@ public class StartActivity extends AppCompatActivity {
     }
 
     private void precomputeInterventionLookupTable(long userStartTime) {
-        // TODO: clear old data in shared preferences
+        // clear old intervention map in shared preferences
+        storeInterventionMap(new InterventionMap());
 
         List<InterventionDisplayData> interventionOrder = getInterventionOrder();
         int eachInterventionLength = BoozymeterApplication.NUM_CYCLES / 3;
@@ -341,8 +342,8 @@ public class StartActivity extends AppCompatActivity {
             interventionLookupTable.put(day, interventionOrder.get(phase));
         }
 
+        // store the a new map in shared preferences
         storeInterventionMap(interventionLookupTable);
-
     }
 
     private List<InterventionDisplayData> getInterventionOrder() {
