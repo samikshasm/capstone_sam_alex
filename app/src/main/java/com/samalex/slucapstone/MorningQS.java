@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -1012,10 +1013,10 @@ public class MorningQS extends AppCompatActivity {
     }
 
     private InterventionMap getInterventionMap() {
-//        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter_intervention_map", MODE_PRIVATE);
-//        Map<String, ?> interventionMap = mSharedPreferences.getAll();
-//        return  (InterventionMap) interventionMap;
-        // TODO: continue after getting library that can save Object to shared preferences
-        return new InterventionMap();
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = mSharedPreferences.getString("intervention_map", "");
+        InterventionMap map = gson.fromJson(json, InterventionMap.class);
+        return map;
     }
 }
