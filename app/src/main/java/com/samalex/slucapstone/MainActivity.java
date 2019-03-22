@@ -31,14 +31,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
-
-import static com.samalex.slucapstone.BoozymeterApplication.CYCLE_LENGTH;
-import static com.samalex.slucapstone.BoozymeterApplication.CYCLE_OFFSET;
-import static com.samalex.slucapstone.BoozymeterApplication.EVENING_REMINDER_OFFSET;
-import static com.samalex.slucapstone.BoozymeterApplication.NUM_CYCLES;
-import static com.samalex.slucapstone.BoozymeterApplication.SURVEY_OFFSET;
-import static com.samalex.slucapstone.NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -226,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
             long userStartTime = getUserStartTime();
             String userStartDateStr = dateFormat.format(new Date(userStartTime));
 
-            String moringSurveyTime = dateFormat.format(new Date(userStartTime + SURVEY_OFFSET));
+            String moringSurveyTime = dateFormat.format(new Date(userStartTime + BoozymeterApplication.SURVEY_OFFSET));
             String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
             @Override
             public void onClick(View view) {
@@ -238,10 +230,10 @@ public class MainActivity extends AppCompatActivity {
                         .setMessage("Username: " + userIDMA
                                 + "\nUser group: " + getGroup()
                                 + "\nCanonical start time: " + userStartDateStr
-                                + "\nCycle: " + (currentCycle + 1)
-                                + "\nCycle length: " + CYCLE_LENGTH / 1000 / 60 + " minutes"
-                                + "\nNumber of cycles: " + NUM_CYCLES
-                                + "\nCycle offset: " + CYCLE_OFFSET / 1000 / 60 + " minutes"
+                                + "\nCycle: " + currentCycle + "(zero-based index)"
+                                + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
+                                + "\nNumber of cycles: " + BoozymeterApplication.NUM_CYCLES
+                                + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
                                 + "\nLive report: " + (ui.isShowLiveReport() ? "Yes" : "No")
                                 + "\nMorning report: " + (ui.isShowMorningReport() ? "Yes" : "No")
                                 + "\nNumber of drinks: " + getNumDrinks()
@@ -279,9 +271,9 @@ public class MainActivity extends AppCompatActivity {
         long userStartTime = getUserStartTime();
 
 
-        long reminderTime = userStartTime + EVENING_REMINDER_OFFSET;
+        long reminderTime = userStartTime + BoozymeterApplication.EVENING_REMINDER_OFFSET;
         if(reminderTime < now) {
-            reminderTime += CYCLE_LENGTH;
+            reminderTime += BoozymeterApplication.CYCLE_LENGTH;
         }
 
         return reminderTime;
@@ -334,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent alertIntent = new Intent(this, TimerReceiver.class);
         AlarmManager morningAlarmMan = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alertIntent.putExtra("broadcast Int", MORNING_QUESTIONNAIRE_NOTIFICATION_ID + "");
+        alertIntent.putExtra("broadcast Int", NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID + "");
         alertIntent.putExtra("initial time", initialTimeStr);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 5, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         morningAlarmMan.set(AlarmManager.RTC_WAKEUP, morningSurveyCalendar.getTimeInMillis(), pendingIntent);
