@@ -224,18 +224,29 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 int currentCycle = getCurrentCycle();
                 InterventionDisplayData ui = getInterventionMap().get(currentCycle);
+                String liveReportFlag;
+                String morningReportFlag;
+
+                // TODO: investigate more which flow cause this null
+                if (ui == null) {
+                    liveReportFlag = "precomputed map is null";
+                    morningReportFlag = "precomputed map is null";
+                } else {
+                    liveReportFlag = ui.isShowLiveReport() ? "Yes" : "No";
+                    morningReportFlag = ui.isShowMorningReport() ? "Yes" : "No";
+                }
 
                 android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(MainActivity .this, R.style.MyDialogTheme);
                 builder.setTitle("Hidden Logs")
                         .setMessage("Username: " + userIDMA
                                 + "\nUser group: " + getGroup()
                                 + "\nCanonical start time: " + userStartDateStr
-                                + "\nCycle: " + currentCycle + "(zero-based index)"
+                                + "\nCycle: " + currentCycle + " (zero-based index)"
                                 + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
                                 + "\nNumber of cycles: " + BoozymeterApplication.NUM_CYCLES
                                 + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
-                                + "\nLive report: " + (ui.isShowLiveReport() ? "Yes" : "No")
-                                + "\nMorning report: " + (ui.isShowMorningReport() ? "Yes" : "No")
+                                + "\nLive report: " + liveReportFlag
+                                + "\nMorning report: " + morningReportFlag
                                 + "\nNumber of drinks: " + getNumDrinks()
                                 + "\nNight count (old parameter): " + getNightCount()
                                 + "\n\n"
