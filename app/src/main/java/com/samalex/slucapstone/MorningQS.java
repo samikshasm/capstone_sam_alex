@@ -210,7 +210,7 @@ public class MorningQS extends AppCompatActivity {
 
         dismissMorningQuestionnaireNotification();
 
-        ImageView appHeaderBar = findViewById(R.id.main_app_header_bar);
+        ImageView appHeaderBar = findViewById(R.id.morningqs_app_header_bar);
         appHeaderBar.setOnClickListener(new View.OnClickListener() {
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
