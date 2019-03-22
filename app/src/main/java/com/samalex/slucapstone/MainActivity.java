@@ -2,6 +2,7 @@ package com.samalex.slucapstone;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -32,6 +33,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+import static com.samalex.slucapstone.BoozymeterApplication.CYCLE_LENGTH;
+import static com.samalex.slucapstone.BoozymeterApplication.CYCLE_OFFSET;
+import static com.samalex.slucapstone.BoozymeterApplication.EVENING_REMINDER_OFFSET;
+import static com.samalex.slucapstone.BoozymeterApplication.NUM_CYCLES;
+import static com.samalex.slucapstone.BoozymeterApplication.SURVEY_OFFSET;
 import static com.samalex.slucapstone.NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID;
 
 
@@ -213,7 +219,72 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
+        ImageView appHeaderBar = findViewById(R.id.main_app_header_bar);
+        appHeaderBar.setOnClickListener(new View.OnClickListener() {
 
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            long userStartTime = getUserStartTime();
+            String userStartDateStr = dateFormat.format(new Date(userStartTime));
+
+            String moringSurveyTime = dateFormat.format(new Date(userStartTime + SURVEY_OFFSET));
+            String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
+            @Override
+            public void onClick(View view) {
+                int currentCycle = getCurrentCycle();
+                InterventionDisplayData ui = getInterventionMap().get(currentCycle);
+
+                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(MainActivity .this, R.style.MyDialogTheme);
+                builder.setTitle("Hidden Logs")
+                        .setMessage("Username: " + userIDMA
+                                + "\nUser group: " + getGroup()
+                                + "\nCanonical start time: " + userStartDateStr
+                                + "\nCycle: " + (currentCycle + 1)
+                                + "\nCycle length: " + CYCLE_LENGTH / 1000 / 60 + " minutes"
+                                + "\nNumber of cycles: " + NUM_CYCLES
+                                + "\nCycle offset: " + CYCLE_OFFSET / 1000 / 60 + " minutes"
+                                + "\nLive report: " + (ui.isShowLiveReport() ? "Yes" : "No")
+                                + "\nMorning report: " + (ui.isShowMorningReport() ? "Yes" : "No")
+                                + "\nNumber of drinks: " + getNumDrinks()
+                                + "\nNight count (old parameter): " + getNightCount()
+                                + "\n\n"
+                                + "\nMorning Survey alarm will go off: " + moringSurveyTime
+                                + "\nFirst evening reminder will go off: " + eveningReminderTime
+                        )
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // continue with delete
+                            }
+                        })
+                        .setIcon(R.drawable.white_small_icon)
+                        .show();
+            }
+        });
+    }
+
+    //gets number of drinks from shared preferences
+    private Integer getNumDrinks () {
+        SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
+        Integer numberDrinks = mSharedPreferences.getInt("numDrinks",0);
+        return numberDrinks;
+    }
+    private String getGroup() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
+        String group = mSharedPreferences.getString("Group", "none");
+        return group;
+    }
+
+    private long calculateEveningReminderTime() {
+        Calendar calendar = Calendar.getInstance();
+        long now = calendar.getTimeInMillis();
+        long userStartTime = getUserStartTime();
+
+
+        long reminderTime = userStartTime + EVENING_REMINDER_OFFSET;
+        if(reminderTime < now) {
+            reminderTime += CYCLE_LENGTH;
+        }
+
+        return reminderTime;
     }
 
     private void showHideLiveReportData() {

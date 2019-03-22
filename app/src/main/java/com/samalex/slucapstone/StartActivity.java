@@ -36,11 +36,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static com.samalex.slucapstone.BoozymeterApplication.CYCLE_LENGTH;
+import static com.samalex.slucapstone.BoozymeterApplication.CYCLE_OFFSET;
+import static com.samalex.slucapstone.BoozymeterApplication.EVENING_REMINDER_OFFSET;
+import static com.samalex.slucapstone.BoozymeterApplication.NUM_CYCLES;
+import static com.samalex.slucapstone.BoozymeterApplication.SURVEY_OFFSET;
 
 /**
  * Created by samikshasm on 7/17/17.
@@ -100,14 +108,14 @@ public class StartActivity extends AppCompatActivity {
             // Pre-compute a new table for this user
             long canonicalUserStartTime = calculateUserStartTime(
                     Calendar.getInstance(),
-                    BoozymeterApplication.CYCLE_LENGTH,
+                    CYCLE_LENGTH,
                     BoozymeterApplication.CYCLE_OFFSET);
 
             storeUserStartTime(canonicalUserStartTime);
             precomputeInterventionLookupTable(canonicalUserStartTime);
 
             // Create an evening reminder alarm that goes of daily
-            startEveningDailyReminderAlarm();
+            createEveningDailyReminderAlarm();
         } else {
             // check if map is null
         }
@@ -163,9 +171,9 @@ public class StartActivity extends AppCompatActivity {
     }
 
 
-    private void startEveningDailyReminderAlarm() {
+    private void createEveningDailyReminderAlarm() {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(getUserStartTime() + BoozymeterApplication.EVENING_REMINDER_OFFSET);
+        calendar.setTimeInMillis(calculateEveningReminderTime());
 
         // Set an alarm to go off daily
         Intent alertIntent = new Intent(this, TimerReceiver.class);
@@ -202,12 +210,35 @@ public class StartActivity extends AppCompatActivity {
     private void registerUIEvents() {
         ImageView appHeaderBar = findViewById(R.id.app_header_bar);
         appHeaderBar.setOnClickListener(new View.OnClickListener() {
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            long userStartTime = getUserStartTime();
+            String userStartDateStr = dateFormat.format(new Date(userStartTime));
+
+            String moringSurveyTime = dateFormat.format(new Date(userStartTime + SURVEY_OFFSET));
+            String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
             @Override
             public void onClick(View view) {
+                int currentCycle = getCurrentCycle();
+                InterventionDisplayData ui = getInterventionMap().get(currentCycle);
+
                 android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(StartActivity.this, R.style.MyDialogTheme);
-                builder.setTitle("Logs for testing")
-                        .setMessage("username: " + userIDMA
-                                + "\nUser group: " + getGroup())
+                builder.setTitle("Hidden Logs")
+                        .setMessage("Username: " + userIDMA
+                                + "\nUser group: " + getGroup()
+                                + "\nCanonical start time: " + userStartDateStr
+                                + "\nCycle: " + (currentCycle + 1)
+                                + "\nCycle length: " + CYCLE_LENGTH / 1000 / 60 + " minutes"
+                                + "\nNumber of cycles: " + NUM_CYCLES
+                                + "\nCycle offset: " + CYCLE_OFFSET / 1000 / 60 + " minutes"
+                                + "\nLive report: " + (ui.isShowLiveReport() ? "Yes" : "No")
+                                + "\nMorning report: " + (ui.isShowMorningReport() ? "Yes" : "No")
+                                + "\nNumber of drinks: " + getNumDrinks()
+                                + "\nNight count (old parameter): " + getNightCount()
+                                + "\n\n"
+                                + "\nMorning Survey alarm will go off: " + moringSurveyTime
+                                + "\nFirst evening reminder will go off: " + eveningReminderTime
+                        )
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 // continue with delete
@@ -259,6 +290,20 @@ public class StartActivity extends AppCompatActivity {
                         .setPositiveButton("Ok", null).create().show();
             }
         });
+    }
+
+    private long calculateEveningReminderTime() {
+        Calendar calendar = Calendar.getInstance();
+        long now = calendar.getTimeInMillis();
+        long userStartTime = getUserStartTime();
+
+
+        long reminderTime = userStartTime + EVENING_REMINDER_OFFSET;
+        if(reminderTime < now) {
+            reminderTime += CYCLE_LENGTH;
+        }
+
+        return reminderTime;
     }
 
     private String getCurrentScreen() {
@@ -351,7 +396,7 @@ public class StartActivity extends AppCompatActivity {
         for (int day = 0, len = BoozymeterApplication.NUM_CYCLES; day < len; day++) {
 
             // Store start time of each cycle
-            cycleStartTimeList.add(day, userStartTime + (day * BoozymeterApplication.CYCLE_LENGTH));
+            cycleStartTimeList.add(day, userStartTime + (day * CYCLE_LENGTH));
 
             // Official phases: Day 1-7 = phase 0, Day 8-14 = phase 1 Day 15-21 = phase 2
             int phase = day / eachInterventionLength;
@@ -419,6 +464,7 @@ public class StartActivity extends AppCompatActivity {
                         break;
                     }
                 }
+                storeGroup(group);
             }
 
             @Override
@@ -675,6 +721,13 @@ public class StartActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    //gets number of drinks from shared preferences
+    private Integer getNumDrinks () {
+        SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
+        Integer numberDrinks = mSharedPreferences.getInt("numDrinks",0);
+        return numberDrinks;
     }
 }
 
