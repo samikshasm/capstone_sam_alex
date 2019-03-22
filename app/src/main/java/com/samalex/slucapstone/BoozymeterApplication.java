@@ -19,12 +19,21 @@ public class BoozymeterApplication extends Application {
 //    final public static int NUM_IN_EPISODE_REMINDER = 4; // 4 reminders every IN_EPISODE_REMINDER_INTERVAL
 
     // Testing settings
-    final public static int CYCLE_OFFSET = 0;  // 1 minutes (from start of natural cycle)
-    final public static int CYCLE_LENGTH = 30 * 1000; // 10 minutes
-    final public static int NUM_CYCLES = 3; // 3 cycles
-    final public static int SURVEY_OFFSET = 60 * 1000; // at minute 15 (14 minutes from user start time that includes CYCLE_OFFSET)
-    final public static int EVENING_REMINDER_OFFSET = 4 * 60 * 1000; // at minute 5 (4 minutes from user start time that includes CYCLE_OFFSET)
-    final public static int IN_EPISODE_REMINDER_INTERVAL = 30 * 1000; // 30 seconds
+//    final public static int CYCLE_OFFSET = 0;  // 1 minutes (from start of natural cycle)
+//    final public static int CYCLE_LENGTH = 30 * 1000; // 10 minutes
+//    final public static int NUM_CYCLES = 3; // 3 cycles
+//    final public static int SURVEY_OFFSET = 60 * 1000; // at minute 15 (14 minutes from user start time that includes CYCLE_OFFSET)
+//    final public static int EVENING_REMINDER_OFFSET = 4 * 60 * 1000; // at minute 5 (4 minutes from user start time that includes CYCLE_OFFSET)
+//    final public static int IN_EPISODE_REMINDER_INTERVAL = 30 * 1000; // 30 seconds
+//    final public static int NUM_IN_EPISODE_REMINDER = 4; // 4 reminders every IN_EPISODE_REMINDER_INTERVAL
+
+    //  Dr. Goldwasser test settings (03/22/2019)
+    final public static long CYCLE_OFFSET = 1 * 60 * 60 * 1000;    // 1 hour
+    final public static long CYCLE_LENGTH = 6 * 60 * 60 * 1000;    //  6 hours
+    final public static int NUM_CYCLES = 12;
+    final public static long SURVEY_OFFSET = 8 * 60 * 60 * 1000;  //  8 hours after cycle start = 2 hours after END of a cycle = 1 hour after OFFSET cycle end?
+    final public static long EVENING_REMINDER_OFFSET = 4 * 60 * 60 * 1000;    // 4 hours from cycle time which is 3 hours from cycle offset start
+    final public static long IN_EPISODE_REMINDER_INTERVAL = 15 * 60 * 100;   // 15 minutes
     final public static int NUM_IN_EPISODE_REMINDER = 4; // 4 reminders every IN_EPISODE_REMINDER_INTERVAL
 
     // Global settings
@@ -33,6 +42,7 @@ public class BoozymeterApplication extends Application {
     public boolean isDebug() {
         return isDebug;
     }
+
     public void setDebug(boolean debug) {
         isDebug = debug;
     }
