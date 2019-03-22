@@ -62,8 +62,8 @@ public class StartActivity extends AppCompatActivity {
     public static final int TWO_DAY = ONE_DAY * 2;
 
     private final InterventionDisplayData NO_INTERVENTION = new InterventionDisplayData(false, false);
-    private final InterventionDisplayData INTERVENTION_A = new InterventionDisplayData(true, false);
-    private final InterventionDisplayData INTERVENTION_B = new InterventionDisplayData(false, true);
+    private final InterventionDisplayData INTERVENTION_A = new InterventionDisplayData(false, true);
+    private final InterventionDisplayData INTERVENTION_B = new InterventionDisplayData(true, false);
 
     private final List<InterventionDisplayData> CONTROL_GROUP_INTERVENTIONS = Arrays.asList(NO_INTERVENTION, INTERVENTION_A, INTERVENTION_B);
     private final List<InterventionDisplayData> EXPERIMENTAL_GROUP_INTERVENTIONS = Arrays.asList(NO_INTERVENTION, INTERVENTION_B, INTERVENTION_A);
@@ -90,6 +90,10 @@ public class StartActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         incrementStartAttempts(); // when user go back to the start activity after exiting the app by hitting the home button (which does not trigger onCreate()
+
+
+        Calendar calendar = Calendar.getInstance();
+        updateCurrentCycle(calendar.getTimeInMillis());
     }
 
     @Override
@@ -103,7 +107,6 @@ public class StartActivity extends AppCompatActivity {
         initializeLocationServiceClient();
 
         if (isFirstLogin()) {
-            storeUserGroupFromDBToSharedPref();
 
             // Pre-compute a new table for this user
             long canonicalUserStartTime = calculateUserStartTime(
@@ -121,7 +124,7 @@ public class StartActivity extends AppCompatActivity {
         }
 
         Calendar calendar = Calendar.getInstance();
-        updateCurrentCycle(calendar.getTimeInMillis(), getUserStartTime());
+        updateCurrentCycle(calendar.getTimeInMillis());
 
         userIDMA = getIntent().getStringExtra("User ID");
         SharedPreferences userSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
@@ -184,20 +187,18 @@ public class StartActivity extends AppCompatActivity {
         Log.e("evening reminder alarm:", calendar.getTimeInMillis() + "");
     }
 
-    private void updateCurrentCycle(long currentTimeInMillis, long userStartTime) {
+    private void updateCurrentCycle(long currentTimeInMillis) {
         List<Long> cycleStartTimeList = getCycleStartTimeList();
 
         int cycle = 0;
-        for (int i = 1, len = cycleStartTimeList.size(); i < len; i++) {
-            if (currentTimeInMillis < cycleStartTimeList.get(i)) {
+        for (int i = 0, len = cycleStartTimeList.size(); i < len; i++) {
+            if (currentTimeInMillis >= cycleStartTimeList.get(i)) {
                 cycle = i;
+            } else {
                 break;
             }
         }
         storeCurrentCycle(cycle);
-    }
-    private ArrayList<Long> getCycleStartTimeList() {
-        return new ArrayList<>();
     }
 
     private void initializeLocationServiceClient() {
@@ -252,6 +253,8 @@ public class StartActivity extends AppCompatActivity {
         ImageButton startDrinking = (ImageButton) findViewById(R.id.start_drinking);
         startDrinking.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                precomputeInterventionLookupTable(getUserStartTime()); // TODO: This is a temporary way to fix getting group from database is slower than when precomputeInterventionLookupTable method is called in onCreate()
+
                 nightCount = getNightCount();
                 nightCount++;
                 storeNight(nightCount);
@@ -383,6 +386,23 @@ public class StartActivity extends AppCompatActivity {
         mEditor.apply();
     }
 
+    private LongList getCycleStartTimeList() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = mSharedPreferences.getString("cycle_start_time_list", "[]");
+        LongList list = gson.fromJson(json, LongList.class);
+        return list;
+    }
+
+    private void storeCycleStartTimeList(LongList list) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(list); // myObject - instance of MyObject
+        mEditor.putString("cycle_start_time_list", json);
+        mEditor.apply();
+    }
+
     private void precomputeInterventionLookupTable(long userStartTime) {
         // clear old intervention map in shared preferences
         storeInterventionMap(new InterventionMap());
@@ -390,7 +410,7 @@ public class StartActivity extends AppCompatActivity {
         List<InterventionDisplayData> interventionOrder = getInterventionOrder();
         int eachInterventionLength = BoozymeterApplication.NUM_CYCLES / 3;
 
-        List<Long> cycleStartTimeList = new ArrayList<>();
+        LongList cycleStartTimeList = new LongList();
         InterventionMap interventionLookupTable = new InterventionMap();
 
         for (int day = 0, len = BoozymeterApplication.NUM_CYCLES; day < len; day++) {
@@ -407,6 +427,7 @@ public class StartActivity extends AppCompatActivity {
 
         // store the a new map in shared preferences
         storeInterventionMap(interventionLookupTable);
+        storeCycleStartTimeList(cycleStartTimeList);
     }
 
     private List<InterventionDisplayData> getInterventionOrder() {
@@ -423,58 +444,58 @@ public class StartActivity extends AppCompatActivity {
         return getLoginAttempts() == 1 && getStartAttempts() == 1;
     }
 
-    private List<String> getUserListByGroup(DataSnapshot dataSnapshot, String s) {
-        List<String> userList = new ArrayList<>();
-        //iterates through the dataSnapshot
-        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-            String usersKey = ds.getKey().toString();
-            if (usersKey.equals("Users")) {
-                //gets information from database
-                //makes sure that there is data at the given branch
-                Map<String, Map<String, String>> controlJSON = (Map<String, Map<String, String>>) ds.child(s).getValue();
-                if (controlJSON != null) {
-                    userList = new ArrayList<>(controlJSON.keySet());
-                }
-            }
-        }
-        return userList;
-    }
-
-    // check user's group from database and store in SharedPreferences
-    private void storeUserGroupFromDBToSharedPref() {
-        mReference = FirebaseDatabase.getInstance().getReference();
-        mReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                String group = "";
-                List<String> controlUserList = getUserListByGroup(dataSnapshot, "Control Group");
-                List<String> experimentalUserList = getUserListByGroup(dataSnapshot, "Experimental Group");
-
-                for (int i = 0; i < experimentalUserList.size(); i++) {
-                    if (experimentalUserList.get(i).equals(userIDMA)) {
-                        group = "experimental";
-                        break;
-                    }
-                }
-
-                for (int i = 0; i < controlUserList.size(); i++) {
-                    if (controlUserList.get(i).equals(userIDMA)) {
-                        group = "control";
-                        break;
-                    }
-                }
-                storeGroup(group);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        Log.e("group after ", getGroup() + "");
-    }
+//    private List<String> getUserListByGroup(DataSnapshot dataSnapshot, String s) {
+//        List<String> userList = new ArrayList<>();
+//        //iterates through the dataSnapshot
+//        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+//            String usersKey = ds.getKey().toString();
+//            if (usersKey.equals("Users")) {
+//                //gets information from database
+//                //makes sure that there is data at the given branch
+//                Map<String, Map<String, String>> controlJSON = (Map<String, Map<String, String>>) ds.child(s).getValue();
+//                if (controlJSON != null) {
+//                    userList = new ArrayList<>(controlJSON.keySet());
+//                }
+//            }
+//        }
+//        return userList;
+//    }
+//
+//    // check user's group from database and store in SharedPreferences
+//    private void storeUserGroupFromDBToSharedPref() {
+//        mReference = FirebaseDatabase.getInstance().getReference();
+//        mReference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//                String group = "";
+//                List<String> controlUserList = getUserListByGroup(dataSnapshot, "Control Group");
+//                List<String> experimentalUserList = getUserListByGroup(dataSnapshot, "Experimental Group");
+//
+//                for (int i = 0; i < experimentalUserList.size(); i++) {
+//                    if (experimentalUserList.get(i).equals(userIDMA)) {
+//                        group = "experimental";
+//                        break;
+//                    }
+//                }
+//
+//                for (int i = 0; i < controlUserList.size(); i++) {
+//                    if (controlUserList.get(i).equals(userIDMA)) {
+//                        group = "control";
+//                        break;
+//                    }
+//                }
+//                storeGroup(group);
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//        Log.e("group after ", getGroup() + "");
+//    }
 
     private String getGroup() {
         SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);

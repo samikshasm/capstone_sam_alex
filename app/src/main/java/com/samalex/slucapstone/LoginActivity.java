@@ -31,9 +31,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 /**
  * A login screen that offers login via email/password.
  */
@@ -193,13 +200,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             UserID = task.getResult().getUser().getUid();
                             storeUserID(username);
                             loginAttempts=getLoginAttempts();
-                            //loginAttempts++;
+//                            loginAttempts++;
                             loginAttempts=1;
                             storeLoginAttempts(loginAttempts);
                             Log.e("Login Attempts", loginAttempts+"");
                             Log.e("User ID Login", username);
                             intent.putExtra("User ID", username);
                             intent.putExtra("Sign in Boolean", currentUserBool);
+
+                            storeUserGroupFromDBToSharedPref();
+
                             startActivity(intent);
                             finish();
                         } else {
@@ -211,6 +221,64 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         }
                     }
                 });
+    }
+
+    private List<String> getUserListByGroup(DataSnapshot dataSnapshot, String s) {
+        List<String> userList = new ArrayList<>();
+        //iterates through the dataSnapshot
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+            String usersKey = ds.getKey().toString();
+            if (usersKey.equals("Users")) {
+                //gets information from database
+                //makes sure that there is data at the given branch
+                Map<String, Map<String, String>> controlJSON = (Map<String, Map<String, String>>) ds.child(s).getValue();
+                if (controlJSON != null) {
+                    userList = new ArrayList<>(controlJSON.keySet());
+                }
+            }
+        }
+        return userList;
+    }
+
+    private void storeGroup(String group) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putString("Group", group);
+        mEditor.apply();
+    }
+
+    // check user's group from database and store in SharedPreferences
+    private void storeUserGroupFromDBToSharedPref() {
+        DatabaseReference mReference = FirebaseDatabase.getInstance().getReference();
+        mReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                String group = "";
+                List<String> controlUserList = getUserListByGroup(dataSnapshot, "Control Group");
+                List<String> experimentalUserList = getUserListByGroup(dataSnapshot, "Experimental Group");
+
+                for (int i = 0; i < experimentalUserList.size(); i++) {
+                    if (experimentalUserList.get(i).equals(username)) {
+                        group = "experimental";
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < controlUserList.size(); i++) {
+                    if (controlUserList.get(i).equals(username)) {
+                        group = "control";
+                        break;
+                    }
+                }
+                storeGroup(group);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 /*
     private boolean isEmailValid(String email) {
