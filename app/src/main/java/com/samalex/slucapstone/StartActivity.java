@@ -29,26 +29,14 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-import static com.samalex.slucapstone.BoozymeterApplication.CYCLE_LENGTH;
-import static com.samalex.slucapstone.BoozymeterApplication.CYCLE_OFFSET;
-import static com.samalex.slucapstone.BoozymeterApplication.EVENING_REMINDER_OFFSET;
-import static com.samalex.slucapstone.BoozymeterApplication.NUM_CYCLES;
-import static com.samalex.slucapstone.BoozymeterApplication.SURVEY_OFFSET;
 
 /**
  * Created by samikshasm on 7/17/17.
@@ -112,7 +100,7 @@ public class StartActivity extends AppCompatActivity {
             // Pre-compute a new table for this user
             long canonicalUserStartTime = calculateUserStartTime(
                     Calendar.getInstance(),
-                    CYCLE_LENGTH,
+                    BoozymeterApplication.CYCLE_LENGTH,
                     BoozymeterApplication.CYCLE_OFFSET);
 
             storeUserStartTime(canonicalUserStartTime);
@@ -217,7 +205,7 @@ public class StartActivity extends AppCompatActivity {
             long userStartTime = getUserStartTime();
             String userStartDateStr = dateFormat.format(new Date(userStartTime));
 
-            String moringSurveyTime = dateFormat.format(new Date(userStartTime + SURVEY_OFFSET));
+            String moringSurveyTime = dateFormat.format(new Date(userStartTime + BoozymeterApplication.SURVEY_OFFSET));
             String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
 
             @Override
@@ -241,10 +229,10 @@ public class StartActivity extends AppCompatActivity {
                         .setMessage("Username: " + userIDMA
                                 + "\nUser group: " + getGroup()
                                 + "\nCanonical start time: " + userStartDateStr
-                                + "\nCycle: " + (currentCycle + 1)
-                                + "\nCycle length: " + CYCLE_LENGTH / 1000 / 60 + " minutes"
-                                + "\nNumber of cycles: " + NUM_CYCLES
-                                + "\nCycle offset: " + CYCLE_OFFSET / 1000 / 60 + " minutes"
+                                + "\nCycle: " + currentCycle + "(zero-based index)"
+                                + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
+                                + "\nNumber of cycles: " + BoozymeterApplication.NUM_CYCLES
+                                + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
                                 + "\nLive report: " + liveReportFlag
                                 + "\nMorning report: " + morningReportFlag
                                 + "\nNumber of drinks: " + getNumDrinks()
@@ -314,9 +302,9 @@ public class StartActivity extends AppCompatActivity {
         long userStartTime = getUserStartTime();
 
 
-        long reminderTime = userStartTime + EVENING_REMINDER_OFFSET;
+        long reminderTime = userStartTime + BoozymeterApplication.EVENING_REMINDER_OFFSET;
         if (reminderTime < now) {
-            reminderTime += CYCLE_LENGTH;
+            reminderTime += BoozymeterApplication.CYCLE_LENGTH;
         }
 
         return reminderTime;
@@ -434,7 +422,7 @@ public class StartActivity extends AppCompatActivity {
         for (int day = 0, len = BoozymeterApplication.NUM_CYCLES; day < len; day++) {
 
             // Store start time of each cycle
-            cycleStartTimeList.add(day, userStartTime + (day * CYCLE_LENGTH));
+            cycleStartTimeList.add(day, userStartTime + (day * BoozymeterApplication.CYCLE_LENGTH));
 
             // Official phases: Day 1-7 = phase 0, Day 8-14 = phase 1 Day 15-21 = phase 2
             int phase = day / eachInterventionLength;
