@@ -218,10 +218,22 @@ public class StartActivity extends AppCompatActivity {
 
             String moringSurveyTime = dateFormat.format(new Date(userStartTime + SURVEY_OFFSET));
             String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
+
             @Override
             public void onClick(View view) {
                 int currentCycle = getCurrentCycle();
                 InterventionDisplayData ui = getInterventionMap().get(currentCycle);
+                String liveReportFlag;
+                String morningReportFlag;
+
+                // TODO: investigate more which flow cause this null
+                if (ui == null) {
+                    liveReportFlag = "precomputed map is null";
+                    morningReportFlag = "precomputed map is null";
+                } else {
+                    liveReportFlag = ui.isShowLiveReport() ? "Yes" : "No";
+                    morningReportFlag = ui.isShowMorningReport() ? "Yes" : "No";
+                }
 
                 android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(StartActivity.this, R.style.MyDialogTheme);
                 builder.setTitle("Hidden Logs")
@@ -232,8 +244,8 @@ public class StartActivity extends AppCompatActivity {
                                 + "\nCycle length: " + CYCLE_LENGTH / 1000 / 60 + " minutes"
                                 + "\nNumber of cycles: " + NUM_CYCLES
                                 + "\nCycle offset: " + CYCLE_OFFSET / 1000 / 60 + " minutes"
-                                + "\nLive report: " + (ui.isShowLiveReport() ? "Yes" : "No")
-                                + "\nMorning report: " + (ui.isShowMorningReport() ? "Yes" : "No")
+                                + "\nLive report: " + liveReportFlag
+                                + "\nMorning report: " + morningReportFlag
                                 + "\nNumber of drinks: " + getNumDrinks()
                                 + "\nNight count (old parameter): " + getNightCount()
                                 + "\n\n"
@@ -302,7 +314,7 @@ public class StartActivity extends AppCompatActivity {
 
 
         long reminderTime = userStartTime + EVENING_REMINDER_OFFSET;
-        if(reminderTime < now) {
+        if (reminderTime < now) {
             reminderTime += CYCLE_LENGTH;
         }
 
@@ -370,9 +382,14 @@ public class StartActivity extends AppCompatActivity {
     }
 
     private InterventionMap getInterventionMap() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
         Gson gson = new Gson();
-        String json = mSharedPreferences.getString("intervention_map", "{}");
+
+        // prevent NullPointerException
+        InterventionMap emptyInterventionMap = new InterventionMap();
+        String emptyInterventionMapStr = gson.toJson(emptyInterventionMap);
+
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        String json = mSharedPreferences.getString("intervention_map", emptyInterventionMapStr);
         InterventionMap map = gson.fromJson(json, InterventionMap.class);
         return map;
     }
@@ -745,9 +762,9 @@ public class StartActivity extends AppCompatActivity {
     }
 
     //gets number of drinks from shared preferences
-    private Integer getNumDrinks () {
+    private Integer getNumDrinks() {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
-        Integer numberDrinks = mSharedPreferences.getInt("numDrinks",0);
+        Integer numberDrinks = mSharedPreferences.getInt("numDrinks", 0);
         return numberDrinks;
     }
 }
