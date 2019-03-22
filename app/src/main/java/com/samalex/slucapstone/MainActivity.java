@@ -354,19 +354,19 @@ public class MainActivity extends AppCompatActivity {
 
     //function to create alarms at given time
     public void createAlarms(long currentTime) {
-        long thirty = currentTime + ALARM_TIME;
+        long thirty = currentTime + BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL;
         //1800000
         startAlarm(thirty, 1);
 
-        long sixty = currentTime + (ALARM_TIME * 2);
+        long sixty = currentTime + (BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL * 2);
         //3600000
         startAlarm(sixty, 2);
 
-        long ninety = currentTime + (ALARM_TIME * 3);
+        long ninety = currentTime + (BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL * 3);
         //5400000
         startAlarm(ninety, 3);
 
-        long one = currentTime + (ALARM_TIME * 4);
+        long one = currentTime + (BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL * 4);
         //7200000
         startAlarm(one, 4);
     }
