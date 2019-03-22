@@ -32,6 +32,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+import static com.samalex.slucapstone.NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID;
+
 
 public class MainActivity extends AppCompatActivity {
     // constants
@@ -252,48 +254,19 @@ public class MainActivity extends AppCompatActivity {
     //creates the morning alarm manager to go off the following morning
     //adapted code from Alarm Manager Android Developer page
     private void createMorningAlarm() {
-        Calendar morningCal = Calendar.getInstance();
+        long userStartTime = getUserStartTime();
+        long morningSurveyTimeInMillis = userStartTime + BoozymeterApplication.SURVEY_OFFSET;
+        Calendar morningSurveyCalendar = Calendar.getInstance();
+        morningSurveyCalendar.setTimeInMillis(morningSurveyTimeInMillis);
 
-        BoozymeterApplication application = (BoozymeterApplication) getApplication();
-        boolean isDebug = application.isDebug();
-
-        if (isDebug) {
-            int day = morningCal.get(Calendar.DAY_OF_WEEK);
-            int hour = morningCal.get(Calendar.HOUR_OF_DAY);
-            int minute = morningCal.get(Calendar.MINUTE);
-            int second = morningCal.get(Calendar.SECOND);
-
-            morningCal.set(Calendar.DAY_OF_WEEK, day);
-            morningCal.set(Calendar.HOUR_OF_DAY, hour);
-            morningCal.set(Calendar.MINUTE, minute);
-            morningCal.set(Calendar.SECOND, second+2);
-        } else {
-            int day;
-            int hour = morningCal.get(Calendar.HOUR_OF_DAY);
-            if (hour >= 0 && hour < 8) {
-                day = morningCal.get(Calendar.DAY_OF_WEEK);
-            } else {
-                day = morningCal.get(Calendar.DAY_OF_WEEK) + 1;
-            }
-
-            Log.e("day of the week:", "" + morningCal.get(Calendar.DAY_OF_WEEK));
-            Log.e("hour of the week:", "" + hour);
-
-            morningCal.set(Calendar.DAY_OF_WEEK, day);
-            morningCal.set(Calendar.HOUR_OF_DAY, 8);
-            morningCal.set(Calendar.MINUTE, 0);
-            morningCal.set(Calendar.SECOND, 0);
-        }
-
-        Log.e("morningCal set time:", morningCal.get(Calendar.DAY_OF_WEEK) + "," + morningCal.get(Calendar.HOUR_OF_DAY));
+        Log.e("morning survey alarm:", morningSurveyCalendar.getTimeInMillis() + "");
 
         Intent alertIntent = new Intent(this, TimerReceiver.class);
         AlarmManager morningAlarmMan = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alertIntent.putExtra("broadcast Int", "5");
-        //alertIntent.putExtra("User ID", userIDMA);
+        alertIntent.putExtra("broadcast Int", MORNING_QUESTIONNAIRE_NOTIFICATION_ID + "");
         alertIntent.putExtra("initial time", initialTimeStr);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 5, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        morningAlarmMan.set(AlarmManager.RTC_WAKEUP, morningCal.getTimeInMillis(), pendingIntent);
+        morningAlarmMan.set(AlarmManager.RTC_WAKEUP, morningSurveyCalendar.getTimeInMillis(), pendingIntent);
     }
 
     //function to store the current screen to the shared preference screen variable
@@ -352,7 +325,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        long startedTimeInMillis = getStartedTime();
+//        long startedTimeInMillis = getStartedTime();
+        //start the ui update service when the app is resumed to update ui timer
         //start the ui update service when the app is resumed to update ui timer
         //startUIUpdateService(startedTimeInMillis);
         //checks to see which screen is set in the shared preferences screen variable
@@ -377,13 +351,6 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
         return mSharedPreferences.getString("currentScreen", "none");
     }
-
-    private long getStartedTime() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("Started Time", MODE_PRIVATE);
-        long startedTimeMillis = mSharedPreferences.getLong("Started Time", 0);
-        return startedTimeMillis;
-    }
-
 
     private Integer getNightCount() {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
@@ -569,4 +536,9 @@ public class MainActivity extends AppCompatActivity {
         return map;
     }
 
+    private Long getUserStartTime() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        Long time = mSharedPreferences.getLong("userStartTime", 0);
+        return time;
+    }
 }

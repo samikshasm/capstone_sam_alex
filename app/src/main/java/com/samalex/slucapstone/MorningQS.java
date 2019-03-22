@@ -1015,7 +1015,7 @@ public class MorningQS extends AppCompatActivity {
     private InterventionMap getInterventionMap() {
         SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
         Gson gson = new Gson();
-        String json = mSharedPreferences.getString("intervention_map", "");
+        String json = mSharedPreferences.getString("intervention_map", "{}");
         InterventionMap map = gson.fromJson(json, InterventionMap.class);
         return map;
     }

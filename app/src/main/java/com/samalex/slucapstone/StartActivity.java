@@ -1,6 +1,8 @@
 package com.samalex.slucapstone;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -103,10 +105,12 @@ public class StartActivity extends AppCompatActivity {
 
             storeUserStartTime(canonicalUserStartTime);
             precomputeInterventionLookupTable(canonicalUserStartTime);
+
+            // Create an evening reminder alarm that goes of daily
+            startEveningDailyReminderAlarm();
         } else {
             // check if map is null
         }
-
 
         Calendar calendar = Calendar.getInstance();
         updateCurrentCycle(calendar.getTimeInMillis(), getUserStartTime());
@@ -156,6 +160,20 @@ public class StartActivity extends AppCompatActivity {
             startActivity(switchToLogin);
             finish();
         }
+    }
+
+
+    private void startEveningDailyReminderAlarm() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(getUserStartTime() + BoozymeterApplication.EVENING_REMINDER_OFFSET);
+
+        // Set an alarm to go off daily
+        Intent alertIntent = new Intent(this, TimerReceiver.class);
+        alertIntent.putExtra("broadcast Int", NotificationService.EVENING_REMINDER_NOTIFICATION_ID + "");
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, NotificationService.EVENING_REMINDER_NOTIFICATION_ID, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmMgr = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        Log.e("evening reminder alarm:", calendar.getTimeInMillis() + "");
     }
 
     private void updateCurrentCycle(long currentTimeInMillis, long userStartTime) {

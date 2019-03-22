@@ -70,7 +70,7 @@ public class NotificationService extends Service {
             CharSequence name = getString(R.string.channel_name);
             String description = getString(R.string.channel_description);
 
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH);
             channel.setDescription(description);
             channel.enableLights(true);
             channel.enableVibration(true);
@@ -142,7 +142,7 @@ public class NotificationService extends Service {
                     .setContentText("It's been 30 minutes! Have you had a drink?")
                     .addAction(R.drawable.check_small, "Yes", yesIntent1)
                     .addAction(R.drawable.cancel_small, "No", noIntent1)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setAutoCancel(true);
 
             builder.setVibrate(new long[]{1000, 1000, 1000, 1000, 1000});
