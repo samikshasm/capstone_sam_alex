@@ -2,6 +2,7 @@ package com.samalex.slucapstone;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -25,6 +27,7 @@ import com.google.gson.Gson;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -52,7 +55,6 @@ public class MorningQS extends AppCompatActivity {
     private String newStr = "NA";
     private String naStr = "NA";
     private Integer counter = -1;
-    private Integer nightCount;
     private String drinkCost = "NA";
     private String broadcastInt = "none";
     private String stress_event = "NA";
@@ -206,29 +208,81 @@ public class MorningQS extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = mSharedPreferences.getString("user ID", "none");
 
-        nightCount = getNightCount();
-
         dismissMorningQuestionnaireNotification();
+
+        ImageView appHeaderBar = findViewById(R.id.main_app_header_bar);
+        appHeaderBar.setOnClickListener(new View.OnClickListener() {
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            long userStartTime = getUserStartTime();
+            String userStartDateStr = dateFormat.format(new Date(userStartTime));
+
+            String moringSurveyTime = dateFormat.format(new Date(userStartTime + BoozymeterApplication.SURVEY_OFFSET));
+            String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
+            @Override
+            public void onClick(View view) {
+                int currentCycle = getCurrentCycle();
+                InterventionDisplayData ui = getInterventionMap().get(currentCycle);
+                String liveReportFlag;
+                String morningReportFlag;
+
+                // TODO: investigate more which flow cause this null
+                if (ui == null) {
+                    liveReportFlag = "precomputed map is null";
+                    morningReportFlag = "precomputed map is null";
+                } else {
+                    liveReportFlag = ui.isShowLiveReport() ? "Yes" : "No";
+                    morningReportFlag = ui.isShowMorningReport() ? "Yes" : "No";
+                }
+
+                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(MorningQS .this, R.style.MyDialogTheme);
+                builder.setTitle("Hidden Logs")
+                        .setMessage("Username: " + userIDMA
+                                + "\nUser group: " + getGroup()
+                                + "\nCanonical start time: " + userStartDateStr
+                                + "\nCycle: " + currentCycle + " (zero-based index)"
+                                + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
+                                + "\nNumber of cycles: " + BoozymeterApplication.NUM_CYCLES
+                                + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
+                                + "\nLive report: " + liveReportFlag
+                                + "\nMorning report: " + morningReportFlag
+                                + "\nNumber of drinks: " + getNumDrinks()
+                                + "\nNight count (old parameter): " + getNightCount()
+                                + "\n\n"
+                                + "\nMorning Survey alarm will go off: " + moringSurveyTime
+                                + "\nFirst evening reminder will go off: " + eveningReminderTime
+                        )
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // continue with delete
+                            }
+                        })
+                        .setIcon(R.drawable.white_small_icon)
+                        .show();
+            }
+        });
+
 
         //creates all of the onClick listeners for all of the buttons for questions
         View.OnClickListener handler1 = new View.OnClickListener() {
             public void onClick(View view) {
-                writeOralToDB(oral);
-                writeLastNightDrink(drinklastNight);
-                writeNumDrinksToDB(drinksCounter);
-                writeTypesDrinksToDB(typesOfDrinks);
-                writeHangoverToDB(hangover);
-                writeDrugsToDB(drugs);
-                writeTypeDrugsToDB(typeDrugs);
-                writeAnalVaginalToDB(analVaginalSex);
-                writeCondomToDB(condom);
+                int nightCount = getNightCount();
+                writeOralToDB(oral, nightCount);
+                writeLastNightDrink(drinklastNight, nightCount);
+                writeNumDrinksToDB(drinksCounter, nightCount);
+                writeTypesDrinksToDB(typesOfDrinks, nightCount);
+                writeHangoverToDB(hangover, nightCount);
+                writeDrugsToDB(drugs, nightCount);
+                writeTypeDrugsToDB(typeDrugs, nightCount);
+                writeAnalVaginalToDB(analVaginalSex, nightCount);
+                writeCondomToDB(condom, nightCount);
 
                 if (analVaginalSex == "Yes") {
                     int partnerSelectedId = partnerGroup.getCheckedRadioButtonId();
                     RadioButton partnerButton;
                     partnerButton = (RadioButton) findViewById(partnerSelectedId);
                     partner = partnerButton.getText().toString();
-                    writePartnerToDB(partner);
+                    writePartnerToDB(partner, nightCount);
 
                 }
                 if (stress_event == "Yes") {
@@ -236,12 +290,12 @@ public class MorningQS extends AppCompatActivity {
                     RadioButton stressButton;
                     stressButton = (RadioButton) findViewById(stressSelectedID);
                     whenStressOccurred = stressButton.getText().toString();
-                    writeStressOccurranceToDB(whenStressOccurred);
+                    writeStressOccurranceToDB(whenStressOccurred, nightCount);
                 }
 
-                writeStressEventToDB(stress_event);
-                writeTypeStressToDB(typeStress);
-                writeStressValueToDB(stress_value);
+                writeStressEventToDB(stress_event, nightCount);
+                writeTypeStressToDB(typeStress, nightCount);
+                writeStressValueToDB(stress_value, nightCount);
                 finish();
 
 
@@ -803,67 +857,67 @@ public class MorningQS extends AppCompatActivity {
         time = dateFormat.format(currentDate);
     }
 
-    public void writeStressValueToDB(String value) {
+    public void writeStressValueToDB(String value, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("12StressValue");
         mRef.setValue(value);
     }
 
-    public void writeStressEventToDB(String stress_event) {
+    public void writeStressEventToDB(String stress_event, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("10StressEvent");
         mRef.setValue(stress_event);
     }
 
-    public void writeStressOccurranceToDB(String whenStressOccurred) {
+    public void writeStressOccurranceToDB(String whenStressOccurred, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("13StressTime");
         mRef.setValue(whenStressOccurred);
     }
 
-    public void writeTypeStressToDB(String typeStress) {
+    public void writeTypeStressToDB(String typeStress, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("11TypeStress");
         mRef.setValue(typeStress);
     }
 
-    public void writeInterpersonal(String interpersonal) {
+    public void writeInterpersonal(String interpersonal, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("Interpersonal");
         mRef.setValue(interpersonal);
     }
 
-    public void writeWorkToDB(String work) {
+    public void writeWorkToDB(String work, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("Work");
         mRef.setValue(work);
     }
 
-    public void writeFinancialToDB(String financial) {
+    public void writeFinancialToDB(String financial, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("Financial");
         mRef.setValue(financial);
     }
 
-    public void writeHealthToDB(String health) {
+    public void writeHealthToDB(String health, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("Health");
         mRef.setValue(health);
     }
 
-    public void writeTraumaToDB(String trauma) {
+    public void writeTraumaToDB(String trauma, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("Trauma");
         mRef.setValue(trauma);
     }
 
-    public void writeStressOtherToDB(String stress_other) {
+    public void writeStressOtherToDB(String stress_other, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("StressOther");
         mRef.setValue(stress_other);
     }
 
-    public void writeCostTotaltoDB(String drink_cost) {
+    public void writeCostTotaltoDB(String drink_cost, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("Cost_Total");
         mRef.setValue(drink_cost);
@@ -871,129 +925,129 @@ public class MorningQS extends AppCompatActivity {
     }
 
     //functions to write all of the answers to the database
-    public void writeNumPartners(int number) {
+    public void writeNumPartners(int number, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("numPartners");
         mRef.setValue(number);
     }
 
-    public void writeMonoPartner(String monoPartner) {
+    public void writeMonoPartner(String monoPartner, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("MonogamousPartner");
         mRef.setValue(monoPartner);
     }
 
-    public void writeFriendPartner(String friendPartner) {
+    public void writeFriendPartner(String friendPartner, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("FriendPartner");
         mRef.setValue(friendPartner);
     }
 
-    public void writeNewPartner(String newPartner) {
+    public void writeNewPartner(String newPartner, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("NewPartner");
         mRef.setValue(newPartner);
     }
 
-    public void writeNAPartner(String naPartner) {
+    public void writeNAPartner(String naPartner, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("NAPartner");
         mRef.setValue(naPartner);
     }
 
-    public void writeOralToDB(String oral) {
+    public void writeOralToDB(String oral, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("oral");
         mRef.setValue(oral);
     }
 
-    public void writeLastNightDrink(String drinklastNight) {
+    public void writeLastNightDrink(String drinklastNight, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("1EpisodeLastNight");
         mRef.setValue(drinklastNight);
     }
 
-    public void writeNumDrinksToDB(int drinksCounter) {
+    public void writeNumDrinksToDB(int drinksCounter, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("2NumberOfDrinks");
         mRef.setValue(drinksCounter);
     }
 
-    public void writeTypesDrinksToDB(String typesOfDrinks) {
+    public void writeTypesDrinksToDB(String typesOfDrinks, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("3TypesOfDrinks");
         mRef.setValue(typesOfDrinks);
     }
 
 
-    public void writeHangoverToDB(String hangover) {
+    public void writeHangoverToDB(String hangover, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("4Hangover");
         mRef.setValue(hangover);
     }
 
-    public void writeDrugsToDB(String drugs) {
+    public void writeDrugsToDB(String drugs, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("5Drugs");
         mRef.setValue(drugs);
     }
 
-    public void writeTypeDrugsToDB(String typeDrugs) {
+    public void writeTypeDrugsToDB(String typeDrugs, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("6TypeDrugs");
         mRef.setValue(typeDrugs);
     }
 
-    public void writeAnalVaginalToDB(String analVaginalSex) {
+    public void writeAnalVaginalToDB(String analVaginalSex, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("7AnalVaginalSex");
         mRef.setValue(analVaginalSex);
     }
 
-    public void writeCondomToDB(String condom) {
+    public void writeCondomToDB(String condom, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("8UsedCondom");
         mRef.setValue(condom);
     }
 
 
-    public void writePartnerToDB(String partner) {
+    public void writePartnerToDB(String partner, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("9PartnerType");
         mRef.setValue(partner);
     }
 
-    public void writeVaginalToDB(String vaginal) {
+    public void writeVaginalToDB(String vaginal, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("vaginal");
         mRef.setValue(vaginal);
     }
 
-    public void writeAnalToDB(String anal) {
+    public void writeAnalToDB(String anal, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("anal");
         mRef.setValue(anal);
     }
 
-    public void writeVaginalCondomToDB(String vaginalCondom) {
+    public void writeVaginalCondomToDB(String vaginalCondom, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("vaginalCondom");
         mRef.setValue(vaginalCondom);
     }
 
-    public void writeVaginalConsentToDB(String vaginalConsent) {
+    public void writeVaginalConsentToDB(String vaginalConsent, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("vaginalConsent");
         mRef.setValue(vaginalConsent);
     }
 
-    public void writeAnalCondomToDB(String analCondom) {
+    public void writeAnalCondomToDB(String analCondom, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("analCondom");
         mRef.setValue(analCondom);
     }
 
-    public void writeAnalConsentToDB(String analConsent) {
+    public void writeAnalConsentToDB(String analConsent, int nightCount) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("analConsent");
         mRef.setValue(analConsent);
@@ -1018,5 +1072,38 @@ public class MorningQS extends AppCompatActivity {
         String json = mSharedPreferences.getString("intervention_map", "{}");
         InterventionMap map = gson.fromJson(json, InterventionMap.class);
         return map;
+    }
+
+    //gets number of drinks from shared preferences
+    private Integer getNumDrinks () {
+        SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
+        Integer numberDrinks = mSharedPreferences.getInt("numDrinks",0);
+        return numberDrinks;
+    }
+    private String getGroup() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
+        String group = mSharedPreferences.getString("Group", "none");
+        return group;
+    }
+
+    private long calculateEveningReminderTime() {
+        Calendar calendar = Calendar.getInstance();
+        long now = calendar.getTimeInMillis();
+        long userStartTime = getUserStartTime();
+
+
+        long reminderTime = userStartTime + BoozymeterApplication.EVENING_REMINDER_OFFSET;
+        if(reminderTime < now) {
+            reminderTime += BoozymeterApplication.CYCLE_LENGTH;
+        }
+
+        return reminderTime;
+    }
+
+
+    private Long getUserStartTime() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        Long time = mSharedPreferences.getLong("userStartTime", 0);
+        return time;
     }
 }

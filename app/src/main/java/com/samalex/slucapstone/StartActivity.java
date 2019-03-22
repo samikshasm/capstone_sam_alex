@@ -62,7 +62,6 @@ public class StartActivity extends AppCompatActivity {
     private String startActivity;
     private Integer id = 1;
     private String lastActivity;
-    private Integer nightCount = 0;
     private String cancelButMain;
     private DatabaseReference mReference;
 
@@ -95,7 +94,9 @@ public class StartActivity extends AppCompatActivity {
         initializeLocationServiceClient();
 
         if (isFirstLogin()) {
+            // reset all count values
             storeCurrentCycle(0);
+            storeNight(0); // count episodes in 1 cycle
             
             // Pre-compute a new table for this user
             long canonicalUserStartTime = calculateUserStartTime(
@@ -229,7 +230,7 @@ public class StartActivity extends AppCompatActivity {
                         .setMessage("Username: " + userIDMA
                                 + "\nUser group: " + getGroup()
                                 + "\nCanonical start time: " + userStartDateStr
-                                + "\nCycle: " + currentCycle + "(zero-based index)"
+                                + "\nCycle: " + currentCycle + " (zero-based index)"
                                 + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
                                 + "\nNumber of cycles: " + BoozymeterApplication.NUM_CYCLES
                                 + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
@@ -256,7 +257,7 @@ public class StartActivity extends AppCompatActivity {
             public void onClick(View view) {
                 precomputeInterventionLookupTable(getUserStartTime()); // TODO: This is a temporary way to fix getting group from database is slower than when precomputeInterventionLookupTable method is called in onCreate()
 
-                nightCount = getNightCount();
+                int nightCount = getNightCount();
                 nightCount++;
                 storeNight(nightCount);
                 id = 2;

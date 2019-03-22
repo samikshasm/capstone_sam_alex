@@ -52,7 +52,6 @@ public class MorningReport extends AppCompatActivity{
     private String date;
     private Integer totalCalConsumed;
     private TextView display_calories;
-    private Integer nightCount;
     private Integer numLocation;
     private TextView display_location;
     private TextView display_numDrinks;
@@ -81,7 +80,6 @@ public class MorningReport extends AppCompatActivity{
 
         //gets shared preference variables
         getTime();
-        nightCount = getNightCount();
 //        numDrinks = getNumDrinks(); // cannot get from SharedPreferences because it's already reset when submitting morning questionnaire
 
         //initializes pie chart and sets basic features
@@ -154,6 +152,8 @@ public class MorningReport extends AppCompatActivity{
 
     //function to analyze data received from snapshot
     private void getData(DataSnapshot dataSnapshot) {
+
+        int nightCount = getNightCount();
 
         //iterates through the dataSnapshot
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -411,7 +411,7 @@ public class MorningReport extends AppCompatActivity{
             //checks to make sure the location branch is not null
             String usersKey = ds.getKey().toString();
             if(usersKey.equals("Users")){
-                Object locationObject = ds.child("UID: "+userIDMA).child("Night Count: " + nightCount).child("Location").getValue();
+                Object locationObject = ds.child("UID: "+userIDMA).child("Night Count: " + getNightCount()).child("Location").getValue();
                 if (locationObject != null){
                     //gets the specific latitude and longitude string from database
                     String location = locationObject.toString();
