@@ -105,11 +105,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mEmailView = (EditText) findViewById(R.id.email);
 
-        SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
-        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-        mEditor.putString("Group", "none");
-        mEditor.apply();
-
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override

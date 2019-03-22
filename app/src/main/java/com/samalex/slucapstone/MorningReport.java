@@ -63,7 +63,6 @@ public class MorningReport extends AppCompatActivity{
     private TextView litersDrank;
     private Double avgCost = 0.00;
     private String[] costList;
-    private String group;
     private String broadcastInt = "none";
     public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
 
@@ -134,9 +133,6 @@ public class MorningReport extends AppCompatActivity{
             }
         };
         goToStart.setOnClickListener(handler1);
-
-        SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
-        group = mSharedPreferences2.getString("Group", "none");
 
         dismissMorningQuestionnaireNotification();
     }

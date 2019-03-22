@@ -53,7 +53,6 @@ public class MorningQS extends AppCompatActivity {
     private Integer counter = -1;
     private Integer nightCount;
     private String drinkCost = "NA";
-    private String group;
     private String broadcastInt = "none";
     private String stress_event = "NA";
     private String interpersonal = "NA";
@@ -206,9 +205,6 @@ public class MorningQS extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = mSharedPreferences.getString("user ID", "none");
 
-        SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
-        group = mSharedPreferences2.getString("Group", "none");
-
         nightCount = getNightCount();
 
         dismissMorningQuestionnaireNotification();
@@ -247,24 +243,8 @@ public class MorningQS extends AppCompatActivity {
                 writeStressValueToDB(stress_value);
                 finish();
 
-                // The "none" and "control" group will not see the Morning Summary Report
-                if (group.equals("control") || group.equals("none")) {
-                    startActivity1 = "start";
-                    storeScreen(startActivity1);
-                    storeNumDrinks(0);
-                    Intent goToStart = new Intent(MorningQS.this, StartActivity.class);
-                    goToStart.putExtra("Start Activity", startActivity);
-                    startActivity(goToStart);
-                    finish();
-                } else if (group.equals("experimental")) {
-                    startActivity1 = "morningReport";
-                    storeScreen(startActivity1);
-                    storeNumDrinks(0);
-                    Intent goToStart = new Intent(MorningQS.this, StartActivity.class);
-                    goToStart.putExtra("Start Activity", startActivity);
-                    startActivity(goToStart);
-                    finish();
-                }
+
+                startNextActivity();
             }
         };
         submit.setOnClickListener(handler1);
@@ -750,6 +730,37 @@ public class MorningQS extends AppCompatActivity {
         stress_value = progress + "";
     }
 
+    private void startNextActivity() {
+        InterventionMap interventionMap = getInterventionMap();
+        InterventionDisplayData display = interventionMap.get(getCurrentCycle());
+
+        if(display.isShowMorningReport()) {
+            goToMorningReportScreen();
+        } else {
+            goToStartScreen();
+        }
+    }
+
+    private void goToStartScreen() {
+        startActivity1 = "start";
+        storeScreen(startActivity1);
+        storeNumDrinks(0);
+        Intent goToStart = new Intent(MorningQS.this, StartActivity.class);
+        goToStart.putExtra("Start Activity", startActivity);
+        startActivity(goToStart);
+        finish();
+    }
+
+    private void goToMorningReportScreen() {
+        startActivity1 = "morningReport";
+        storeScreen(startActivity1);
+        storeNumDrinks(0);
+        Intent goToStart = new Intent(MorningQS.this, StartActivity.class);
+        goToStart.putExtra("Start Activity", startActivity);
+        startActivity(goToStart);
+        finish();
+    }
+
     private void dismissMorningQuestionnaireNotification() {
         NotificationManager manager = (NotificationManager) MorningQS.this.getSystemService(Context.NOTIFICATION_SERVICE);
         broadcastInt = getIntent().getStringExtra("broadcast Int");
@@ -992,5 +1003,19 @@ public class MorningQS extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
         return nightCount;
+    }
+
+    private int getCurrentCycle() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        int cycle = mSharedPreferences.getInt("currentCycle", 0);
+        return cycle;
+    }
+
+    private InterventionMap getInterventionMap() {
+//        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter_intervention_map", MODE_PRIVATE);
+//        Map<String, ?> interventionMap = mSharedPreferences.getAll();
+//        return  (InterventionMap) interventionMap;
+        // TODO: continue after getting library that can save Object to shared preferences
+        return new InterventionMap();
     }
 }

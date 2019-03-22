@@ -50,6 +50,7 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/live_report_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -203,18 +204,6 @@
                     android:textSize="20dp" />
 
             </RelativeLayout>
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/ongoing_group_value"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textColor="@color/aluminum" />
 
         </LinearLayout>
 

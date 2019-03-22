@@ -29,7 +29,6 @@ public class NotificationService extends Service {
 
     private Integer counterInt = 0;
     public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
-    private String group;
     private NotificationCompat.Builder builder;
 
 
@@ -79,9 +78,6 @@ public class NotificationService extends Service {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
         }
-
-        SharedPreferences groupSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
-        group = groupSharedPreferences.getString("Group", "none");
 
         Intent morningIntent = new Intent(this, MorningQS.class);
         morningIntent.putExtra("broadcast Int", broadcastId);

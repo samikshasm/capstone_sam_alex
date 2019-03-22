@@ -1,15 +1,11 @@
 package com.samalex.slucapstone;
 
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -36,9 +32,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -52,6 +51,14 @@ public class StartActivity extends AppCompatActivity {
     public static final int ONE_DAY = 24 * 60 * 60 * 1000; // 86,400,000 milliseconds in 1 day
     public static final int TWO_DAY = ONE_DAY * 2;
 
+    private final InterventionDisplayData NO_INTERVENTION = new InterventionDisplayData(false, false);
+    private final InterventionDisplayData INTERVENTION_A = new InterventionDisplayData(true, false);
+    private final InterventionDisplayData INTERVENTION_B = new InterventionDisplayData(false, true);
+
+    private final List<InterventionDisplayData> CONTROL_GROUP_INTERVENTIONS = Arrays.asList(NO_INTERVENTION, INTERVENTION_A, INTERVENTION_B);
+    private final List<InterventionDisplayData> EXPERIMENTAL_GROUP_INTERVENTIONS = Arrays.asList(NO_INTERVENTION, INTERVENTION_B, INTERVENTION_A);
+    private final List<InterventionDisplayData> NONE_GROUP_INTERVENTIONS = Arrays.asList(NO_INTERVENTION, NO_INTERVENTION, NO_INTERVENTION);
+
     private String userIDMA;
     private String currentUserFromLA;
     private String startActivity;
@@ -60,13 +67,6 @@ public class StartActivity extends AppCompatActivity {
     private Integer nightCount = 0;
     private String cancelButMain;
     private DatabaseReference mReference;
-    private ArrayList<String> controlList;
-    private ArrayList<String> expList;
-    private String group;
-    private Integer loginAttempts;
-    private Integer startAttempts;
-    private Number oneWeek;
-    private Number twoWeeks;
 
 
     //new location stuff
@@ -79,24 +79,37 @@ public class StartActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        processInterventionGroup();
+        incrementStartAttempts(); // when user go back to the start activity after exiting the app by hitting the home button (which does not trigger onCreate()
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         super.onCreate(savedInstanceState);
+
+        incrementStartAttempts();
+
         setContentView(R.layout.activity_start);
-        //new location stuff
-        client = new GoogleApiClient.Builder(this)
-                .addApi(AppIndex.API)
-                .addApi(LocationServices.API)
-                .build();
 
-        // check if the user should be swapped ti another intervention group
-        processInterventionGroup();
+        initializeLocationServiceClient();
 
+        if (isFirstLogin()) {
+            storeUserGroupFromDBToSharedPref();
+
+            // Pre-compute a new table for this user
+            long canonicalUserStartTime = calculateUserStartTime(
+                    Calendar.getInstance(),
+                    BoozymeterApplication.CYCLE_LENGTH,
+                    BoozymeterApplication.CYCLE_OFFSET);
+
+            storeUserStartTime(canonicalUserStartTime);
+            precomputeInterventionLookupTable(canonicalUserStartTime);
+        } else {
+            // check if map is null
+        }
+
+
+        Calendar calendar = Calendar.getInstance();
+        updateCurrentCycle(calendar.getTimeInMillis(), getUserStartTime());
 
         userIDMA = getIntent().getStringExtra("User ID");
         SharedPreferences userSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
@@ -116,14 +129,67 @@ public class StartActivity extends AppCompatActivity {
 
         }
 
+        registerUIEvents();
+
+        SharedPreferences switchesSharedPreferences = getSharedPreferences("NumberSwitchesToMain2Activity", MODE_PRIVATE);
+        SharedPreferences.Editor switchesEditor = switchesSharedPreferences.edit();
+        switchesEditor.putInt("switches", 1);
+        switchesEditor.apply();
+
+        String selectedScreen = getCurrentScreen();
+        if (selectedScreen.equals("main")) {
+            Intent switchToMain = new Intent(StartActivity.this, MainActivity.class);
+            startActivity(switchToMain);
+            finish();
+        } else if (selectedScreen.equals("morningReport")) {
+            Log.e("is it experimental?", "hi it is");
+            Intent switchToMorning = new Intent(StartActivity.this, MorningReport.class);
+            startActivity(switchToMorning);
+            finish();
+        } else if (selectedScreen.equals("morningQS")) {
+            Log.e("is it control?", "hi it is");
+            Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
+            startActivity(switchToMorning);
+            finish();
+        } else if (selectedScreen.equals("login")) {
+            Intent switchToLogin = new Intent(StartActivity.this, LoginActivity.class);
+            startActivity(switchToLogin);
+            finish();
+        }
+    }
+
+    private void updateCurrentCycle(long currentTimeInMillis, long userStartTime) {
+        List<Long> cycleStartTimeList = getCycleStartTimeList();
+
+        int cycle = 0;
+        for (int i = 1, len = cycleStartTimeList.size(); i < len; i++) {
+            if (currentTimeInMillis < cycleStartTimeList.get(i)) {
+                cycle = i;
+                break;
+            }
+        }
+        storeCurrentCycle(cycle);
+    }
+    private ArrayList<Long> getCycleStartTimeList() {
+        return new ArrayList<>();
+    }
+
+    private void initializeLocationServiceClient() {
+        client = new GoogleApiClient.Builder(this)
+                .addApi(AppIndex.API)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    private void registerUIEvents() {
         ImageView appHeaderBar = findViewById(R.id.app_header_bar);
         appHeaderBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(StartActivity.this, R.style.MyDialogTheme);
                 builder.setTitle("Logs for testing")
-                        .setMessage("username: " +userIDMA
-                        + "\ngroup: " + getGroup())
+                        .setMessage("username: " + userIDMA
+                                + "\nUser group: " + getGroup())
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 // continue with delete
@@ -175,36 +241,6 @@ public class StartActivity extends AppCompatActivity {
                         .setPositiveButton("Ok", null).create().show();
             }
         });
-
-        SharedPreferences switchesSharedPreferences = getSharedPreferences("NumberSwitchesToMain2Activity", MODE_PRIVATE);
-        SharedPreferences.Editor switchesEditor = switchesSharedPreferences.edit();
-        switchesEditor.putInt("switches", 1);
-        switchesEditor.apply();
-
-        String selectedScreen = getCurrentScreen();
-        if (selectedScreen.equals("main")) {
-            Intent switchToMain = new Intent(StartActivity.this, MainActivity.class);
-            startActivity(switchToMain);
-            finish();
-        } else if (selectedScreen.equals("morningReport")) {
-            Log.e("is it experimental?", "hi it is");
-            Intent switchToMorning = new Intent(StartActivity.this, MorningReport.class);
-            startActivity(switchToMorning);
-            finish();
-        } else if (selectedScreen.equals("morningQS")) {
-            Log.e("is it control?", "hi it is");
-            Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
-            startActivity(switchToMorning);
-            finish();
-        } else if (selectedScreen.equals("login")) {
-            Intent switchToLogin = new Intent(StartActivity.this, LoginActivity.class);
-            startActivity(switchToLogin);
-            finish();
-        }
-
-
-        //Log.e("user ID",userIDMA);
-
     }
 
     private String getCurrentScreen() {
@@ -212,165 +248,173 @@ public class StartActivity extends AppCompatActivity {
         return mSharedPreferences.getString("currentScreen", "none");
     }
 
-    private void processInterventionGroup() {
-        BoozymeterApplication application = (BoozymeterApplication) getApplication();
-        boolean isDebug = application.isDebug();
-
-        loginAttempts = getLoginAttempts();
-        startAttempts = getStartAttempts();
+    private void incrementStartAttempts() {
+        int startAttempts = getStartAttempts();
         startAttempts++;
         storeStartAttempts(startAttempts);
-        Calendar cal = Calendar.getInstance();
-        long currentTime = cal.getTimeInMillis();
-
-        if (loginAttempts == 1 && startAttempts == 1) {
-            Calendar morningCal = Calendar.getInstance();
-            long currentMillis = morningCal.getTimeInMillis();
-
-            if (isDebug) {
-                oneWeek = ONE_MINUTE + currentMillis;
-                twoWeeks = (2 * ONE_MINUTE) + currentMillis;
-            } else {
-                oneWeek = ONE_DAY + currentMillis;
-                twoWeeks = TWO_DAY + currentMillis;
-            }
-
-            storeOneWeek(oneWeek.longValue());
-            storeTwoWeeks(twoWeeks.longValue());
-            storeGroup("none");
-        }
-
-       /* Log.e("start attempts", startAttempts+"");
-        Log.e("login attempts", loginAttempts+"");
-        Log.e("group before", group+"");
-        Log.e("oneweek", oneWeek+"");
-        Log.e("twoweeks", twoWeeks+"");*/
-
-        long oneWeek = getOneWeek();
-        long twoWeeks = getTwoWeeks();
-
-        Log.e("oneWeek", oneWeek + "");
-        Log.e("twoWeeks", twoWeeks + "");
-        Log.e("calmillis", currentTime + "");
-
-        boolean isDuringWeek1 = currentTime < oneWeek;
-        boolean isDuringWeek2 = currentTime >= oneWeek && currentTime < twoWeeks;
-        boolean isDuringWeek3OrAfterward = currentTime >= getTwoWeeks();
-
-//        if(isDuringWeek1) {
-//            // do nothing
-//        }
-        if (isDuringWeek2) {
-            // assign group straightforward (control -> control, experimental -> experimental)
-            mReference = FirebaseDatabase.getInstance().getReference();
-            mReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    getControlList(dataSnapshot);
-                    getExperimentalList(dataSnapshot);
-                    Log.e("expList", expList + "");
-                    Log.e("controlList", controlList + "");
-
-                    for (int i = 0; i < expList.size(); i++) {
-                        if (expList.get(i).equals(userIDMA)) {
-                            group = "experimental";
-                            break;
-                        }
-                    }
-                    for (int i = 0; i < controlList.size(); i++) {
-                        if (controlList.get(i).equals(userIDMA)) {
-                            group = "control";
-                            break;
-                        }
-                    }
-                    Log.e("group", group + "");
-                    storeGroup(group);
-                    //Log.e("expList",expList.get(4).substring(1,expList.get(4).length()).length()+"");
-                    //Log.e("userID",userIDMA.length()+"");
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-            Log.e("group after ", getGroup() + "");
-        }
-        if (isDuringWeek3OrAfterward) {
-            // switch group (control -> experimental, experimental -> control)
-            mReference = FirebaseDatabase.getInstance().getReference();
-            mReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    getControlList(dataSnapshot);
-                    getExperimentalList(dataSnapshot);
-                    for (int i = 0; i < expList.size(); i++) {
-                        if (expList.get(i).equals(userIDMA)) {
-                            group = "control";
-                            break;
-                        }
-                    }
-                    for (int i = 0; i < controlList.size(); i++) {
-                        if (controlList.get(i).equals(userIDMA)) {
-                            group = "experimental";
-                            break;
-                        }
-                    }
-                    storeGroup(group);
-                    //Log.e("expList",expList.get(4).substring(1,expList.get(4).length()).length()+"");
-                    //Log.e("userID",userIDMA.length()+"");
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-            Log.e("group: ", getGroup() + "");
-
-        }
     }
 
-    //function to analyze data received from snapshot
-    private void getControlList(DataSnapshot dataSnapshot) {
+    public long calculateUserStartTime(Calendar currentDateTime, long cycleLength, long cycleOffset) {
+        long now = currentDateTime.getTimeInMillis();
 
+        Calendar naturalCycleStartTimeCalendar = (Calendar) currentDateTime.clone();
+        naturalCycleStartTimeCalendar.set(
+                currentDateTime.get(Calendar.YEAR),
+                currentDateTime.get(Calendar.MONTH),
+                currentDateTime.get(Calendar.DAY_OF_MONTH));
+        naturalCycleStartTimeCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        naturalCycleStartTimeCalendar.set(Calendar.MINUTE, 0);
+        naturalCycleStartTimeCalendar.set(Calendar.SECOND, 0);
+        naturalCycleStartTimeCalendar.set(Calendar.MILLISECOND, 0);
+
+        long naturalCycleStartTime = naturalCycleStartTimeCalendar.getTimeInMillis();
+
+        long startTime = (((now - naturalCycleStartTime) / cycleLength) * cycleLength) + cycleOffset + naturalCycleStartTime;
+
+        if (now - naturalCycleStartTime < cycleOffset) {
+            startTime -= cycleLength; // support when the user login time is between midnight and CYCLE_OFFSET
+        }
+        return startTime;
+    }
+
+    private Long getUserStartTime() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        Long time = mSharedPreferences.getLong("userStartTime", 0);
+        return time;
+    }
+
+    public void storeUserStartTime(long time) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putLong("userStartTime", time);
+        mEditor.apply();
+    }
+
+    private int getCurrentCycle() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        int cycle = mSharedPreferences.getInt("currentCycle", 0);
+        return cycle;
+    }
+
+    private void storeCurrentCycle(int cycle) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putInt("currentCycle", cycle);
+        mEditor.apply();
+    }
+
+    private InterventionMap getInterventionMap() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = mSharedPreferences.getString("intervention_map", "");
+        InterventionMap map = gson.fromJson(json, InterventionMap.class);
+        return map;
+    }
+
+    private void storeInterventionMap(InterventionMap map) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(map); // myObject - instance of MyObject
+        mEditor.putString("intervention_map", json);
+        mEditor.apply();
+    }
+
+    private void precomputeInterventionLookupTable(long userStartTime) {
+        // TODO: clear old data in shared preferences
+
+        List<InterventionDisplayData> interventionOrder = getInterventionOrder();
+        int eachInterventionLength = BoozymeterApplication.NUM_CYCLES / 3;
+
+        List<Long> cycleStartTimeList = new ArrayList<>();
+        InterventionMap interventionLookupTable = new InterventionMap();
+
+        for (int day = 0, len = BoozymeterApplication.NUM_CYCLES; day < len; day++) {
+
+            // Store start time of each cycle
+            cycleStartTimeList.add(day, userStartTime + (day * BoozymeterApplication.CYCLE_LENGTH));
+
+            // Official phases: Day 1-7 = phase 0, Day 8-14 = phase 1 Day 15-21 = phase 2
+            int phase = day / eachInterventionLength;
+
+            // Store how UI looks like in each cycle
+            interventionLookupTable.put(day, interventionOrder.get(phase));
+        }
+
+        storeInterventionMap(interventionLookupTable);
+
+    }
+
+    private List<InterventionDisplayData> getInterventionOrder() {
+        switch (getGroup()) {
+            case "control":
+                return CONTROL_GROUP_INTERVENTIONS;
+            case "experimental":
+                return EXPERIMENTAL_GROUP_INTERVENTIONS;
+        }
+        return NONE_GROUP_INTERVENTIONS;
+    }
+
+    private boolean isFirstLogin() {
+        return getLoginAttempts() == 1 && getStartAttempts() == 1;
+    }
+
+    private List<String> getUserListByGroup(DataSnapshot dataSnapshot, String s) {
+        List<String> userList = new ArrayList<>();
         //iterates through the dataSnapshot
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             String usersKey = ds.getKey().toString();
             if (usersKey.equals("Users")) {
                 //gets information from database
                 //makes sure that there is data at the given branch
-                Map<String, Map<String, String>> controlJSON = (Map<String, Map<String, String>>) ds.child("Control Group").getValue();
-                if (controlJSON == null) {
-                    controlList = new ArrayList<>();
-                } else {
-                    controlList = new ArrayList<>(controlJSON.keySet());
+                Map<String, Map<String, String>> controlJSON = (Map<String, Map<String, String>>) ds.child(s).getValue();
+                if (controlJSON != null) {
+                    userList = new ArrayList<>(controlJSON.keySet());
                 }
             }
         }
+        return userList;
     }
 
-    private void getExperimentalList(DataSnapshot dataSnapshot) {
+    // check user's group from database and store in SharedPreferences
+    private void storeUserGroupFromDBToSharedPref() {
+        mReference = FirebaseDatabase.getInstance().getReference();
+        mReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
-        //iterates through the dataSnapshot
-        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-            String usersKey = ds.getKey().toString();
-            if (usersKey.equals("Users")) {
-                //gets information from database
-                //makes sure that there is data at the given branch
-                Map<String, Map<String, String>> experimentalJSON = (Map<String, Map<String, String>>) ds.child("Experimental Group").getValue();
-                if (experimentalJSON == null) {
-                    expList = new ArrayList<>();
-                } else {
-                    expList = new ArrayList<>(experimentalJSON.keySet());
+                String group = "";
+                List<String> controlUserList = getUserListByGroup(dataSnapshot, "Control Group");
+                List<String> experimentalUserList = getUserListByGroup(dataSnapshot, "Experimental Group");
+
+                for (int i = 0; i < experimentalUserList.size(); i++) {
+                    if (experimentalUserList.get(i).equals(userIDMA)) {
+                        group = "experimental";
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < controlUserList.size(); i++) {
+                    if (controlUserList.get(i).equals(userIDMA)) {
+                        group = "control";
+                        break;
+                    }
                 }
             }
 
-        }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        Log.e("group after ", getGroup() + "");
+    }
+
+    private String getGroup() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
+        String group = mSharedPreferences.getString("Group", "none");
+        return group;
     }
 
     private void storeGroup(String group) {
@@ -378,12 +422,6 @@ public class StartActivity extends AppCompatActivity {
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.putString("Group", group);
         mEditor.apply();
-    }
-
-    private String getGroup() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
-        String group = mSharedPreferences.getString("Group", "none");
-        return group;
     }
 
     private void storeUserID(String string) {

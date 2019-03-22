@@ -24,11 +24,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -58,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
     private String[] sizeList;
     private Integer totalCalConsumed;
     private Double avgCost = 0.00;
-    private String group;
 
     // UI
     private ProgressBar progressBarCircle;
@@ -67,8 +68,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView cost_txt;
     private TextView cal_text;
     private TextView num_drink_text;
-    private TextView ongoing_group_value;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,20 +132,7 @@ public class MainActivity extends AppCompatActivity {
         num_drink_text = (TextView) findViewById(R.id.num_drinks_txt);
         cost_txt = (TextView) findViewById(R.id.cost_text);
 
-        SharedPreferences mSharedPreferences2 = getSharedPreferences("Group", MODE_PRIVATE);
-        group = mSharedPreferences2.getString("Group", "none");
-        ongoing_group_value = (TextView) findViewById(R.id.ongoing_group_value);
-        ongoing_group_value.setText("group = " + group);
-
-        // The "none" and "experimental" groups will not see the real-time updated data
-        if (group.equals("experimental") || group.equals("none")) {
-            LinearLayout lin1 = (LinearLayout) findViewById(R.id.lin_lay_1);
-            lin1.setVisibility(View.GONE);
-            LinearLayout lin2 = (LinearLayout) findViewById(R.id.lin_layout_2);
-            lin2.setVisibility(View.GONE);
-        }
-        Log.e("Group", userIDMA + "," + group);
-
+        showHideLiveReportData();
 
         //tells the app that the current screen is "main"
         //store the current screen in a shared preferences variable
@@ -226,6 +212,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void showHideLiveReportData() {
+        InterventionMap interventionMap = getInterventionMap();
+        InterventionDisplayData display = interventionMap.get(getCurrentCycle());
+
+        LinearLayout liveDataLayout = (LinearLayout) findViewById(R.id.live_report_layout);
+
+        if(display.isShowLiveReport()) {
+            liveDataLayout.setVisibility(View.VISIBLE);
+        } else {
+            liveDataLayout.setVisibility(View.GONE);
+        }
     }
 
     //function to get the current time
@@ -555,4 +554,19 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+    private int getCurrentCycle() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        int cycle = mSharedPreferences.getInt("currentCycle", 0);
+        return cycle;
+    }
+
+    private InterventionMap getInterventionMap() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = mSharedPreferences.getString("intervention_map", "");
+        InterventionMap map = gson.fromJson(json, InterventionMap.class);
+        return map;
+    }
+
 }
