@@ -33,7 +33,7 @@ public class BoozymeterApplication extends Application {
     final public static int NUM_CYCLES = 12;
     final public static long SURVEY_OFFSET = 8 * 60 * 60 * 1000;  //  8 hours after cycle start = 2 hours after END of a cycle = 1 hour after OFFSET cycle end?
     final public static long EVENING_REMINDER_OFFSET = 4 * 60 * 60 * 1000;    // 4 hours from cycle time which is 3 hours from cycle offset start
-    final public static long IN_EPISODE_REMINDER_INTERVAL = 15 * 60 * 100;   // 15 minutes
+    final public static long IN_EPISODE_REMINDER_INTERVAL = 15 * 60 * 1000;   // 15 minutes
     final public static int NUM_IN_EPISODE_REMINDER = 4; // 4 reminders every IN_EPISODE_REMINDER_INTERVAL
 
     // Global settings
