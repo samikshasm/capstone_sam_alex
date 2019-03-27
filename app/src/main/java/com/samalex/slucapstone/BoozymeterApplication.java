@@ -16,7 +16,7 @@ public class BoozymeterApplication extends Application {
 //        final public static long SURVEY_OFFSET = 27 * 60 * 60 * 1000; // 8 am (27 hours from user start time that includes CYCLE_OFFSET)
 //    final public static long EVENING_REMINDER_OFFSET = 13 * 60 * 60 * 1000; // 6pm (13 hours from user start time that includes CYCLE_OFFSET)
 //    final public static long IN_EPISODE_REMINDER_INTERVAL = 30 * 60 * 1000; // 30 minutes
-//    final public static int NUM_IN_EPISODE_REMINDER = 4; // 4 reminders every IN_EPISODE_REMINDER_INTERVAL
+//    final public static int NUM_IN_EPISODE_REMINDER = 3; // 3 reminders every IN_EPISODE_REMINDER_INTERVAL
 
     // Testing settings
 //    final public static int CYCLE_OFFSET = 0;  // 1 minutes (from start of natural cycle)
@@ -34,7 +34,7 @@ public class BoozymeterApplication extends Application {
     final public static long SURVEY_OFFSET = 8 * 60 * 60 * 1000;  //  8 hours after cycle start = 2 hours after END of a cycle = 1 hour after OFFSET cycle end?
     final public static long EVENING_REMINDER_OFFSET = 4 * 60 * 60 * 1000;    // 4 hours from cycle time which is 3 hours from cycle offset start
     final public static long IN_EPISODE_REMINDER_INTERVAL = 15 * 60 * 1000;   // 15 minutes
-    final public static int NUM_IN_EPISODE_REMINDER = 4; // 4 reminders every IN_EPISODE_REMINDER_INTERVAL
+    final public static int NUM_IN_EPISODE_REMINDER = 3; // 4 reminders every IN_EPISODE_REMINDER_INTERVAL
 
     // Global settings
     private boolean isDebug = false;
