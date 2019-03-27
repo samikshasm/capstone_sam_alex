@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                 cancelAlarm(1);
                 cancelAlarm(2);
                 cancelAlarm(3);
-                cancelAlarm(4);
+//                cancelAlarm(4);
                 //stopUIUpdateService();
                 //startUIUpdateService(notificationTime);
                 createAlarms(notificationTime);
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                 cancelAlarm(1);
                 cancelAlarm(2);
                 cancelAlarm(3);
-                cancelAlarm(4);
+//                cancelAlarm(4);
                 startActivity1 = "start";
                 storeScreen(startActivity1);
                 if (ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -366,9 +366,9 @@ public class MainActivity extends AppCompatActivity {
         //5400000
         startAlarm(ninety, 3);
 
-        long one = currentTime + (BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL * 4);
-        //7200000
-        startAlarm(one, 4);
+//        long one = currentTime + (BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL * 4);
+//        //7200000
+//        startAlarm(one, 4);
     }
 
     //function to start alarm manager at given time
