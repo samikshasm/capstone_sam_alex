@@ -13,17 +13,39 @@
         android:background="@color/app_background_darker"
         android:minHeight="?attr/actionBarSize" >
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="15">
+
+            <ImageView
+                android:id="@+id/app_header_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_weight="14"
+                android:adjustViewBounds="true"
+                android:gravity="center"
+                android:maxHeight="?attr/actionBarSize"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:src="@drawable/white_logo" />
+
+            <TextView
+                android:id="@+id/info_icon"
+                android:layout_width="24dp"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:gravity="center"
+                android:maxHeight="?attr/actionBarSize"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:src="@drawable/white_logo"
+                android:text="ⓘ"
+                android:textSize="24dp" />
+        </LinearLayout>
     </android.support.v7.widget.Toolbar>
 
-    <ImageView
-        android:id="@+id/app_header_bar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:gravity="center"
-        android:src="@drawable/white_logo"
-        android:maxHeight="?attr/actionBarSize"/>
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_bottom"
@@ -54,67 +76,4 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
-    <LinearLayout
-        android:layout_alignTop="@id/toolbar_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:weightSum="2">
-
-        <ImageButton
-            android:id="@+id/contact"
-            android:layout_width="24dp"
-            android:layout_height="35dp"
-            android:adjustViewBounds="true"
-            android:layout_weight="1"
-            android:src="@drawable/contact_button"
-            android:background="@color/app_background_darker"
-            android:paddingTop="5dp"
-            android:scaleType="centerInside" />
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/white"/>
-
-
-        <ImageButton
-            android:layout_width="30dp"
-            android:layout_height="35dp"
-            android:id="@+id/sign_out_button"
-            android:layout_weight="1"
-            android:src="@drawable/logout_button"
-            android:adjustViewBounds="true"
-            android:background="@color/app_background_darker"
-            android:paddingTop="5dp"
-            android:scaleType="centerInside" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_alignBottom="@id/toolbar_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:weightSum="2">
-
-
-        <TextView
-            android:id="@+id/contactTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:text="contact"/>
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:id="@+id/sign_out_button_txt"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:text="sign out"/>
-
-    </LinearLayout>
 </RelativeLayout>

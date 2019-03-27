@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -97,7 +98,7 @@ public class StartActivity extends AppCompatActivity {
             // reset all count values
             storeCurrentCycle(0);
             storeNight(0); // count episodes in 1 cycle
-            
+
             // Pre-compute a new table for this user
             long canonicalUserStartTime = calculateUserStartTime(
                     Calendar.getInstance(),
@@ -270,31 +271,45 @@ public class StartActivity extends AppCompatActivity {
             }
         });
 
-        //sign out button
-        ImageButton signOut = (ImageButton) findViewById(R.id.sign_out_button);
-        signOut.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                storeUserID("none");
-                currentUserFromLA = "signed out";
-                storeStartAttempts(0);
-                Intent switchToLogin = new Intent(StartActivity.this, LoginActivity.class);
-                switchToLogin.putExtra("sign out", currentUserFromLA);
-                startActivity(switchToLogin);
-                storeGroup("none");
-                finish();
-            }
-        });
-
-        ImageButton contact = (ImageButton) findViewById(R.id.contact);
-        contact.setOnClickListener(new View.OnClickListener() {
+        TextView infoIcon = (TextView) findViewById(R.id.info_icon);
+        infoIcon.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 new AlertDialog.Builder(StartActivity.this, R.style.MyAlertDialogStyle)
                         //.setTitle("Contact Dr. Shacham")
-                        .setMessage("Email eshacham@slu.edu\nYour logged in username: " + getUserID() + "\nOngoing status: " + getGroup())
+                        .setMessage("Contact: eshacham@slu.edu\nYour logged in username: " + getUserID())
                         // .setNegativeButton("Ok",null)
                         .setPositiveButton("Ok", null).create().show();
             }
         });
+
+        infoIcon.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View view) {
+                new AlertDialog.Builder(StartActivity.this, R.style.MyAlertDialogStyle)
+//                        .setTitle("Are you sure to sign out?")
+                        .setMessage("Are you sure to sign out?")
+                        // .setNegativeButton("Ok",null)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener(){
+
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                signOut();
+                            }
+                        })
+                        .setNegativeButton("Cancel", null).create().show();
+                return false;
+            }
+        });
+    }
+
+    private void signOut() {
+        storeUserID("none");
+        currentUserFromLA = "signed out";
+        storeStartAttempts(0);
+        Intent switchToLogin = new Intent(StartActivity.this, LoginActivity.class);
+        switchToLogin.putExtra("sign out", currentUserFromLA);
+        startActivity(switchToLogin);
+        storeGroup("none");
+        finish();
     }
 
     private long calculateEveningReminderTime() {
