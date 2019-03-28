@@ -1,5 +1,6 @@
 package com.samalex.slucapstone;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -67,39 +68,27 @@ public class NotificationService extends Service {
     }
 
     //creates notification that appears when the morning alarm goes off
-    private void notifyTimeForMorningQuestionnaire(int NOTIFICATION_ID, String broadcastId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription(description);
-            channel.enableLights(true);
-            channel.enableVibration(true);
-
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(channel);
-        }
-
+    private void notifyTimeForMorningQuestionnaire(int notificationId, String broadcastId) {
         Intent morningIntent = new Intent(this, MorningQS.class);
         morningIntent.putExtra("broadcast Int", broadcastId);
         PendingIntent morningIntent1 = PendingIntent.getActivity(this, 0, morningIntent, PendingIntent.FLAG_ONE_SHOT);
-        builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.small_statusbar_icon)
-                .setContentTitle("Boozymeter")
-                .setContentText("Time for morning questionnaire")
-                .setAutoCancel(true);
-        builder.setContentIntent(morningIntent1);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForeground(NOTIFICATION_ID, builder.build());
+
+        if (isAndroid8OrLater()) {
+            NotificationChannel channel = getNotificationChannel();
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(channel);
+
+            NotificationCompat.Builder builder = createNotificationBuilder(morningIntent1, "Time for morning questionnaire");
+            startForeground(notificationId, builder.build());
         } else {
-            NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            nManager.notify(NOTIFICATION_ID, builder.build());
+            NotificationCompat.Builder builder = createNotificationBuilder(morningIntent1, "Time for morning questionnaire");
+            NotificationManagerCompat nManager = NotificationManagerCompat.from(this);
+            nManager.notify(notificationId, builder.build());
         }
     }
 
     //creates a notification for the alarms that occur during the night after 30 minutes has gone by
-    private void notify30minutesPass(int NOTIFICATION_ID, String initialTimeStr, String broadcastId) {
+    private void notify30minutesPass(int notificationId, String initialTimeStr, String broadcastId) {
         Intent yesIntent = new Intent(this, Main2Activity.class);
         yesIntent.putExtra("notificationBool", 100);
         yesIntent.putExtra("initial time", initialTimeStr);
@@ -112,84 +101,85 @@ public class NotificationService extends Service {
         noIntent.putExtra("broadcast Int", broadcastId);
         PendingIntent noIntent1 = PendingIntent.getBroadcast(this, 0, noIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            channel.enableLights(true);
-            channel.enableVibration(true);
+        if (isAndroid8OrLater()) {
+            NotificationChannel channel = getNotificationChannel();
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
 
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.small_statusbar_icon)
-                    .setContentTitle("Boozymeter")
-                    .setContentText("It's been 30 minutes! Have you had a drink?")
-                    .addAction(R.drawable.check_small, "Yes", yesIntent1)
-                    .addAction(R.drawable.cancel_small, "No", noIntent1)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .setAutoCancel(true);
-
-            builder.setVibrate(new long[]{1000, 1000, 1000, 1000, 1000});
-            builder.setDefaults(Notification.DEFAULT_SOUND);
-
-            startForeground(NOTIFICATION_ID, builder.build());
-
+            NotificationCompat.Builder builder = createNotificationBuilder(yesIntent1, noIntent1, "It's been 30 minutes! Have you had a drink?");
+            startForeground(notificationId, builder.build());
         } else {
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.small_statusbar_icon)
-                    .setContentTitle("Boozymeter")
-                    .setContentText("It's been 30 minutes! Have you had a drink?")
-                    .addAction(R.drawable.check_small, "Yes", yesIntent1)
-                    .addAction(R.drawable.cancel_small, "No", noIntent1)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .setAutoCancel(true);
-
-            builder.setVibrate(new long[]{1000, 1000, 1000, 1000, 1000});
-            builder.setDefaults(Notification.DEFAULT_SOUND);
-
-
+            NotificationCompat.Builder builder = createNotificationBuilder(yesIntent1, noIntent1, "It's been 30 minutes! Have you had a drink?");
             NotificationManagerCompat nManager = NotificationManagerCompat.from(this);
-            nManager.notify(NOTIFICATION_ID, builder.build());
+            nManager.notify(notificationId, builder.build());
         }
     }
 
+    private boolean isAndroid8OrLater() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    }
+
     private void notifyEveningReminder(int notificationId, String broadcastId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription(description);
-            channel.enableLights(true);
-            channel.enableVibration(true);
-
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(channel);
-        }
-
         Intent eveningReminderIntent = new Intent(this, StartActivity.class);
         eveningReminderIntent.putExtra("broadcast Int", broadcastId);
         PendingIntent eveningReminderPendingIntent = PendingIntent.getActivity(this, 0, eveningReminderIntent, PendingIntent.FLAG_ONE_SHOT);
-        builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.small_statusbar_icon)
-                .setContentTitle("Boozymeter")
-                .setContentText("Are you going to have a drink today?")
-                .setAutoCancel(true);
-        builder.setContentIntent(eveningReminderPendingIntent);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+        if (isAndroid8OrLater()) {
+            NotificationChannel channel = getNotificationChannel();
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(channel);
+
+            NotificationCompat.Builder builder = createNotificationBuilder(eveningReminderPendingIntent, "Are you going to have a drink today?");
             startForeground(notificationId, builder.build());
         } else {
+            NotificationCompat.Builder builder = createNotificationBuilder(eveningReminderPendingIntent, "Are you going to have a drink today?");
             NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             nManager.notify(notificationId, builder.build());
         }
     }
 
-    private Integer getNightCount() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
-        Integer nightCount = mSharedPreferences.getInt("night counter", 0);
-        return nightCount;
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private NotificationChannel getNotificationChannel() {
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, getString(R.string.channel_name), NotificationManager.IMPORTANCE_HIGH);
+        channel.setDescription(getString(R.string.channel_description));
+        channel.enableLights(true);
+        channel.enableVibration(true);
+        return channel;
     }
+
+    private NotificationCompat.Builder createNotificationBuilder(PendingIntent morningIntent1, String contentText) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.small_statusbar_icon)
+                .setContentTitle("Boozymeter")
+                .setContentText(contentText)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true)
+                .setContentIntent(morningIntent1);
+
+        builder.setVibrate(new long[]{1000, 1000, 1000, 1000, 1000});
+        builder.setDefaults(Notification.DEFAULT_SOUND);
+        return builder;
+    }
+
+    private NotificationCompat.Builder createNotificationBuilder(PendingIntent yesIntent1, PendingIntent noIntent1, String contentText) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.small_statusbar_icon)
+                .setContentTitle("Boozymeter")
+                .setContentText(contentText)
+                .addAction(R.drawable.check_small, "Yes", yesIntent1)
+                .addAction(R.drawable.cancel_small, "No", noIntent1)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true);
+
+        builder.setVibrate(new long[]{1000, 1000, 1000, 1000, 1000});
+        builder.setDefaults(Notification.DEFAULT_SOUND);
+        return builder;
+    }
+
+//    private Integer getNightCount() {
+//        SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
+//        Integer nightCount = mSharedPreferences.getInt("night counter", 0);
+//        return nightCount;
+//    }
 }
