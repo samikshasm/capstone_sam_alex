@@ -176,7 +176,7 @@ public class StartActivity extends AppCompatActivity {
         alertIntent.putExtra("broadcast Int", NotificationService.EVENING_REMINDER_NOTIFICATION_ID + "");
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, NotificationService.EVENING_REMINDER_NOTIFICATION_ID, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmMgr = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), BoozymeterApplication.CYCLE_LENGTH, pendingIntent);
         Log.e("evening reminder alarm:", calendar.getTimeInMillis() + "");
     }
 
