@@ -310,6 +310,7 @@ public class StartActivity extends AppCompatActivity {
         switchToLogin.putExtra("sign out", currentUserFromLA);
         startActivity(switchToLogin);
         storeGroup("none");
+        storeNumDrinks(0);
         finish();
     }
 
@@ -772,6 +773,13 @@ public class StartActivity extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
         Integer numberDrinks = mSharedPreferences.getInt("numDrinks", 0);
         return numberDrinks;
+    }
+    //function to store the number of drinks
+    private void storeNumDrinks (Integer integer) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putInt("numDrinks", integer);
+        mEditor.apply();
     }
 }
 
