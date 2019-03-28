@@ -49,10 +49,12 @@ public class NotificationService extends Service {
             case EVENING_REMINDER_NOTIFICATION_ID:
 //                if(getNightCount() == 0) {
                     notifyEveningReminder(notificationId, broadcastId);
+                    storePendingEveningReminderTimeInMillis(0);
 //                }
                 break;
             case MORNING_QUESTIONNAIRE_NOTIFICATION_ID:
                 notifyTimeForMorningQuestionnaire(notificationId, broadcastId);
+                storePendingMorningAlarmTimeInMillis(0);
                 break;
 
             case THIRTY_MINUTE_NOTIFICATION_ID:
@@ -192,4 +194,18 @@ public class NotificationService extends Service {
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
         return nightCount;
     }
+    private void storePendingEveningReminderTimeInMillis(long timeInMillis) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putLong("pendingEveningReminderTimeInMillis", timeInMillis);
+        mEditor.apply();
+    }
+    private void storePendingMorningAlarmTimeInMillis(long timeInMillis) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putLong("pendingMorningAlarmTimeInMillis", timeInMillis);
+        mEditor.apply();
+    }
+
+
 }

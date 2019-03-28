@@ -215,12 +215,15 @@ public class MainActivity extends AppCompatActivity {
         appHeaderBar.setOnClickListener(new View.OnClickListener() {
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            long userRawStartTime = getUserRawStartTime();
+            String userRawStartDateStr = dateFormat.format(new Date(userRawStartTime));
             long userStartTime = getUserStartTime();
             String userStartDateStr = dateFormat.format(new Date(userStartTime));
 
             long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), getCurrentCycle());
             String moringSurveyTime = dateFormat.format(new Date(morningSurveyTimeInMillis));
             String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
+
             @Override
             public void onClick(View view) {
                 int currentCycle = getCurrentCycle();
@@ -237,22 +240,30 @@ public class MainActivity extends AppCompatActivity {
                     morningReportFlag = ui.isShowMorningReport() ? "Yes" : "No";
                 }
 
-                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(MainActivity .this, R.style.MyDialogTheme);
+                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(MainActivity.this, R.style.MyDialogTheme);
                 builder.setTitle("Hidden Logs")
-                        .setMessage("Username: " + userIDMA
-                                + "\nUser group: " + getGroup()
-                                + "\nCanonical start time: " + userStartDateStr
-                                + "\nCycle (1-based index): " + (currentCycle+1)
-                                + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
-                                + "\nNumber of cycles: " + BoozymeterApplication.NUM_CYCLES
-                                + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
-                                + "\nLive report: " + liveReportFlag
-                                + "\nMorning report: " + morningReportFlag
-                                + "\nNumber of drinks: " + getNumDrinks()
-                                + "\nNight count (old parameter): " + getNightCount()
-                                + "\n\n"
-                                + "\nMorning Survey alarm will go off: " + moringSurveyTime
-                                + "\nFirst evening reminder will go off: " + eveningReminderTime
+                        .setMessage(
+                                "Number of cycles: " + BoozymeterApplication.NUM_CYCLES
+                                        + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
+                                        + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
+                                        + "\nMorning survey offset: " + BoozymeterApplication.SURVEY_OFFSET / 1000 / 60 + " minutes"
+                                        + "\nEvening reminder offset: " + BoozymeterApplication.EVENING_REMINDER_OFFSET / 1000 / 60 + " minutes"
+                                        + "\n"
+                                        + "\nUsername: " + userIDMA
+                                        + "\nUser group: " + getGroup()
+                                        + "\n"
+                                        + "\nRaw start time: " + userRawStartDateStr
+                                        + "\nCanonical start time (incl. cycle offset): " + userStartDateStr
+                                        + "\nCycle (1-based index): " + (currentCycle + 1)
+                                        + "\n"
+                                        + "\nLive report: " + liveReportFlag
+                                        + "\nMorning report: " + morningReportFlag
+                                        + "\n"
+                                        + "\nNumber of drinks: " + getNumDrinks()
+                                        + "\nNight count (old parameter): " + getNightCount()
+                                        + "\n"
+                                        + "\nNext morning Survey alarm will go off: " + moringSurveyTime
+                                        + "\nNext evening reminder will go off: " + eveningReminderTime
                         )
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -266,11 +277,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //gets number of drinks from shared preferences
-    private Integer getNumDrinks () {
+    private Integer getNumDrinks() {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
-        Integer numberDrinks = mSharedPreferences.getInt("numDrinks",0);
+        Integer numberDrinks = mSharedPreferences.getInt("numDrinks", 0);
         return numberDrinks;
     }
+
     private String getGroup() {
         SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
         String group = mSharedPreferences.getString("Group", "none");
@@ -284,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         long reminderTime = userStartTime + BoozymeterApplication.EVENING_REMINDER_OFFSET;
-        if(reminderTime < now) {
+        if (reminderTime < now) {
             reminderTime += BoozymeterApplication.CYCLE_LENGTH;
         }
 
@@ -297,7 +309,7 @@ public class MainActivity extends AppCompatActivity {
 
         LinearLayout liveDataLayout = (LinearLayout) findViewById(R.id.live_report_layout);
 
-        if(display.isShowLiveReport()) {
+        if (display.isShowLiveReport()) {
             liveDataLayout.setVisibility(View.VISIBLE);
         } else {
             liveDataLayout.setVisibility(View.GONE);
@@ -338,9 +350,17 @@ public class MainActivity extends AppCompatActivity {
         Intent alertIntent = new Intent(this, TimerReceiver.class);
         AlarmManager morningAlarmMan = (AlarmManager) getSystemService(ALARM_SERVICE);
         alertIntent.putExtra("broadcast Int", NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID + "");
-        alertIntent.putExtra("initial time", initialTimeStr);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 5, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         morningAlarmMan.set(AlarmManager.RTC_WAKEUP, morningSurveyCalendar.getTimeInMillis(), pendingIntent);
+
+        storePendingMorningAlarmTimeInMillis(morningSurveyCalendar.getTimeInMillis());
+    }
+
+    private void storePendingMorningAlarmTimeInMillis(long timeInMillis) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putLong("pendingMorningAlarmTimeInMillis", timeInMillis);
+        mEditor.apply();
     }
 
     //function to store the current screen to the shared preference screen variable
@@ -608,6 +628,12 @@ public class MainActivity extends AppCompatActivity {
         String json = mSharedPreferences.getString("intervention_map", "");
         InterventionMap map = gson.fromJson(json, InterventionMap.class);
         return map;
+    }
+
+    private Long getUserRawStartTime() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        Long time = mSharedPreferences.getLong("userRawStartTime", 0);
+        return time;
     }
 
     private Long getUserStartTime() {

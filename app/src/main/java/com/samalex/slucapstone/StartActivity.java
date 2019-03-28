@@ -104,7 +104,8 @@ public class StartActivity extends AppCompatActivity {
                     Calendar.getInstance(),
                     BoozymeterApplication.CYCLE_LENGTH,
                     BoozymeterApplication.CYCLE_OFFSET);
-
+            Calendar cal = Calendar.getInstance();
+            storeUserRawStartTime(cal.getTimeInMillis());
             storeUserStartTime(canonicalUserStartTime);
             precomputeInterventionLookupTable(canonicalUserStartTime);
 
@@ -176,6 +177,15 @@ public class StartActivity extends AppCompatActivity {
         AlarmManager alarmMgr = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
         Log.e("evening reminder alarm:", calendar.getTimeInMillis() + "");
+
+        storePendingEveningReminderTimeInMillis(calendar.getTimeInMillis());
+    }
+
+    private void storePendingEveningReminderTimeInMillis(long timeInMillis) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putLong("pendingEveningReminderTimeInMillis", timeInMillis);
+        mEditor.apply();
     }
 
     private void updateCurrentCycle(long currentTimeInMillis) {
@@ -204,6 +214,8 @@ public class StartActivity extends AppCompatActivity {
         appHeaderBar.setOnClickListener(new View.OnClickListener() {
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            long userRawStartTime = getUserRawStartTime();
+            String userRawStartDateStr = dateFormat.format(new Date(userRawStartTime));
             long userStartTime = getUserStartTime();
             String userStartDateStr = dateFormat.format(new Date(userStartTime));
 
@@ -229,20 +241,27 @@ public class StartActivity extends AppCompatActivity {
 
                 android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(StartActivity.this, R.style.MyDialogTheme);
                 builder.setTitle("Hidden Logs")
-                        .setMessage("Username: " + userIDMA
-                                + "\nUser group: " + getGroup()
-                                + "\nCanonical start time: " + userStartDateStr
-                                + "\nCycle (1-based index): " + (currentCycle+1)
+                        .setMessage("Number of cycles: " + BoozymeterApplication.NUM_CYCLES
                                 + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
-                                + "\nNumber of cycles: " + BoozymeterApplication.NUM_CYCLES
                                 + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
+                                + "\nMorning survey offset: " + BoozymeterApplication.SURVEY_OFFSET / 1000 / 60 + " minutes"
+                                + "\nEvening reminder offset: " + BoozymeterApplication.EVENING_REMINDER_OFFSET / 1000 / 60 + " minutes"
+                                + "\n"
+                                + "\nUsername: " + userIDMA
+                                + "\nUser group: " + getGroup()
+                                + "\n"
+                                + "\nRaw start time: " + userRawStartDateStr
+                                + "\nCanonical start time (incl. cycle offset): " + userStartDateStr
+                                + "\nCycle (1-based index): " + (currentCycle + 1)
+                                + "\n"
                                 + "\nLive report: " + liveReportFlag
                                 + "\nMorning report: " + morningReportFlag
+                                + "\n"
                                 + "\nNumber of drinks: " + getNumDrinks()
                                 + "\nNight count (old parameter): " + getNightCount()
-                                + "\n\n"
-                                + "\nMorning Survey alarm will go off: " + moringSurveyTime
-                                + "\nFirst evening reminder will go off: " + eveningReminderTime
+                                + "\n"
+                                + "\nNext morning Survey alarm will go off: " + moringSurveyTime
+                                + "\nNext evening reminder will go off: " + eveningReminderTime
                         )
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -310,6 +329,9 @@ public class StartActivity extends AppCompatActivity {
         switchToLogin.putExtra("sign out", currentUserFromLA);
         startActivity(switchToLogin);
         storeGroup("none");
+        storeNumDrinks(0);
+        storePendingEveningReminderTimeInMillis(0);
+        storePendingMorningAlarmTimeInMillis(0);
         finish();
     }
 
@@ -359,6 +381,19 @@ public class StartActivity extends AppCompatActivity {
             startTime -= cycleLength; // support when the user login time is between midnight and CYCLE_OFFSET
         }
         return startTime;
+    }
+
+    private void storeUserRawStartTime(long rawStartTime){
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putLong("userRawStartTime", rawStartTime);
+        mEditor.apply();
+    }
+
+    private Long getUserRawStartTime() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        Long time = mSharedPreferences.getLong("userRawStartTime", 0);
+        return time;
     }
 
     private Long getUserStartTime() {
@@ -772,6 +807,19 @@ public class StartActivity extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
         Integer numberDrinks = mSharedPreferences.getInt("numDrinks", 0);
         return numberDrinks;
+    }
+    //function to store the number of drinks
+    private void storeNumDrinks (Integer integer) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putInt("numDrinks", integer);
+        mEditor.apply();
+    }
+    private void storePendingMorningAlarmTimeInMillis(long timeInMillis) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putLong("pendingMorningAlarmTimeInMillis", timeInMillis);
+        mEditor.apply();
     }
 }
 
