@@ -431,8 +431,9 @@ public class Main2Activity extends AppCompatActivity{
                     } else {
                         builder = new AlertDialog.Builder(Main2Activity.this);
                     }
-                    builder.setTitle("Try Again")
-                            .setMessage("Please respond to every question!")
+                    builder
+//                            .setTitle("Try Again")
+                            .setMessage("Please answer every question.")
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     // continue with delete

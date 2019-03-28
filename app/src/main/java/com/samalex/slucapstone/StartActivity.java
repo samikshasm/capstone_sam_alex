@@ -130,7 +130,7 @@ public class StartActivity extends AppCompatActivity {
         cancelButMain = getIntent().getStringExtra("Cancel main activity");
         if (cancelButMain == null) {
             Log.e("null String", "null");
-        } else if (cancelButMain == "main") {
+        } else if (cancelButMain.equals("main")) {
             Log.e("Cancel main activity", cancelButMain);
 
         }
@@ -207,7 +207,8 @@ public class StartActivity extends AppCompatActivity {
             long userStartTime = getUserStartTime();
             String userStartDateStr = dateFormat.format(new Date(userStartTime));
 
-            String moringSurveyTime = dateFormat.format(new Date(userStartTime + BoozymeterApplication.SURVEY_OFFSET));
+            long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), getCurrentCycle());
+            String moringSurveyTime = dateFormat.format(new Date(morningSurveyTimeInMillis));
             String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
 
             @Override
@@ -231,7 +232,7 @@ public class StartActivity extends AppCompatActivity {
                         .setMessage("Username: " + userIDMA
                                 + "\nUser group: " + getGroup()
                                 + "\nCanonical start time: " + userStartDateStr
-                                + "\nCycle: " + currentCycle + " (zero-based index)"
+                                + "\nCycle (1-based index): " + (currentCycle+1)
                                 + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
                                 + "\nNumber of cycles: " + BoozymeterApplication.NUM_CYCLES
                                 + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"

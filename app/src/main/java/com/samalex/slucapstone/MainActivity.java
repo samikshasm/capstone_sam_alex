@@ -218,7 +218,8 @@ public class MainActivity extends AppCompatActivity {
             long userStartTime = getUserStartTime();
             String userStartDateStr = dateFormat.format(new Date(userStartTime));
 
-            String moringSurveyTime = dateFormat.format(new Date(userStartTime + BoozymeterApplication.SURVEY_OFFSET));
+            long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), getCurrentCycle());
+            String moringSurveyTime = dateFormat.format(new Date(morningSurveyTimeInMillis));
             String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
             @Override
             public void onClick(View view) {
@@ -241,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
                         .setMessage("Username: " + userIDMA
                                 + "\nUser group: " + getGroup()
                                 + "\nCanonical start time: " + userStartDateStr
-                                + "\nCycle: " + currentCycle + " (zero-based index)"
+                                + "\nCycle (1-based index): " + (currentCycle+1)
                                 + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
                                 + "\nNumber of cycles: " + BoozymeterApplication.NUM_CYCLES
                                 + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
@@ -328,8 +329,7 @@ public class MainActivity extends AppCompatActivity {
     //creates the morning alarm manager to go off the following morning
     //adapted code from Alarm Manager Android Developer page
     private void createMorningAlarm() {
-        long userStartTime = getUserStartTime();
-        long morningSurveyTimeInMillis = userStartTime + BoozymeterApplication.SURVEY_OFFSET;
+        long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), getCurrentCycle());
         Calendar morningSurveyCalendar = Calendar.getInstance();
         morningSurveyCalendar.setTimeInMillis(morningSurveyTimeInMillis);
 

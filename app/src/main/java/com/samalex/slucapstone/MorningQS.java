@@ -9,6 +9,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -81,6 +82,84 @@ public class MorningQS extends AppCompatActivity {
 
     private TextView stressRatingSlideBarLabel;
 
+    private ImageButton lastNightDrinkYes;
+    private ImageButton lastNightDrinkNo;
+    private TextView lastNightDrinkYesText;
+    private TextView lastNightDrinkNoText;
+    private TextView number_drinks_qs;
+    private LinearLayout number_drinks_qs_layout;
+    private Button drinks_add;
+    private Button drinks_subtract;
+    private TextView drinks_counterText;
+    private TextView drink_type;
+    private TextView select_drink_type;
+    private LinearLayout drink_type_layout;
+    private CheckBox liquor;
+    private CheckBox wine;
+    private CheckBox beer;
+    private TextView hangover_qs;
+    private LinearLayout hangover_qs_layout;
+    private TextView hangoverYesText;
+    private ImageButton hangoverYes;
+    private TextView hangoverNoText;
+    private ImageButton hangoverNo;
+    private TextView drugs_qs;
+    private LinearLayout drugs_layout;
+    private ImageButton drugs_yes;
+    private TextView drugs_yesText;
+    private ImageButton drugs_no;
+    private TextView drugs_noText;
+    private TextView typesOfDrugs_qs;
+    private TextView select_drugs;
+    private LinearLayout typesOfDrugs_layout;
+    private CheckBox ritalin;
+    private CheckBox adderall;
+    private CheckBox oxyContin;
+    private CheckBox vicodin;
+    private CheckBox percocet;
+    private CheckBox otherPrescriptionOpioid;
+    private CheckBox xanax;
+    private CheckBox valium;
+    private CheckBox otherBenzo;
+    private CheckBox marijuana;
+    private CheckBox heroin;
+    private CheckBox mdma;
+    private CheckBox meth;
+    private CheckBox otherDrug;
+    private ImageButton analVaginalSexYes;
+    private TextView analVaginalSexYesText;
+    private ImageButton analVaginalSexNo;
+    private TextView analVaginalSexNoText;
+    private TextView condom_qs;
+    private LinearLayout condom_layout;
+    private ImageButton condom_yes;
+    private TextView condom_yesText;
+    private ImageButton condom_no;
+    private TextView condom_noText;
+    private TextView sexPartner_qs;
+    private LinearLayout sexPartner_qs_layout;
+    private RadioGroup partnerGroup;
+    private TextView stressfulEventOccurance;
+    private LinearLayout stressfulEventOccurance_layout;
+    private RadioGroup stressGroup;
+    private SeekBar seekBar;
+    Button submit;
+    private ImageButton stress_yes;
+    private TextView stress_yesText;
+    private ImageButton stress_no;
+    private TextView stress_noText;
+    private TextView stress_type;
+    private TextView stress_select;
+    private LinearLayout stressTypeLayout;
+    private TextView value_stress_qs;
+    private LinearLayout ratingLayout;
+    private CheckBox interpersonal_check;
+    private CheckBox work_check;
+    private CheckBox financial_check;
+    private CheckBox health_check;
+    private CheckBox trauma_check;
+    private CheckBox other_check;
+
     SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
 
         @Override
@@ -112,97 +191,83 @@ public class MorningQS extends AppCompatActivity {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        final ImageButton lastNightDrinkYes = (ImageButton) findViewById(R.id.drinkAlcoholQS_yes);
-        final ImageButton lastNightDrinkNo = (ImageButton) findViewById(R.id.drinkAlcoholQS_no);
-        final TextView lastNightDrinkYesText = (TextView) findViewById(R.id.drinkAlcoholQS_yesText);
-        final TextView lastNightDrinkNoText = (TextView) findViewById(R.id.drinkAlcoholQS_noText);
-
-        final TextView number_drinks_qs = (TextView) findViewById(R.id.number_drinks_qs);
-        final LinearLayout number_drinks_qs_layout = (LinearLayout) findViewById(R.id.number_drinks_qs_layout);
-        final Button drinks_add = (Button) findViewById(R.id.drinks_add_button);
-        final Button drinks_subtract = (Button) findViewById(R.id.drinks_subtract_button);
-        final TextView drinks_counterText = (TextView) findViewById(R.id.drinks_counter);
-
-        final TextView drink_type = (TextView) findViewById(R.id.drink_type);
-        final TextView select_drink_type = (TextView) findViewById(R.id.select_drink_type);
-        final LinearLayout drink_type_layout = (LinearLayout) findViewById(R.id.drink_type_layout);
-        final CheckBox liquor = (CheckBox) findViewById(R.id.liquor);
-        final CheckBox wine = (CheckBox) findViewById(R.id.wine);
-        final CheckBox beer = (CheckBox) findViewById(R.id.beer);
-
-        final TextView hangover_qs = (TextView) findViewById(R.id.hangover_qs);
-        final LinearLayout hangover_qs_layout = (LinearLayout) findViewById(R.id.hangover_qs_layout);
-        final TextView hangoverYesText = (TextView) findViewById(R.id.hangover_yesText);
-        final ImageButton hangoverYes = (ImageButton) findViewById(R.id.hangover_yes);
-        final TextView hangoverNoText = (TextView) findViewById(R.id.hangover_noText);
-        final ImageButton hangoverNo = (ImageButton) findViewById(R.id.hangover_no);
-
-        final TextView drugs_qs = (TextView) findViewById(R.id.drugs);
-        final LinearLayout drugs_layout = (LinearLayout) findViewById(R.id.drugs_layout);
-        final ImageButton drugs_yes = (ImageButton) findViewById(R.id.drugs_yes);
-        final TextView drugs_yesText = (TextView) findViewById(R.id.drugs_yesText);
-        final ImageButton drugs_no = (ImageButton) findViewById(R.id.drugs_no);
-        final TextView drugs_noText = (TextView) findViewById(R.id.drugs_noText);
-
-        final TextView typesOfDrugs_qs = (TextView) findViewById(R.id.typesOfDrugs);
-        final TextView select_drugs = (TextView) findViewById(R.id.select_drugs);
-        final LinearLayout typesOfDrugs_layout = (LinearLayout) findViewById(R.id.typesOfDrugs_layout);
-        final CheckBox ritalin = (CheckBox) findViewById(R.id.ritalin);
-        final CheckBox adderall = (CheckBox) findViewById(R.id.adderall);
-        final CheckBox oxyContin = (CheckBox) findViewById(R.id.oxyContin);
-        final CheckBox vicodin = (CheckBox) findViewById(R.id.vicodin);
-        final CheckBox percocet = (CheckBox) findViewById(R.id.percocet);
-        final CheckBox otherPrescriptionOpioid = (CheckBox) findViewById(R.id.otherPrescriptionOpioid);
-        final CheckBox xanax = (CheckBox) findViewById(R.id.xanax);
-        final CheckBox valium = (CheckBox) findViewById(R.id.valium);
-        final CheckBox otherBenzo = (CheckBox) findViewById(R.id.otherBenzo);
-        final CheckBox marijuana = (CheckBox) findViewById(R.id.marijuana);
-        final CheckBox heroin = (CheckBox) findViewById(R.id.heroin);
-        final CheckBox mdma = (CheckBox) findViewById(R.id.mdma);
-        final CheckBox meth = (CheckBox) findViewById(R.id.meth);
-        final CheckBox otherDrug = (CheckBox) findViewById(R.id.otherDrug);
-
-        final ImageButton analVaginalSexYes = (ImageButton) findViewById(R.id.analVaginalSex_yes);
-        final TextView analVaginalSexYesText = (TextView) findViewById(R.id.analVaginalSex_yesText);
-        final ImageButton analVaginalSexNo = (ImageButton) findViewById(R.id.analVaginalSex_no);
-        final TextView analVaginalSexNoText = (TextView) findViewById(R.id.analVaginalSex_noText);
-
-        final TextView condom_qs = (TextView) findViewById(R.id.condom);
-        final LinearLayout condom_layout = (LinearLayout) findViewById(R.id.condom_layout);
-        final ImageButton condom_yes = (ImageButton) findViewById(R.id.condom_yes);
-        final TextView condom_yesText = (TextView) findViewById(R.id.condom_yesText);
-        final ImageButton condom_no = (ImageButton) findViewById(R.id.condom_no);
-        final TextView condom_noText = (TextView) findViewById(R.id.condom_noText);
-
-        final TextView sexPartner_qs = (TextView) findViewById(R.id.sexPartner_qs);
-        final LinearLayout sexPartner_qs_layout = (LinearLayout) findViewById(R.id.sexPartner_qs_layout);
-        final RadioGroup partnerGroup = (RadioGroup) findViewById(R.id.radioGroupPartner);
-
-
-        final TextView stressfulEventOccurance = (TextView) findViewById(R.id.stressfulEventOccurance);
-        final LinearLayout stressfulEventOccurance_layout = (LinearLayout) findViewById(R.id.stressfulEventOccurance_layout);
-        final RadioGroup stressGroup = (RadioGroup) findViewById(R.id.radioGroupStress);
-        final SeekBar seekBar = (SeekBar) findViewById(R.id.stress_rating_slidebar);
-
-        Button submit = (Button) findViewById(R.id.submit);
-
-        final ImageButton stress_yes = (ImageButton) findViewById(R.id.stress_q1_yes_button);
-        final TextView stress_yesText = (TextView) findViewById(R.id.stress_q1_yes_text);
-        final ImageButton stress_no = (ImageButton) findViewById(R.id.stress_q1_no_button);
-        final TextView stress_noText = (TextView) findViewById(R.id.stress_q1_no_text);
-
-        final TextView stress_type = (TextView) findViewById(R.id.stress_type_qs);
-        final TextView stress_select = (TextView) findViewById(R.id.select_stress);
-        final LinearLayout stressTypeLayout = (LinearLayout) findViewById(R.id.type_layout);
-        final TextView value_stress_qs = (TextView) findViewById(R.id.value_stress_qs);
-        final LinearLayout ratingLayout = (LinearLayout) findViewById(R.id.rating_layout);
-
-        final CheckBox interpersonal_check = (CheckBox) findViewById(R.id.interpersonal);
-        final CheckBox work_check = (CheckBox) findViewById(R.id.work);
-        final CheckBox financial_check = (CheckBox) findViewById(R.id.financial);
-        final CheckBox health_check = (CheckBox) findViewById(R.id.health);
-        final CheckBox trauma_check = (CheckBox) findViewById(R.id.trauma);
-        final CheckBox other_check = (CheckBox) findViewById(R.id.other_stress);
+        lastNightDrinkYes = (ImageButton) findViewById(R.id.drinkAlcoholQS_yes);
+        lastNightDrinkNo = (ImageButton) findViewById(R.id.drinkAlcoholQS_no);
+        lastNightDrinkYesText = (TextView) findViewById(R.id.drinkAlcoholQS_yesText);
+        lastNightDrinkNoText = (TextView) findViewById(R.id.drinkAlcoholQS_noText);
+        number_drinks_qs = (TextView) findViewById(R.id.number_drinks_qs);
+        number_drinks_qs_layout = (LinearLayout) findViewById(R.id.number_drinks_qs_layout);
+        drinks_add = (Button) findViewById(R.id.drinks_add_button);
+        drinks_subtract = (Button) findViewById(R.id.drinks_subtract_button);
+        drinks_counterText = (TextView) findViewById(R.id.drinks_counter);
+        drink_type = (TextView) findViewById(R.id.drink_type);
+        select_drink_type = (TextView) findViewById(R.id.select_drink_type);
+        drink_type_layout = (LinearLayout) findViewById(R.id.drink_type_layout);
+        liquor = (CheckBox) findViewById(R.id.liquor);
+        wine = (CheckBox) findViewById(R.id.wine);
+        beer = (CheckBox) findViewById(R.id.beer);
+        hangover_qs = (TextView) findViewById(R.id.hangover_qs);
+        hangover_qs_layout = (LinearLayout) findViewById(R.id.hangover_qs_layout);
+        hangoverYesText = (TextView) findViewById(R.id.hangover_yesText);
+        hangoverYes = (ImageButton) findViewById(R.id.hangover_yes);
+        hangoverNoText = (TextView) findViewById(R.id.hangover_noText);
+        hangoverNo = (ImageButton) findViewById(R.id.hangover_no);
+        drugs_qs = (TextView) findViewById(R.id.drugs);
+        drugs_layout = (LinearLayout) findViewById(R.id.drugs_layout);
+        drugs_yes = (ImageButton) findViewById(R.id.drugs_yes);
+        drugs_yesText = (TextView) findViewById(R.id.drugs_yesText);
+        drugs_no = (ImageButton) findViewById(R.id.drugs_no);
+        drugs_noText = (TextView) findViewById(R.id.drugs_noText);
+        typesOfDrugs_qs = (TextView) findViewById(R.id.typesOfDrugs);
+        select_drugs = (TextView) findViewById(R.id.select_drugs);
+        typesOfDrugs_layout = (LinearLayout) findViewById(R.id.typesOfDrugs_layout);
+        ritalin = (CheckBox) findViewById(R.id.ritalin);
+        adderall = (CheckBox) findViewById(R.id.adderall);
+        oxyContin = (CheckBox) findViewById(R.id.oxyContin);
+        vicodin = (CheckBox) findViewById(R.id.vicodin);
+        percocet = (CheckBox) findViewById(R.id.percocet);
+        otherPrescriptionOpioid = (CheckBox) findViewById(R.id.otherPrescriptionOpioid);
+        xanax = (CheckBox) findViewById(R.id.xanax);
+        valium = (CheckBox) findViewById(R.id.valium);
+        otherBenzo = (CheckBox) findViewById(R.id.otherBenzo);
+        marijuana = (CheckBox) findViewById(R.id.marijuana);
+        heroin = (CheckBox) findViewById(R.id.heroin);
+        mdma = (CheckBox) findViewById(R.id.mdma);
+        meth = (CheckBox) findViewById(R.id.meth);
+        otherDrug = (CheckBox) findViewById(R.id.otherDrug);
+        analVaginalSexYes = (ImageButton) findViewById(R.id.analVaginalSex_yes);
+        analVaginalSexYesText = (TextView) findViewById(R.id.analVaginalSex_yesText);
+        analVaginalSexNo = (ImageButton) findViewById(R.id.analVaginalSex_no);
+        analVaginalSexNoText = (TextView) findViewById(R.id.analVaginalSex_noText);
+        condom_qs = (TextView) findViewById(R.id.condom);
+        condom_layout = (LinearLayout) findViewById(R.id.condom_layout);
+        condom_yes = (ImageButton) findViewById(R.id.condom_yes);
+        condom_yesText = (TextView) findViewById(R.id.condom_yesText);
+        condom_no = (ImageButton) findViewById(R.id.condom_no);
+        condom_noText = (TextView) findViewById(R.id.condom_noText);
+        sexPartner_qs = (TextView) findViewById(R.id.sexPartner_qs);
+        sexPartner_qs_layout = (LinearLayout) findViewById(R.id.sexPartner_qs_layout);
+        partnerGroup = (RadioGroup) findViewById(R.id.radioGroupPartner);
+        stressfulEventOccurance = (TextView) findViewById(R.id.stressfulEventOccurance);
+        stressfulEventOccurance_layout = (LinearLayout) findViewById(R.id.stressfulEventOccurance_layout);
+        stressGroup = (RadioGroup) findViewById(R.id.radioGroupStress);
+        seekBar = (SeekBar) findViewById(R.id.stress_rating_slidebar);
+        submit = (Button) findViewById(R.id.submit);
+        stress_yes = (ImageButton) findViewById(R.id.stress_q1_yes_button);
+        stress_yesText = (TextView) findViewById(R.id.stress_q1_yes_text);
+        stress_no = (ImageButton) findViewById(R.id.stress_q1_no_button);
+        stress_noText = (TextView) findViewById(R.id.stress_q1_no_text);
+        stress_type = (TextView) findViewById(R.id.stress_type_qs);
+        stress_select = (TextView) findViewById(R.id.select_stress);
+        stressTypeLayout = (LinearLayout) findViewById(R.id.type_layout);
+        value_stress_qs = (TextView) findViewById(R.id.value_stress_qs);
+        ratingLayout = (LinearLayout) findViewById(R.id.rating_layout);
+        interpersonal_check = (CheckBox) findViewById(R.id.interpersonal);
+        work_check = (CheckBox) findViewById(R.id.work);
+        financial_check = (CheckBox) findViewById(R.id.financial);
+        health_check = (CheckBox) findViewById(R.id.health);
+        trauma_check = (CheckBox) findViewById(R.id.trauma);
+        other_check = (CheckBox) findViewById(R.id.other_stress);
 
         //gets shared preferences variable
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
@@ -217,7 +282,8 @@ public class MorningQS extends AppCompatActivity {
             long userStartTime = getUserStartTime();
             String userStartDateStr = dateFormat.format(new Date(userStartTime));
 
-            String moringSurveyTime = dateFormat.format(new Date(userStartTime + BoozymeterApplication.SURVEY_OFFSET));
+            long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), getCurrentCycle());
+            String moringSurveyTime = dateFormat.format(new Date(morningSurveyTimeInMillis));
             String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
             @Override
             public void onClick(View view) {
@@ -240,7 +306,7 @@ public class MorningQS extends AppCompatActivity {
                         .setMessage("Username: " + userIDMA
                                 + "\nUser group: " + getGroup()
                                 + "\nCanonical start time: " + userStartDateStr
-                                + "\nCycle: " + currentCycle + " (zero-based index)"
+                                + "\nCycle (1-based index): " + (currentCycle+1)
                                 + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
                                 + "\nNumber of cycles: " + BoozymeterApplication.NUM_CYCLES
                                 + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
@@ -266,40 +332,60 @@ public class MorningQS extends AppCompatActivity {
         //creates all of the onClick listeners for all of the buttons for questions
         View.OnClickListener handler1 = new View.OnClickListener() {
             public void onClick(View view) {
-                int nightCount = getNightCount();
-                writeOralToDB(oral, nightCount);
-                writeLastNightDrink(drinklastNight, nightCount);
-                writeNumDrinksToDB(drinksCounter, nightCount);
-                writeTypesDrinksToDB(typesOfDrinks, nightCount);
-                writeHangoverToDB(hangover, nightCount);
-                writeDrugsToDB(drugs, nightCount);
-                writeTypeDrugsToDB(typeDrugs, nightCount);
-                writeAnalVaginalToDB(analVaginalSex, nightCount);
-                writeCondomToDB(condom, nightCount);
+                if(!validateAnswers()) {
+                    AlertDialog.Builder builder;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        builder = new AlertDialog.Builder(MorningQS.this, R.style.MyDialogTheme);
+                    } else {
+                        builder = new AlertDialog.Builder(MorningQS.this);
+                    }
+                    builder
+//                            .setTitle("Try Again")
+                            .setMessage("Please answer every question.")
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // continue with delete
+                                }
+                            })
+                            .setIcon(R.drawable.white_small_icon)
+                            .show();
+                } else {
 
-                if (analVaginalSex == "Yes") {
-                    int partnerSelectedId = partnerGroup.getCheckedRadioButtonId();
-                    RadioButton partnerButton;
-                    partnerButton = (RadioButton) findViewById(partnerSelectedId);
-                    partner = partnerButton.getText().toString();
-                    writePartnerToDB(partner, nightCount);
+                    int nightCount = getNightCount();
+                    writeOralToDB(oral, nightCount);
+                    writeLastNightDrink(drinklastNight, nightCount);
+                    writeNumDrinksToDB(drinksCounter, nightCount);
+                    writeTypesDrinksToDB(typesOfDrinks, nightCount);
+                    writeHangoverToDB(hangover, nightCount);
+                    writeDrugsToDB(drugs, nightCount);
+                    writeTypeDrugsToDB(typeDrugs, nightCount);
+                    writeAnalVaginalToDB(analVaginalSex, nightCount);
+                    writeCondomToDB(condom, nightCount);
 
+                    if (analVaginalSex.equals("Yes")) {
+                        int partnerSelectedId = partnerGroup.getCheckedRadioButtonId();
+                        RadioButton partnerButton;
+                        partnerButton = (RadioButton) findViewById(partnerSelectedId);
+                        partner = partnerButton.getText().toString();
+                        writePartnerToDB(partner, nightCount);
+
+                    }
+                    if (stress_event.equals("Yes")) {
+                        int stressSelectedID = stressGroup.getCheckedRadioButtonId();
+                        RadioButton stressButton;
+                        stressButton = (RadioButton) findViewById(stressSelectedID);
+                        whenStressOccurred = stressButton.getText().toString();
+                        writeStressOccurranceToDB(whenStressOccurred, nightCount);
+                    }
+
+                    writeStressEventToDB(stress_event, nightCount);
+                    writeTypeStressToDB(typeStress, nightCount);
+                    writeStressValueToDB(stress_value, nightCount);
+                    finish();
+
+
+                    startNextActivity();
                 }
-                if (stress_event == "Yes") {
-                    int stressSelectedID = stressGroup.getCheckedRadioButtonId();
-                    RadioButton stressButton;
-                    stressButton = (RadioButton) findViewById(stressSelectedID);
-                    whenStressOccurred = stressButton.getText().toString();
-                    writeStressOccurranceToDB(whenStressOccurred, nightCount);
-                }
-
-                writeStressEventToDB(stress_event, nightCount);
-                writeTypeStressToDB(typeStress, nightCount);
-                writeStressValueToDB(stress_value, nightCount);
-                finish();
-
-
-                startNextActivity();
             }
         };
         submit.setOnClickListener(handler1);
@@ -345,7 +431,7 @@ public class MorningQS extends AppCompatActivity {
                 hangover_qs_layout.setVisibility(View.VISIBLE);
                 drugs_qs.setVisibility(View.VISIBLE);
                 drugs_layout.setVisibility(View.VISIBLE);
-                if (drugs.equals("yes")) {
+                if (drugs.equals("Yes")) {
                     typesOfDrugs_layout.setVisibility(View.VISIBLE);
                 }
             }
@@ -404,7 +490,7 @@ public class MorningQS extends AppCompatActivity {
 
         View.OnClickListener onClickHangoverNo = new View.OnClickListener() {
             public void onClick(View view) {
-                hangover = "no";
+                hangover = "No";
                 hangoverNo.setImageResource(R.drawable.no_green_button);
                 hangoverYes.setImageResource(R.drawable.yes_button);
 
@@ -417,7 +503,7 @@ public class MorningQS extends AppCompatActivity {
 
         View.OnClickListener onClickHangoverYes = new View.OnClickListener() {
             public void onClick(View view) {
-                hangover = "yes";
+                hangover = "Yes";
                 hangoverNo.setImageResource(R.drawable.no_button);
                 hangoverYes.setImageResource(R.drawable.yes_green);
 
@@ -430,7 +516,7 @@ public class MorningQS extends AppCompatActivity {
 
         View.OnClickListener onClickDrugNo = new View.OnClickListener() {
             public void onClick(View view) {
-                drugs = "no";
+                drugs = "No";
                 drugs_no.setImageResource(R.drawable.no_green_button);
                 drugs_yes.setImageResource(R.drawable.yes_button);
                 drugs_noText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.green));
@@ -446,7 +532,7 @@ public class MorningQS extends AppCompatActivity {
 
         View.OnClickListener onClickDrugYes = new View.OnClickListener() {
             public void onClick(View view) {
-                drugs = "yes";
+                drugs = "Yes";
                 drugs_no.setImageResource(R.drawable.no_button);
                 drugs_yes.setImageResource(R.drawable.yes_green);
                 drugs_noText.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
@@ -783,6 +869,33 @@ public class MorningQS extends AppCompatActivity {
         stressRatingSlideBarLabel = findViewById(R.id.stress_rating_text);
         stressRatingSlideBarLabel.setText("You rate your stress: " + progress + " out of 10");
         stress_value = progress + "";
+    }
+
+    private boolean validateAnswers() {
+        if(drinklastNight.equals("NA")
+        || analVaginalSex.equals("NA")
+        || stress_event.equals("NA")){
+            return false;
+        }
+
+        if(drinklastNight.equals("Yes")) {
+            if(hangover.equals("NA") || drugs.equals("NA")) {
+                return false;
+            }
+        }
+        if (analVaginalSex.equals("Yes")) {
+            int partnerSelectedId = partnerGroup.getCheckedRadioButtonId();
+            if(condom.equals("NA") || partnerSelectedId == -1){
+                return false;
+            }
+        }
+        if (stress_event.equals("Yes")) {
+            int stressSelectedID = stressGroup.getCheckedRadioButtonId();
+            if(stressSelectedID == -1) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void startNextActivity() {
