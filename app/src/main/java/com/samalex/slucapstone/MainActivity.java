@@ -552,18 +552,13 @@ public class MainActivity extends AppCompatActivity {
                     cal_text.setText("0");
                 }
 
-                Object costObject = ds.child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Cost").getValue();
+                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, getNightCount(), date);
                 if (costObject != null) {
                     Map<String, String> costJSON = (Map<String, String>) costObject;
                     double avgCost = CalculationUtil.getAverageCost(costJSON);
                     cost_txt.setText(String.format("%.2f", avgCost));
-                } else {
-                    //Log.e("null","cost object is null");
                 }
-
             }
-
-
         }
     }
 

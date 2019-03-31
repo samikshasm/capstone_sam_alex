@@ -347,20 +347,14 @@ public class MorningReport extends AppCompatActivity{
                     display_calories.setText("0");
                 }
 
-
-                Object costObject = ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Cost").getValue();
+                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, getNightCount(), date);
                 if (costObject != null) {
                     Map<String, String> costJSON = (Map<String, String>) costObject;
                     double avgCost = CalculationUtil.getAverageCost(costJSON);
                     TextView cost_txt = (TextView) findViewById(R.id.costText);
                     cost_txt.setText(String.format("%.2f", avgCost));
-                }else{
-                    //Log.e("null","cost object is null");
                 }
             }
-
-
-
         }
     }
 
