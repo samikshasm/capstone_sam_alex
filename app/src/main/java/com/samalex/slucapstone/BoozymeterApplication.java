@@ -27,12 +27,12 @@ public class BoozymeterApplication extends Application {
     final public static long IN_EPISODE_REMINDER_INTERVAL = 2 * 60 * 1000;   // 2 mins
 
     //  Dr. Goldwasser test settings (03/22/2019)
-//    final public static long CYCLE_OFFSET = 1 * 60 * 60 * 1000;    // 1 hour
-//    final public static long CYCLE_LENGTH = 6 * 60 * 60 * 1000;    //  6 hours
-//    final public static int NUM_CYCLES = 12;
-//    final public static long SURVEY_OFFSET = 8 * 60 * 60 * 1000;  //  8 hours after cycle start = 2 hours after END of a cycle = 1 hour after OFFSET cycle end?
-//    final public static long EVENING_REMINDER_OFFSET = 4 * 60 * 60 * 1000;    // 4 hours from cycle time which is 3 hours from cycle offset start
-//    final public static long IN_EPISODE_REMINDER_INTERVAL = 15 * 60 * 1000;   // 15 minutes
+//    final public static long CYCLE_OFFSET =  10 * 60 * 1000;            //  Drinking period is officially 10 MINUTES past the hour (e.g. 3:10-4:10)
+//    final public static long CYCLE_LENGTH = 1 * 60 * 60 * 1000;         //  1 hour
+//    final public static int NUM_CYCLES = 9;                             //  9-hour test overall, thus 3 cycles in each "week" of intervention styles
+//    final public static long SURVEY_OFFSET = 80 * 60 * 1000;            //  80 MINUTES.  Thus at a time such as 4:20 which is 10 minutes after close of offset cycle
+//    final public static long EVENING_REMINDER_OFFSET = 40 * 60 * 1000;  //  40 MINUTES from cycle time, thus something like 4:50 (incl. cycle offset)
+//    final public static long IN_EPISODE_REMINDER_INTERVAL = 5 * 60 * 1000;    //  5 minutes
 
     // Global settings
     private boolean isDebug = false;

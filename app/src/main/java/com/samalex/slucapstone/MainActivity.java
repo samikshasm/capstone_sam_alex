@@ -31,6 +31,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -55,11 +56,9 @@ public class MainActivity extends AppCompatActivity {
     private String startActivity1;
     private Integer nightCount;
     private String[] typeList;
-    private String[] costList;
     private String date;
     private String[] sizeList;
     private Integer totalCalConsumed;
-    private Double avgCost = 0.00;
 
     // UI
     private ProgressBar progressBarCircle;
@@ -223,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
             long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), getCurrentCycle());
             String moringSurveyTime = dateFormat.format(new Date(morningSurveyTimeInMillis));
             String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
+
             @Override
             public void onClick(View view) {
                 int currentCycle = getCurrentCycle();
@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
                     morningReportFlag = ui.isShowMorningReport() ? "Yes" : "No";
                 }
 
-                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(MainActivity .this, R.style.MyDialogTheme);
+                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(MainActivity.this, R.style.MyDialogTheme);
                 builder.setTitle("Hidden Logs")
                         .setMessage("Number of cycles: " + BoozymeterApplication.NUM_CYCLES
                                 + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
@@ -275,11 +275,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //gets number of drinks from shared preferences
-    private Integer getNumDrinks () {
+    private Integer getNumDrinks() {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
-        Integer numberDrinks = mSharedPreferences.getInt("numDrinks",0);
+        Integer numberDrinks = mSharedPreferences.getInt("numDrinks", 0);
         return numberDrinks;
     }
+
     private String getGroup() {
         SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
         String group = mSharedPreferences.getString("Group", "none");
@@ -293,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         long reminderTime = userStartTime + BoozymeterApplication.EVENING_REMINDER_OFFSET;
-        if(reminderTime < now) {
+        if (reminderTime < now) {
             reminderTime += BoozymeterApplication.CYCLE_LENGTH;
         }
 
@@ -306,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
 
         LinearLayout liveDataLayout = (LinearLayout) findViewById(R.id.live_report_layout);
 
-        if(display.isShowLiveReport()) {
+        if (display.isShowLiveReport()) {
             liveDataLayout.setVisibility(View.VISIBLE);
         } else {
             liveDataLayout.setVisibility(View.GONE);
@@ -553,47 +554,8 @@ public class MainActivity extends AppCompatActivity {
 
                 Object costObject = ds.child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Cost").getValue();
                 if (costObject != null) {
-                    //splits the string properly to get the necessary data
-                    String costDrink = costObject.toString();
-                    //Log.e("costDrink", costDrink);
-                    String costDrinkSub = costDrink.substring(1, costDrink.length() - 1);
-                    //Log.e("costDrinkSub", costDrinkSub);
-                    String[] test = costDrinkSub.split(",");
-                    //Log.e("test", "" + test);
-                    costList = new String[test.length];
-                    for (int i = 0; i < test.length; i++) {
-                        String[] tempList = test[i].split("=");
-                        costList[i] = tempList[1];
-                        //Log.e("costList",costList[i]);
-                    }
-                    for (int i = 0; i < costList.length; i++) {
-                        if (costList[i].contains("-")) {
-                            String[] tempList = costList[i].split("-");
-                            //Log.e("length",tempList.length+"");
-                            for (int j = 0; j < tempList.length; j++) {
-                                tempList[j] = tempList[j].substring(1, tempList[j].length());
-                            }
-                            Double minCost = 0.00;
-                            Double maxCost = 0.00;
-                            minCost = minCost + (Double.parseDouble(tempList[0]));
-                            maxCost = maxCost + (Double.parseDouble(tempList[1]));
-                            avgCost = avgCost + ((maxCost + minCost) / 2);
-                        } else {
-                            if (costList[i].contains("+")) {
-                                //16+
-                                String tempString = costList[i].substring(1, costList[i].length() - 1);
-                                Double cost = Double.parseDouble(tempString);
-                                avgCost = avgCost + cost;
-                            } else {
-                                //0
-                                String tempString = costList[i].substring(1, costList[i].length());
-                                Double cost = Double.parseDouble(tempString);
-                                avgCost = avgCost + cost;
-                            }
-                        }
-
-
-                    }
+                    Map<String, String> costJSON = (Map<String, String>) costObject;
+                    double avgCost = CalculationUtil.getAverageCost(costJSON);
                     cost_txt.setText(String.format("%.2f", avgCost));
                 } else {
                     //Log.e("null","cost object is null");
@@ -604,6 +566,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
 
     private int getCurrentCycle() {
         SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
@@ -624,6 +587,7 @@ public class MainActivity extends AppCompatActivity {
         Long time = mSharedPreferences.getLong("userStartTime", 0);
         return time;
     }
+
     private Long getUserRawStartTime() {
         SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
         Long time = mSharedPreferences.getLong("userRawStartTime", 0);
