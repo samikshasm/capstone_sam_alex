@@ -49,9 +49,9 @@ public class NotificationService extends Service {
 
         switch (notificationId) {
             case EVENING_REMINDER_NOTIFICATION_ID:
-//                if(getNightCount() == 0) {
-                notifyEveningReminder(notificationId, broadcastId);
-//                }
+                if (getNightCount() == 0) { // remind only the user did not input any episode.
+                    notifyEveningReminder(notificationId, broadcastId);
+                }
                 break;
             case MORNING_QUESTIONNAIRE_NOTIFICATION_ID:
                 notifyTimeForMorningQuestionnaire(notificationId, broadcastId);
@@ -186,9 +186,9 @@ public class NotificationService extends Service {
         return builder;
     }
 
-//    private Integer getNightCount() {
-//        SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
-//        Integer nightCount = mSharedPreferences.getInt("night counter", 0);
-//        return nightCount;
-//    }
+    private Integer getNightCount() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
+        Integer nightCount = mSharedPreferences.getInt("night counter", 0);
+        return nightCount;
+    }
 }
