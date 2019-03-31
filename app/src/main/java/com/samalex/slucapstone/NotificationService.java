@@ -1,6 +1,7 @@
 package com.samalex.slucapstone;
 
 import android.annotation.TargetApi;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -49,7 +50,7 @@ public class NotificationService extends Service {
         switch (notificationId) {
             case EVENING_REMINDER_NOTIFICATION_ID:
 //                if(getNightCount() == 0) {
-                    notifyEveningReminder(notificationId, broadcastId);
+                notifyEveningReminder(notificationId, broadcastId);
 //                }
                 break;
             case MORNING_QUESTIONNAIRE_NOTIFICATION_ID:
@@ -65,6 +66,14 @@ public class NotificationService extends Service {
         }
 
         return START_NOT_STICKY; //START_REDELIVER_INTENT
+    }
+
+    public static void dismissNotification(Context context, int notificationId) {
+        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.cancel(notificationId);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            manager.deleteNotificationChannel(CHANNEL_ID);
+        }
     }
 
     //creates notification that appears when the morning alarm goes off

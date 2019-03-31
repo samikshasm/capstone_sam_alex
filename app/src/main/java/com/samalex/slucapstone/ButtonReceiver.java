@@ -22,13 +22,6 @@ public class ButtonReceiver extends BroadcastReceiver {
         int notificationId = Integer.parseInt(broadcastID);
         Log.e("canceling", broadcastID);
 
-
-        //cancels notification with given broadcast id
-        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.cancel(notificationId);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-            manager.deleteNotificationChannel(CHANNEL_ID);
-        }
+        NotificationService.dismissNotification(context, notificationId);
     }
 }

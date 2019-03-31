@@ -143,10 +143,7 @@ public class MorningReport extends AppCompatActivity{
         } else {
             notificationId = Integer.parseInt(broadcastInt);
         }
-        manager.cancel(notificationId);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            manager.deleteNotificationChannel(CHANNEL_ID);
-        }
+        NotificationService.dismissNotification(this, notificationId);
     }
 
     //function to analyze data received from snapshot

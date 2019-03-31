@@ -401,7 +401,6 @@ public class MainActivity extends AppCompatActivity {
         pIntent = PendingIntent.getBroadcast(MainActivity.this, broadcastID, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.cancel(pIntent);
         pIntent.cancel();
-
     }
 
 

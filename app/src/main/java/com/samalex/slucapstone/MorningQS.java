@@ -867,8 +867,7 @@ public class MorningQS extends AppCompatActivity {
         String broadcastID = getIntent().getStringExtra("broadcast Int");
         if (broadcastID != null) {
             int notificationId = Integer.parseInt(broadcastID);
-            NotificationManager manager = (NotificationManager) MorningQS.this.getSystemService(Context.NOTIFICATION_SERVICE);
-            manager.cancel(notificationId);
+            NotificationService.dismissNotification(this, notificationId);
         }
 
         // set a change listener on the SeekBar

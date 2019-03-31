@@ -151,13 +151,7 @@ public class Main2Activity extends AppCompatActivity{
         broadcastInt = getIntent().getStringExtra("broadcast Int");
         if(broadcastInt != null){
             int notificationId = Integer.parseInt(broadcastInt);
-            NotificationManager manager = (NotificationManager) Main2Activity.this.getSystemService(Context.NOTIFICATION_SERVICE);
-            manager.cancel(notificationId);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-                manager.deleteNotificationChannel(CHANNEL_ID);
-            }
-
+            NotificationService.dismissNotification(this, notificationId);
         }
 
         final SeekBar liquorSizeSelector = (SeekBar) findViewById(R.id.liquor_size_selector);
