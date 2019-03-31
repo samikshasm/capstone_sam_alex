@@ -323,7 +323,16 @@ public class StartActivity extends AppCompatActivity {
         storeGroup("none");
         storeNumDrinks(0);
         storeUserRawStartTime(0);
+        cancelEveningReminder();
         finish();
+    }
+
+    private void cancelEveningReminder() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent alertIntent = new Intent(this, TimerReceiver.class);
+        alertIntent.putExtra("broadcast Int", NotificationService.EVENING_REMINDER_NOTIFICATION_ID + "");
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, NotificationService.EVENING_REMINDER_NOTIFICATION_ID, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.cancel(pendingIntent);
     }
 
     private long calculateEveningReminderTime() {
