@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
                 cancelAlarm(1);
                 cancelAlarm(2);
                 cancelAlarm(3);
-//                cancelAlarm(4);
+                cancelAlarm(4);
                 //stopUIUpdateService();
                 //startUIUpdateService(notificationTime);
                 createAlarms(notificationTime);
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 cancelAlarm(1);
                 cancelAlarm(2);
                 cancelAlarm(3);
-//                cancelAlarm(4);
+                cancelAlarm(4);
                 startActivity1 = "start";
                 storeScreen(startActivity1);
                 if (ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -365,20 +365,16 @@ public class MainActivity extends AppCompatActivity {
     //function to create alarms at given time
     public void createAlarms(long currentTime) {
         long thirty = currentTime + BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL;
-        //1800000
-        startAlarm(thirty, 1);
+        startAlarm(thirty, NotificationService.FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID);
 
         long sixty = currentTime + (BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL * 2);
-        //3600000
-        startAlarm(sixty, 2);
+        startAlarm(sixty, NotificationService.SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID);
 
         long ninety = currentTime + (BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL * 3);
-        //5400000
-        startAlarm(ninety, 3);
+        startAlarm(ninety, NotificationService.THIRD_IN_EPISODE_REMINDER_NOTIFICATION_ID);
 
-//        long one = currentTime + (BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL * 4);
-//        //7200000
-//        startAlarm(one, 4);
+        long oneTwenty = currentTime + (BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL * 4);
+        startAlarm(oneTwenty, NotificationService.FOURTH_IN_EPISODE_REMINDER_NOTIFICATION_ID);
     }
 
     //function to start alarm manager at given time

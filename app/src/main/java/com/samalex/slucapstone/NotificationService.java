@@ -1,7 +1,6 @@
 package com.samalex.slucapstone;
 
 import android.annotation.TargetApi;
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -22,10 +21,10 @@ import android.util.Log;
  */
 
 public class NotificationService extends Service {
-    final public static int THIRTY_MINUTE_NOTIFICATION_ID = 1;
-    final public static int SIXTY_MINUTE_NOTIFICATION_ID = 2;
-    final public static int NINETY_MINUTE_NOTIFICATION_ID = 3;
-    final public static int HUNDRED_TWENTY_MINUTE_NOTIFICATION_ID = 4;
+    final public static int FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID = 1;
+    final public static int SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID = 2;
+    final public static int THIRD_IN_EPISODE_REMINDER_NOTIFICATION_ID = 3;
+    final public static int FOURTH_IN_EPISODE_REMINDER_NOTIFICATION_ID = 4;
     final public static int MORNING_QUESTIONNAIRE_NOTIFICATION_ID = 5;
     final public static int EVENING_REMINDER_NOTIFICATION_ID = 6;
 
@@ -57,10 +56,15 @@ public class NotificationService extends Service {
                 notifyTimeForMorningQuestionnaire(notificationId, broadcastId);
                 break;
 
-            case THIRTY_MINUTE_NOTIFICATION_ID:
-            case SIXTY_MINUTE_NOTIFICATION_ID:
-            case NINETY_MINUTE_NOTIFICATION_ID:
-            case HUNDRED_TWENTY_MINUTE_NOTIFICATION_ID:
+            case FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID:
+                notify30minutesPass(notificationId, initialTimeStr, broadcastId);
+                break;
+            case SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID:
+                dismissNotification(getApplicationContext(), FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID);
+                notify30minutesPass(notificationId, initialTimeStr, broadcastId);
+                break;
+            case THIRD_IN_EPISODE_REMINDER_NOTIFICATION_ID:
+                dismissNotification(getApplicationContext(), SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID);
                 notify30minutesPass(notificationId, initialTimeStr, broadcastId);
                 break;
         }
@@ -110,15 +114,22 @@ public class NotificationService extends Service {
         noIntent.putExtra("broadcast Int", broadcastId);
         PendingIntent noIntent1 = PendingIntent.getBroadcast(this, 0, noIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
+        // for testing only
+        String hiddenCountSymbols = notificationId == FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID ? "" :
+                notificationId == SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID ? ".." :
+                        notificationId == THIRD_IN_EPISODE_REMINDER_NOTIFICATION_ID ? "..." : "";
+
+        long timelapseInMinutes = BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL / 60 / 1000;
         if (isAndroid8OrLater()) {
             NotificationChannel channel = getNotificationChannel();
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
 
-            NotificationCompat.Builder builder = createNotificationBuilder(yesIntent1, noIntent1, "It's been 30 minutes! Have you had a drink?");
+
+            NotificationCompat.Builder builder = createNotificationBuilder(yesIntent1, noIntent1, "It's been " + timelapseInMinutes + " minutes! Have you had a drink" + hiddenCountSymbols + "?");
             startForeground(notificationId, builder.build());
         } else {
-            NotificationCompat.Builder builder = createNotificationBuilder(yesIntent1, noIntent1, "It's been 30 minutes! Have you had a drink?");
+            NotificationCompat.Builder builder = createNotificationBuilder(yesIntent1, noIntent1, "It's been " + timelapseInMinutes + " minutes! Have you had a drink" + hiddenCountSymbols + "?");
             NotificationManagerCompat nManager = NotificationManagerCompat.from(this);
             nManager.notify(notificationId, builder.build());
         }

@@ -27,7 +27,7 @@ public class TimerReceiver extends BroadcastReceiver {
         Log.e("We are in the receiver", broadcastStr);
         broadcastID = Integer.parseInt(broadcastStr);
 
-        if (broadcastID < 4) {
+        if (broadcastID < BoozymeterApplication.NUM_EVENING_REMINDER+1) {
             Intent service_intent = new Intent(context, NotificationService.class);
             service_intent.putExtra("initial time", initialTimeStr);
             service_intent.putExtra("broadcast Int", broadcastStr);
@@ -37,7 +37,7 @@ public class TimerReceiver extends BroadcastReceiver {
             } else {
                 context.startService(service_intent);
             }
-        } else if (broadcastID == 4) {
+        } else if (broadcastID == BoozymeterApplication.NUM_EVENING_REMINDER+1) {
             storeScreen("start", context);
         } else if (broadcastID == 5) {
             storeScreen("morningQS", context);
