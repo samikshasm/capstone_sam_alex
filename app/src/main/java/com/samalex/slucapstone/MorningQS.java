@@ -327,8 +327,8 @@ public class MorningQS extends AppCompatActivity {
                                 + "\nLive report: " + liveReportFlag
                                 + "\nMorning report: " + morningReportFlag
                                 + "\n"
-                                + "\nNumber of drinks: " + getNumDrinks()
-                                + "\nNight count (old parameter): " + getNightCount()
+//                                + "\nNumber of drinks: " + getNumDrinks()
+                                + "\nNumber of Episode: " + getNightCount()
                                 + "\n"
                                 + "\nNext morning Survey alarm will go off: " + moringSurveyTime
                                 + "\nNext evening reminder will go off: " + eveningReminderTime

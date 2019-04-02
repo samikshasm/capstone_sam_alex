@@ -191,7 +191,11 @@ public class StartActivity extends AppCompatActivity {
                 break;
             }
         }
-        storeCurrentCycle(cycle);
+        int oldCurrentCycle = getCurrentCycle();
+        if(oldCurrentCycle != cycle) {
+            storeCurrentCycle(cycle);
+            storeNight(0); // reset episode count when a new cycle starts
+        }
     }
 
     private void initializeLocationServiceClient() {
@@ -249,8 +253,8 @@ public class StartActivity extends AppCompatActivity {
                                 + "\nLive report: " + liveReportFlag
                                 + "\nMorning report: " + morningReportFlag
                                 + "\n"
-                                + "\nNumber of drinks: " + getNumDrinks()
-                                + "\nNight count (old parameter): " + getNightCount()
+//                                + "\nNumber of drinks: " + getNumDrinks()
+                                + "\nNumber of Episode: " + getNightCount()
                                 + "\n"
                                 + "\nNext morning Survey alarm will go off: " + moringSurveyTime
                                 + "\nNext evening reminder will go off: " + eveningReminderTime
