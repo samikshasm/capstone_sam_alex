@@ -1038,7 +1038,8 @@ public class MorningQS extends AppCompatActivity {
 
     public void writeHealthToDB(String health, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle)
+                .child("Episodes").child("Episode: " + nightCount)
                 .child("MorningAnswers").child(time).child("Health");
         mRef.setValue(health);
     }

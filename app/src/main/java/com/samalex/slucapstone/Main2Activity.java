@@ -525,7 +525,8 @@ public class Main2Activity extends AppCompatActivity {
         getTime();
         int currentCycle = getCurrentCycle();
         int episodeCount = getNightCount();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + currentCycle).child("Episode: " + episodeCount).child("Answers").child("Date: " + date);
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + currentCycle)
+                .child("Episodes").child("Episode: " + episodeCount).child("Answers").child("Date: " + date);
 
         mRef.child("Cost").child("Time: " + time).setValue(drinkCost);
         mRef.child("Type").child("Time: " + time).setValue(drinkType);
