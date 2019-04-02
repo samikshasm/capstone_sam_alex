@@ -297,7 +297,8 @@ public class MorningReport extends AppCompatActivity {
             //checks to make sure the location branch is not null
             String usersKey = ds.getKey().toString();
             if (usersKey.equals("Users")) {
-                Object locationObject = ds.child("UID: " + userIDMA).child("Night Count: " + getNightCount()).child("Location").getValue();
+                Object locationObject = DatabaseQueryService.getLocations(ds, userIDMA, getNightCount());
+                // { "Time: 2019-03-17 22:42:51": "37.4219983&-122.084"
                 if (locationObject != null) {
                     //gets the specific latitude and longitude string from database
                     String location = locationObject.toString();

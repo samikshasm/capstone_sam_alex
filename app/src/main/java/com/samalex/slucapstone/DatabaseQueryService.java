@@ -32,4 +32,9 @@ public class DatabaseQueryService {
                 .child("Size").getValue();
         return sizeObject;
     }
+
+    public static Object getLocations(DataSnapshot dataSnapshot, String username, Integer nightCount) {
+        Object locationObject = dataSnapshot.child("UID: " + username).child("Night Count: " + nightCount).child("Location").getValue();
+        return locationObject;
+    }
 }
