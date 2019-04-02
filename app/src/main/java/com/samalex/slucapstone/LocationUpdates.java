@@ -53,7 +53,7 @@ public class LocationUpdates extends IntentService {
             LocationResult locationResult = LocationResult.extractResult(intent);
             Location location = locationResult.getLastLocation();
 
-            if(location !=null) {
+            if (location != null) {
 
                 //gets latitude and longitude from location
                 userIDMA = BackgroundLocationService.userID;
@@ -81,7 +81,7 @@ public class LocationUpdates extends IntentService {
 
     private String getCurrentScreen() {
         SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
-        return mSharedPreferences.getString("currentScreen","none");
+        return mSharedPreferences.getString("currentScreen", "none");
     }
 
     //function to store the screen
@@ -94,8 +94,8 @@ public class LocationUpdates extends IntentService {
 
     //function to write to the database
     public void writeToDB(String text1) {
-        Log.e("Location Service DB", "Boi");
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Location").child("Time: "+time);
+//        Log.e("Location Service DB", "Boi");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + getCurrentCycle()).child("Episode: " + getNightCount()).child("Location").child("Time: " + time);
         mRef.setValue(text1);
 
     }
@@ -105,5 +105,11 @@ public class LocationUpdates extends IntentService {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
         return nightCount;
+    }
+
+    private int getCurrentCycle() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        int cycle = mSharedPreferences.getInt("currentCycle", 0);
+        return cycle;
     }
 }

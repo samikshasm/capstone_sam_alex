@@ -32,7 +32,7 @@ import java.util.Date;
  * Created by samikshasm on 7/4/2017.
  */
 
-public class Main2Activity extends AppCompatActivity{
+public class Main2Activity extends AppCompatActivity {
 
 
     //initializes variables
@@ -48,10 +48,10 @@ public class Main2Activity extends AppCompatActivity{
     private String date;
     private Integer nightCount;
     private String drinkCost;
-    private Integer plannedDrinksCounter =0;
-    private Integer peopleCounter=0;
+    private Integer plannedDrinksCounter = 0;
+    private Integer peopleCounter = 0;
     private boolean typeCheck = false;
-//    private boolean sizeCheck = false;
+    //    private boolean sizeCheck = false;
     private boolean withCheck = false;
     private boolean whereCheck = false;
     private boolean costCheck = false;
@@ -74,10 +74,14 @@ public class Main2Activity extends AppCompatActivity{
             wineSizeLabel.setText(progress + " oz.");
             wineSize = progress;
         }
+
         @Override
-        public void onStartTrackingTouch(SeekBar seekBar) { }
+        public void onStartTrackingTouch(SeekBar seekBar) {
+        }
+
         @Override
-        public void onStopTrackingTouch(SeekBar seekBar) { }
+        public void onStopTrackingTouch(SeekBar seekBar) {
+        }
     };
     SeekBar.OnSeekBarChangeListener beerSizeChangeListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
@@ -86,10 +90,14 @@ public class Main2Activity extends AppCompatActivity{
             beerSizeLabel.setText(progress + " oz.");
             beerSize = progress;
         }
+
         @Override
-        public void onStartTrackingTouch(SeekBar seekBar) { }
+        public void onStartTrackingTouch(SeekBar seekBar) {
+        }
+
         @Override
-        public void onStopTrackingTouch(SeekBar seekBar) { }
+        public void onStopTrackingTouch(SeekBar seekBar) {
+        }
     };
     SeekBar.OnSeekBarChangeListener liquorSizeChangeListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
@@ -98,14 +106,18 @@ public class Main2Activity extends AppCompatActivity{
             liquorSizeLabel.setText(progress + " oz (" + progress + " shot(s))");
             liquorSize = progress;
         }
+
         @Override
-        public void onStartTrackingTouch(SeekBar seekBar) { }
+        public void onStartTrackingTouch(SeekBar seekBar) {
+        }
+
         @Override
-        public void onStopTrackingTouch(SeekBar seekBar) { }
+        public void onStopTrackingTouch(SeekBar seekBar) {
+        }
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         super.onCreate(savedInstanceState);
@@ -126,7 +138,7 @@ public class Main2Activity extends AppCompatActivity{
 //        final ImageButton twentyFour = (ImageButton) findViewById(R.id.twentyFour);
 
         final ImageButton nobody = (ImageButton) findViewById(R.id.nobody);
-        final ImageButton partner  = (ImageButton) findViewById(R.id.partner);
+        final ImageButton partner = (ImageButton) findViewById(R.id.partner);
         final ImageButton friends = (ImageButton) findViewById(R.id.friends);
         final ImageButton other = (ImageButton) findViewById(R.id.other);
 
@@ -149,7 +161,7 @@ public class Main2Activity extends AppCompatActivity{
         final TextView drinks_counter = (TextView) findViewById(R.id.drinks_counter);
 
         broadcastInt = getIntent().getStringExtra("broadcast Int");
-        if(broadcastInt != null){
+        if (broadcastInt != null) {
             int notificationId = Integer.parseInt(broadcastInt);
             NotificationService.dismissNotification(this, notificationId);
         }
@@ -180,12 +192,12 @@ public class Main2Activity extends AppCompatActivity{
         liquorSizeLabel = findViewById(R.id.liquor_size_text);
         liquorSizeLabel.setText(liquorSize + " oz (" + liquorSize + " shot(s))");
 
-        if(getNumDrinks() > 0) {
+        if (getNumDrinks() > 0) {
             planned_num_drinks_layout.setVisibility(View.GONE); // Ask a question "How much are you planning on drinking" only once. (first time)
         }
 
-        drink1_5.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view){
+        drink1_5.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
                 drink1_5.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.green));
                 drink0.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
                 drink6_10.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
@@ -195,8 +207,8 @@ public class Main2Activity extends AppCompatActivity{
             }
         });
 
-        drink0.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view){
+        drink0.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
                 drink0.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.green));
                 drink1_5.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
                 drink6_10.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
@@ -206,8 +218,8 @@ public class Main2Activity extends AppCompatActivity{
             }
         });
 
-        drink6_10.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view){
+        drink6_10.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
                 drink6_10.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.green));
                 drink0.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
                 drink1_5.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
@@ -217,8 +229,8 @@ public class Main2Activity extends AppCompatActivity{
             }
         });
 
-        drink11_15.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view){
+        drink11_15.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
                 drink11_15.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.green));
                 drink0.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
                 drink6_10.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
@@ -228,8 +240,8 @@ public class Main2Activity extends AppCompatActivity{
             }
         });
 
-        drink16plus.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view){
+        drink16plus.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
                 drink16plus.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.green));
                 drink0.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
                 drink6_10.setButtonTintList(ContextCompat.getColorStateList(Main2Activity.this, R.color.purple));
@@ -331,15 +343,15 @@ public class Main2Activity extends AppCompatActivity{
             public void onClick(View view) {
                 drinks_subtract_button.setEnabled(true);
                 plannedDrinksCounter++;
-                drinks_counter.setText(""+ plannedDrinksCounter);
+                drinks_counter.setText("" + plannedDrinksCounter);
             }
         });
 
         drinks_subtract_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 plannedDrinksCounter--;
-                drinks_counter.setText(""+ plannedDrinksCounter);
-                if (plannedDrinksCounter == 0){
+                drinks_counter.setText("" + plannedDrinksCounter);
+                if (plannedDrinksCounter == 0) {
                     drinks_subtract_button.setEnabled(false);
                 }
             }
@@ -416,9 +428,8 @@ public class Main2Activity extends AppCompatActivity{
 
         submitBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-//                if((!whereCheck || !withCheck || !typeCheck || !costCheck || !sizeCheck)){
-                if((!whereCheck || !withCheck || !typeCheck || !costCheck)){
-                    Log.e("check","false");
+                if ((!whereCheck || !withCheck || !typeCheck || !costCheck)) {
+                    Log.e("check", "false");
                     AlertDialog.Builder builder;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         builder = new AlertDialog.Builder(Main2Activity.this, R.style.MyDialogTheme);
@@ -435,8 +446,8 @@ public class Main2Activity extends AppCompatActivity{
                             })
                             .setIcon(R.drawable.white_small_icon)
                             .show();
-                }else{
-                    Log.e("check","true");
+                } else {
+                    Log.e("check", "true");
                     switch (typeOfDrink) {
                         case "wine":
                             sizeOfDrink = wineSize + "";
@@ -448,19 +459,14 @@ public class Main2Activity extends AppCompatActivity{
                             sizeOfDrink = liquorSize + "";
                             break;
                     }
-                    writeTypeToDB(typeOfDrink);
-                    writeSizeToDB(sizeOfDrink);
-                    writeWhoToDB(withWhom);
-                    writeWhereToDB(where);
-                    writePlannedDrinksToDB(plannedDrinksCounter);
-//                    writeNumberOfPeopleToDB(peopleCounter);  // this question is not asked anymore
-                    // get selected radio button from radioGroup
+
                     int selectedId = costGroup.getCheckedRadioButtonId();
-                    // find the radiobutton by returned id
                     RadioButton costButton;
                     costButton = (RadioButton) findViewById(selectedId);
                     drinkCost = costButton.getText().toString();
-                    writeCostToDB(drinkCost);
+
+                    writeMorningSurveyAnswersToDatabase();
+
                     switchToMainActivity(view);
                 }
 
@@ -488,13 +494,13 @@ public class Main2Activity extends AppCompatActivity{
     }
 
     //function for switching back to the main activity after questions are answered
-    public void switchToMainActivity(View view){
+    public void switchToMainActivity(View view) {
         SharedPreferences settings = getSharedPreferences("NumberSwitchesToMain2Activity", 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("switches", 2);
         editor.commit();
 
-        Intent switchToMainActivity = new Intent (Main2Activity.this, MainActivity.class);
+        Intent switchToMainActivity = new Intent(Main2Activity.this, MainActivity.class);
 
         switchToMainActivity.putExtra("coming from start", "come from qs");
         switchToMainActivity.putExtra("initial time", initialTimeStr);
@@ -511,56 +517,74 @@ public class Main2Activity extends AppCompatActivity{
         date = dateFormat.format(currentDate);
         time = timeFormat.format(currentDate);
 
-        Log.e("date: ",""+date);
-        Log.e("time:",""+time);
+        Log.e("date: ", "" + date);
+        Log.e("time:", "" + time);
     }
 
-    public void writeCostToDB(String drink_cost){
-        getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Cost").child("Time: "+time);
-        mRef.setValue(drink_cost);
+    private void writeMorningSurveyAnswersToDatabase() {
+//        writeTypeToDB(typeOfDrink);
+//        writeSizeToDB(sizeOfDrink);
+//        writeWhoToDB(withWhom);
+//        writeWhereToDB(where);
+//        writePlannedDrinksToDB(plannedDrinksCounter);
+//        writeCostToDB(drinkCost);
+        writeMorningAnswersToDB(drinkCost, typeOfDrink, sizeOfDrink, withWhom, where, plannedDrinksCounter);
     }
+
+    private void writeMorningAnswersToDB(String drinkCost, String drinkType, String drinkSize, String drinkWithWhom, String where, int numDrinksPlanned) {
+        getTime();
+        int currentCycle = getCurrentCycle();
+        int episodeCount = getNightCount();
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + currentCycle).child("Episode: " + episodeCount).child("Answers").child("Date: " + date);
+
+        mRef.child("Cost").child("Time: " + time).setValue(drinkCost);
+        mRef.child("Type").child("Time: " + time).setValue(drinkType);
+        mRef.child("Size").child("Time: " + time).setValue(drinkWithWhom);
+        mRef.child("Where").child("Time: " + time).setValue(where);
+        mRef.child("DrinksPlanned").child("Time: " + time).setValue(numDrinksPlanned);
+
+    }
+
+//    public void writeCostToDB(String drink_cost) {
+//        getTime();
+//        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Cost").child("Time: " + time);
+//        mRef.setValue(drink_cost);
+//    }
 
 
     //functions that write all of the answers to questions to the database
-    public void writeTypeToDB(String type) {
-        getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Type").child("Time: "+time);
-        mRef.setValue(type);
-    }
+//    public void writeTypeToDB(String type) {
+//        getTime();
+//        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Type").child("Time: " + time);
+//        mRef.setValue(type);
+//    }
 
-    public void writeSizeToDB(String size) {
-        getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Size").child("Time: "+time);
-        mRef.setValue(size);
-    }
+//    public void writeSizeToDB(String size) {
+//        getTime();
+//        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Size").child("Time: " + time);
+//        mRef.setValue(size);
+//    }
 
-    public void writeWhoToDB(String who) {
-        getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Who").child("Time: "+time);
-        mRef.setValue(who);
-    }
+//    public void writeWhoToDB(String who) {
+//        getTime();
+//        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Who").child("Time: " + time);
+//        mRef.setValue(who);
+//    }
 
-    public void writeWhereToDB (String where) {
-        getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Where").child("Time: "+time);
-        mRef.setValue(where);
-    }
+//    public void writeWhereToDB(String where) {
+//        getTime();
+//        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Where").child("Time: " + time);
+//        mRef.setValue(where);
+//    }
 
-    public void writePlannedDrinksToDB (Integer drinksCounter) {
-        getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("DrinksPlanned").child("Time: "+time);
-        mRef.setValue(drinksCounter);
-    }
-
-    public void writeNumberOfPeopleToDB (Integer peopleCounter) {
-        getTime();
-        DatabaseReference mRef= mDatabase.child("Users").child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("NumberOfPeople").child("Time: "+time);
-        mRef.setValue(peopleCounter);
-    }
+//    public void writePlannedDrinksToDB(Integer drinksCounter) {
+//        getTime();
+//        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("DrinksPlanned").child("Time: " + time);
+//        mRef.setValue(drinksCounter);
+//    }
 
     //stores number of drinks as shared preference variable
-    private void storeNumDrinks (Integer integer) {
+    private void storeNumDrinks(Integer integer) {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.putInt("numDrinks", integer);
@@ -568,9 +592,9 @@ public class Main2Activity extends AppCompatActivity{
     }
 
     //gets number of drinks from shared preferences
-    private Integer getNumDrinks () {
+    private Integer getNumDrinks() {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
-        Integer numberDrinks = mSharedPreferences.getInt("numDrinks",0);
+        Integer numberDrinks = mSharedPreferences.getInt("numDrinks", 0);
         return numberDrinks;
     }
 
@@ -579,5 +603,11 @@ public class Main2Activity extends AppCompatActivity{
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
         return nightCount;
+    }
+
+    private int getCurrentCycle() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        int cycle = mSharedPreferences.getInt("currentCycle", 0);
+        return cycle;
     }
 }
