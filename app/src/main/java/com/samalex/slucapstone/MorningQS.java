@@ -908,7 +908,8 @@ public class MorningQS extends AppCompatActivity {
 
     private void startNextActivity() {
         InterventionMap interventionMap = getInterventionMap();
-        InterventionDisplayData display = interventionMap.get(getCurrentCycle());
+        int previousCycle = getCurrentCycle() - 1; // the cycle about which the morning report is reporting on
+        InterventionDisplayData display = interventionMap.get(previousCycle);
 
         if(display.isShowMorningReport()) {
             goToMorningReportScreen();

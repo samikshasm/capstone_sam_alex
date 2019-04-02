@@ -11,7 +11,7 @@ public class InterventionMap {
     }
 
     public InterventionDisplayData get(int key) {
-        if(this.map.get(key) == null) {
+        if (this.map.get(key) == null) {
             // when the current cycle exceeds NUM_CYCLE value, will reset the key to start a new round.
             int newKey = key % (int) BoozymeterApplication.CYCLE_LENGTH;
             return this.map.get(newKey);
