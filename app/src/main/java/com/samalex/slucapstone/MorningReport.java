@@ -41,6 +41,7 @@ import java.util.Map;
 public class MorningReport extends AppCompatActivity {
 
     //initialize variables
+    private int forCycle = 0;
     private String userIDMA;
     private String startActivity1;
     public static final String startActivity = "main";
@@ -68,6 +69,8 @@ public class MorningReport extends AppCompatActivity {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.morning_report);
+
+        forCycle = getIntent().getIntExtra("this survey is for cycle", 0);
 
         //gets shared preference variables
         SharedPreferences userIDSharedPref = getSharedPreferences("UserID", MODE_PRIVATE);
@@ -157,16 +160,15 @@ public class MorningReport extends AppCompatActivity {
                 List<Integer> colors = new ArrayList<>();
 
                 int nightCount = getNightCount();
-                int previousCycle = getCurrentCycle() - 1;
 
                 // { "Time: 23:43:00": "beer", "Time: 23:42:32": "wine" }
-                Object drinkTypesObject = DatabaseQueryService.getDrinkTypes(ds, userIDMA, nightCount, date, previousCycle);
+                Object drinkTypesObject = DatabaseQueryService.getDrinkTypes(ds, userIDMA, nightCount, date, forCycle);
 
                 // { "Time: 23:43:00": "12", "Time: 23:42:32": "14" }
-                Object drinkSizesObject = DatabaseQueryService.getDrinkSizes(ds, userIDMA, nightCount, date, previousCycle);
+                Object drinkSizesObject = DatabaseQueryService.getDrinkSizes(ds, userIDMA, nightCount, date, forCycle);
 
                 // { "Time: 23:43:00": "$1.00-$5.00.", "Time: 23:42:32": "$16.00+" }
-                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, nightCount, date, previousCycle);
+                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, nightCount, date, forCycle);
 
                 if (drinkTypesObject != null && drinkSizesObject != null && costObject != null) {
 
@@ -298,8 +300,7 @@ public class MorningReport extends AppCompatActivity {
             //checks to make sure the location branch is not null
             String usersKey = ds.getKey().toString();
             if (usersKey.equals("Users")) {
-                int previousCycle = getCurrentCycle() - 1;
-                Object locationObject = DatabaseQueryService.getLocations(ds, userIDMA, getNightCount(), previousCycle);
+                Object locationObject = DatabaseQueryService.getLocations(ds, userIDMA, getNightCount(), forCycle);
                 // { "Time: 2019-03-17 22:42:51": "37.4219983&-122.084"
                 if (locationObject != null) {
                     //gets the specific latitude and longitude string from database
@@ -393,11 +394,5 @@ public class MorningReport extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
         Integer numberDrinks = mSharedPreferences.getInt("numDrinks", 0);
         return numberDrinks;
-    }
-
-    private int getCurrentCycle() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        int cycle = mSharedPreferences.getInt("currentCycle", 0);
-        return cycle;
     }
 }

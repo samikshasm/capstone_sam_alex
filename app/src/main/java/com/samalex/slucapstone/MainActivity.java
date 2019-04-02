@@ -352,6 +352,7 @@ public class MainActivity extends AppCompatActivity {
         AlarmManager morningAlarmMan = (AlarmManager) getSystemService(ALARM_SERVICE);
         alertIntent.putExtra("broadcast Int", NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID + "");
         alertIntent.putExtra("initial time", initialTimeStr);
+        alertIntent.putExtra("this survey is for cycle", getCurrentCycle());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 5, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         morningAlarmMan.set(AlarmManager.RTC_WAKEUP, morningSurveyCalendar.getTimeInMillis(), pendingIntent);
     }
