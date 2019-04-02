@@ -529,7 +529,8 @@ public class Main2Activity extends AppCompatActivity {
 
         mRef.child("Cost").child("Time: " + time).setValue(drinkCost);
         mRef.child("Type").child("Time: " + time).setValue(drinkType);
-        mRef.child("Size").child("Time: " + time).setValue(drinkWithWhom);
+        mRef.child("Size").child("Time: " + time).setValue(drinkSize);
+        mRef.child("Who").child("Time: " + time).setValue(drinkWithWhom);
         mRef.child("Where").child("Time: " + time).setValue(where);
         mRef.child("DrinksPlanned").child("Time: " + time).setValue(numDrinksPlanned);
 

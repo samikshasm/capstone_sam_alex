@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -28,8 +29,10 @@ import com.google.gson.Gson;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by samikshasm on 7/24/17.
@@ -66,18 +69,18 @@ public class MorningQS extends AppCompatActivity {
     private String trauma = "NA";
     private String stress_other = "NA";
     private String stress_value = "NA";
-    private String typeStress = "";
+    private List<String> typeStress = new ArrayList<>();
 
     private String whenStressOccurred = "NA";
     private String drinklastNight = "NA";
     private Integer drinksCounter = 0;
-    private String typesOfDrinks = "";
+    private List<String> typesOfDrinks = new ArrayList<>();
     private String hangover = "NA";
     private String analVaginalSex = "NA";
     private String condom = "NA";
     private String partner = "NA";
     private String drugs = "NA";
-    private String typeDrugs = "";
+    private List<String> typeDrugs = new ArrayList<>();
     public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
 
     private TextView stressRatingSlideBarLabel;
@@ -361,22 +364,24 @@ public class MorningQS extends AppCompatActivity {
                 } else {
 
                     int nightCount = getNightCount();
-                    writeOralToDB(oral, nightCount);
-                    writeLastNightDrink(drinklastNight, nightCount);
-                    writeNumDrinksToDB(drinksCounter, nightCount);
-                    writeTypesDrinksToDB(typesOfDrinks, nightCount);
-                    writeHangoverToDB(hangover, nightCount);
-                    writeDrugsToDB(drugs, nightCount);
-                    writeTypeDrugsToDB(typeDrugs, nightCount);
-                    writeAnalVaginalToDB(analVaginalSex, nightCount);
-                    writeCondomToDB(condom, nightCount);
+                    int previousCycle = getCurrentCycle() - 1;
+
+                    writeOralToDB(oral, nightCount, previousCycle);
+                    writeLastNightDrink(drinklastNight, nightCount, previousCycle);
+                    writeNumDrinksToDB(drinksCounter, nightCount, previousCycle);
+                    writeTypesDrinksToDB(TextUtils.join(",", typesOfDrinks), nightCount, previousCycle);
+                    writeHangoverToDB(hangover, nightCount, previousCycle);
+                    writeDrugsToDB(drugs, nightCount, previousCycle);
+                    writeTypeDrugsToDB(TextUtils.join(",", typeDrugs), nightCount, previousCycle);
+                    writeAnalVaginalToDB(analVaginalSex, nightCount, previousCycle);
+                    writeCondomToDB(condom, nightCount, previousCycle);
 
                     if (analVaginalSex.equals("Yes")) {
                         int partnerSelectedId = partnerGroup.getCheckedRadioButtonId();
                         RadioButton partnerButton;
                         partnerButton = (RadioButton) findViewById(partnerSelectedId);
                         partner = partnerButton.getText().toString();
-                        writePartnerToDB(partner, nightCount);
+                        writePartnerToDB(partner, nightCount, previousCycle);
 
                     }
                     if (stress_event.equals("Yes")) {
@@ -384,12 +389,12 @@ public class MorningQS extends AppCompatActivity {
                         RadioButton stressButton;
                         stressButton = (RadioButton) findViewById(stressSelectedID);
                         whenStressOccurred = stressButton.getText().toString();
-                        writeStressOccurranceToDB(whenStressOccurred, nightCount);
+                        writeStressOccurranceToDB(whenStressOccurred, nightCount, previousCycle);
                     }
 
-                    writeStressEventToDB(stress_event, nightCount);
-                    writeTypeStressToDB(typeStress, nightCount);
-                    writeStressValueToDB(stress_value, nightCount);
+                    writeStressEventToDB(stress_event, nightCount, previousCycle);
+                    writeTypeStressToDB(TextUtils.join(",", typeStress), nightCount, previousCycle);
+                    writeStressValueToDB(stress_value, nightCount, previousCycle);
                     finish();
 
 
@@ -470,7 +475,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (liquor.isChecked() == true) {
                     liquor.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typesOfDrinks += "Liquor ";
+                    typesOfDrinks.add("Liquor");
                 } else {
                     liquor.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -480,7 +485,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (wine.isChecked() == true) {
                     wine.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typesOfDrinks += "Wine ";
+                    typesOfDrinks.add("Wine");
                 } else {
                     wine.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -490,7 +495,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (beer.isChecked() == true) {
                     beer.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typesOfDrinks += "Beer ";
+                    typesOfDrinks.add("Beer");
                 } else {
                     beer.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -558,7 +563,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (ritalin.isChecked() == true) {
                     ritalin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeDrugs += "Ritalin ";
+                    typeDrugs.add("Ritalin");
                 } else {
                     ritalin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -568,7 +573,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (adderall.isChecked() == true) {
                     adderall.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeDrugs += "Adderall ";
+                    typeDrugs.add("Adderall");
                 } else {
                     adderall.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -578,7 +583,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (oxyContin.isChecked() == true) {
                     oxyContin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeDrugs += "OxyContin ";
+                    typeDrugs.add("OxyContin");
                 } else {
                     oxyContin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -588,7 +593,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (vicodin.isChecked() == true) {
                     vicodin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeDrugs += "Vicodin ";
+                    typeDrugs.add("Vicodin");
                 } else {
                     vicodin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -598,7 +603,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (percocet.isChecked() == true) {
                     percocet.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeDrugs += "Percocet ";
+                    typeDrugs.add("Percocet");
                 } else {
                     percocet.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -608,7 +613,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (otherPrescriptionOpioid.isChecked() == true) {
                     otherPrescriptionOpioid.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeDrugs += "OtherPrescripOpioid ";
+                    typeDrugs.add("OtherPrescripOpioid");
                 } else {
                     otherPrescriptionOpioid.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -618,7 +623,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (xanax.isChecked() == true) {
                     xanax.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeDrugs += "Xanax ";
+                    typeDrugs.add("Xanax");
                 } else {
                     xanax.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -628,7 +633,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (valium.isChecked() == true) {
                     valium.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeDrugs += "Valium ";
+                    typeDrugs.add("Valium");
                 } else {
                     valium.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -638,7 +643,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (otherBenzo.isChecked() == true) {
                     otherBenzo.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeDrugs += "OtherBenzo ";
+                    typeDrugs.add("OtherBenzo");
                 } else {
                     otherBenzo.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -648,7 +653,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (marijuana.isChecked() == true) {
                     marijuana.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeDrugs += "Marijuana ";
+                    typeDrugs.add("Marijuana");
                 } else {
                     marijuana.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -658,7 +663,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (heroin.isChecked() == true) {
                     heroin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeDrugs += "Heroin ";
+                    typeDrugs.add("Heroin");
                 } else {
                     heroin.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -668,7 +673,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (mdma.isChecked() == true) {
                     mdma.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeDrugs += "MDMA/Ecstasy ";
+                    typeDrugs.add("MDMA/Ecstasy");
                 } else {
                     mdma.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -678,7 +683,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (meth.isChecked() == true) {
                     meth.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeDrugs += "Methamphetamine ";
+                    typeDrugs.add("Methamphetamine");
                 } else {
                     meth.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -688,7 +693,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (otherDrug.isChecked() == true) {
                     otherDrug.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeDrugs += "OtherDrug ";
+                    typeDrugs.add("OtherDrug");
                 } else {
                     otherDrug.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -802,7 +807,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (interpersonal_check.isChecked() == true) {
                     interpersonal_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeStress += "Interpersonal ";
+                    typeStress.add("Interpersonal");
                 } else {
                     interpersonal_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -813,7 +818,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (financial_check.isChecked() == true) {
                     financial_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeStress += "Financial ";
+                    typeStress.add("Financial");
                 } else {
                     financial_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -824,7 +829,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (work_check.isChecked() == true) {
                     work_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeStress += "Work ";
+                    typeStress.add("Work");
                 } else {
                     work_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -835,7 +840,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (health_check.isChecked() == true) {
                     health_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeStress += "Health ";
+                    typeStress.add("Health");
                 } else {
                     health_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -846,7 +851,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (trauma_check.isChecked() == true) {
                     trauma_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeStress += "Trauma ";
+                    typeStress.add("Trauma");
                 } else {
                     trauma_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -857,7 +862,7 @@ public class MorningQS extends AppCompatActivity {
             public void onClick(View view) {
                 if (other_check.isChecked() == true) {
                     other_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.pink));
-                    typeStress += "Other ";
+                    typeStress.add("Other");
                 } else {
                     other_check.setTextColor(ContextCompat.getColor(MorningQS.this, R.color.white));
                 }
@@ -979,199 +984,231 @@ public class MorningQS extends AppCompatActivity {
         time = dateFormat.format(currentDate);
     }
 
-    public void writeStressValueToDB(String value, int nightCount) {
+    public void writeStressValueToDB(String value, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("12StressValue");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("12StressValue");
         mRef.setValue(value);
     }
 
-    public void writeStressEventToDB(String stress_event, int nightCount) {
+    public void writeStressEventToDB(String stress_event, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("10StressEvent");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("10StressEvent");
         mRef.setValue(stress_event);
     }
 
-    public void writeStressOccurranceToDB(String whenStressOccurred, int nightCount) {
+    public void writeStressOccurranceToDB(String whenStressOccurred, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("13StressTime");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("13StressTime");
         mRef.setValue(whenStressOccurred);
     }
 
-    public void writeTypeStressToDB(String typeStress, int nightCount) {
+    public void writeTypeStressToDB(String typeStress, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("11TypeStress");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("11TypeStress");
         mRef.setValue(typeStress);
     }
 
-    public void writeInterpersonal(String interpersonal, int nightCount) {
+    public void writeInterpersonal(String interpersonal, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("Interpersonal");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("Interpersonal");
         mRef.setValue(interpersonal);
     }
 
-    public void writeWorkToDB(String work, int nightCount) {
+    public void writeWorkToDB(String work, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("Work");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("Work");
         mRef.setValue(work);
     }
 
-    public void writeFinancialToDB(String financial, int nightCount) {
+    public void writeFinancialToDB(String financial, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("Financial");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("Financial");
         mRef.setValue(financial);
     }
 
-    public void writeHealthToDB(String health, int nightCount) {
+    public void writeHealthToDB(String health, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("Health");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("Health");
         mRef.setValue(health);
     }
 
-    public void writeTraumaToDB(String trauma, int nightCount) {
+    public void writeTraumaToDB(String trauma, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("Trauma");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("Trauma");
         mRef.setValue(trauma);
     }
 
-    public void writeStressOtherToDB(String stress_other, int nightCount) {
+    public void writeStressOtherToDB(String stress_other, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("StressOther");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("StressOther");
         mRef.setValue(stress_other);
     }
 
-    public void writeCostTotaltoDB(String drink_cost, int nightCount) {
+    public void writeCostTotaltoDB(String drink_cost, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("Cost_Total");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("Cost_Total");
         mRef.setValue(drink_cost);
 
     }
 
     //functions to write all of the answers to the database
-    public void writeNumPartners(int number, int nightCount) {
+    public void writeNumPartners(int number, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("numPartners");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("numPartners");
         mRef.setValue(number);
     }
 
-    public void writeMonoPartner(String monoPartner, int nightCount) {
+    public void writeMonoPartner(String monoPartner, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("MonogamousPartner");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("MonogamousPartner");
         mRef.setValue(monoPartner);
     }
 
-    public void writeFriendPartner(String friendPartner, int nightCount) {
+    public void writeFriendPartner(String friendPartner, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("FriendPartner");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("FriendPartner");
         mRef.setValue(friendPartner);
     }
 
-    public void writeNewPartner(String newPartner, int nightCount) {
+    public void writeNewPartner(String newPartner, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("NewPartner");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("NewPartner");
         mRef.setValue(newPartner);
     }
 
-    public void writeNAPartner(String naPartner, int nightCount) {
+    public void writeNAPartner(String naPartner, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("NAPartner");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("NAPartner");
         mRef.setValue(naPartner);
     }
 
-    public void writeOralToDB(String oral, int nightCount) {
+    public void writeOralToDB(String oral, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("oral");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("oral");
         mRef.setValue(oral);
     }
 
-    public void writeLastNightDrink(String drinklastNight, int nightCount) {
+    public void writeLastNightDrink(String drinklastNight, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("1EpisodeLastNight");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("1EpisodeLastNight");
         mRef.setValue(drinklastNight);
     }
 
-    public void writeNumDrinksToDB(int drinksCounter, int nightCount) {
+    public void writeNumDrinksToDB(int drinksCounter, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("2NumberOfDrinks");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("2NumberOfDrinks");
         mRef.setValue(drinksCounter);
     }
 
-    public void writeTypesDrinksToDB(String typesOfDrinks, int nightCount) {
+    public void writeTypesDrinksToDB(String typesOfDrinks, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("3TypesOfDrinks");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("3TypesOfDrinks");
         mRef.setValue(typesOfDrinks);
     }
 
 
-    public void writeHangoverToDB(String hangover, int nightCount) {
+    public void writeHangoverToDB(String hangover, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("4Hangover");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("4Hangover");
         mRef.setValue(hangover);
     }
 
-    public void writeDrugsToDB(String drugs, int nightCount) {
+    public void writeDrugsToDB(String drugs, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("5Drugs");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("5Drugs");
         mRef.setValue(drugs);
     }
 
-    public void writeTypeDrugsToDB(String typeDrugs, int nightCount) {
+    public void writeTypeDrugsToDB(String typeDrugs, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("6TypeDrugs");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("6TypeDrugs");
         mRef.setValue(typeDrugs);
     }
 
-    public void writeAnalVaginalToDB(String analVaginalSex, int nightCount) {
+    public void writeAnalVaginalToDB(String analVaginalSex, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("7AnalVaginalSex");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("7AnalVaginalSex");
         mRef.setValue(analVaginalSex);
     }
 
-    public void writeCondomToDB(String condom, int nightCount) {
+    public void writeCondomToDB(String condom, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("8UsedCondom");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("8UsedCondom");
         mRef.setValue(condom);
     }
 
 
-    public void writePartnerToDB(String partner, int nightCount) {
+    public void writePartnerToDB(String partner, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("9PartnerType");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("9PartnerType");
         mRef.setValue(partner);
     }
 
-    public void writeVaginalToDB(String vaginal, int nightCount) {
+    public void writeVaginalToDB(String vaginal, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("vaginal");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("vaginal");
         mRef.setValue(vaginal);
     }
 
-    public void writeAnalToDB(String anal, int nightCount) {
+    public void writeAnalToDB(String anal, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("anal");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("anal");
         mRef.setValue(anal);
     }
 
-    public void writeVaginalCondomToDB(String vaginalCondom, int nightCount) {
+    public void writeVaginalCondomToDB(String vaginalCondom, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("vaginalCondom");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("vaginalCondom");
         mRef.setValue(vaginalCondom);
     }
 
-    public void writeVaginalConsentToDB(String vaginalConsent, int nightCount) {
+    public void writeVaginalConsentToDB(String vaginalConsent, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("vaginalConsent");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("vaginalConsent");
         mRef.setValue(vaginalConsent);
     }
 
-    public void writeAnalCondomToDB(String analCondom, int nightCount) {
+    public void writeAnalCondomToDB(String analCondom, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("analCondom");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("analCondom");
         mRef.setValue(analCondom);
     }
 
-    public void writeAnalConsentToDB(String analConsent, int nightCount) {
+    public void writeAnalConsentToDB(String analConsent, int nightCount, int cycle) {
         getTime();
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("MorningAnswers").child(time).child("analConsent");
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle).child("Episode: " + nightCount)
+                .child("MorningAnswers").child(time).child("analConsent");
         mRef.setValue(analConsent);
     }
 

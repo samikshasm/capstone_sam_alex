@@ -451,15 +451,16 @@ public class MainActivity extends AppCompatActivity {
                 List<Integer> colors = new ArrayList<>();
 
                 int nightCount = getNightCount();
+                int currentCycle = getCurrentCycle();
 
                 // { "Time: 23:43:00": "beer", "Time: 23:42:32": "wine" }
-                Object drinkTypesObject = DatabaseQueryService.getDrinkTypes(ds, userIDMA, nightCount, date);
+                Object drinkTypesObject = DatabaseQueryService.getDrinkTypes(ds, userIDMA, nightCount, date, currentCycle);
 
                 // { "Time: 23:43:00": "12", "Time: 23:42:32": "14" }
-                Object drinkSizesObject = DatabaseQueryService.getDrinkSizes(ds, userIDMA, nightCount, date);
+                Object drinkSizesObject = DatabaseQueryService.getDrinkSizes(ds, userIDMA, nightCount, date, currentCycle);
 
                 // { "Time: 23:43:00": "$1.00-$5.00.", "Time: 23:42:32": "$16.00+" }
-                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, nightCount, date);
+                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, nightCount, date, currentCycle);
 
                 if (drinkTypesObject != null && drinkSizesObject != null && costObject != null) {
 

@@ -157,15 +157,16 @@ public class MorningReport extends AppCompatActivity {
                 List<Integer> colors = new ArrayList<>();
 
                 int nightCount = getNightCount();
+                int previousCycle = getCurrentCycle() - 1;
 
                 // { "Time: 23:43:00": "beer", "Time: 23:42:32": "wine" }
-                Object drinkTypesObject = DatabaseQueryService.getDrinkTypes(ds, userIDMA, nightCount, date);
+                Object drinkTypesObject = DatabaseQueryService.getDrinkTypes(ds, userIDMA, nightCount, date, previousCycle);
 
                 // { "Time: 23:43:00": "12", "Time: 23:42:32": "14" }
-                Object drinkSizesObject = DatabaseQueryService.getDrinkSizes(ds, userIDMA, nightCount, date);
+                Object drinkSizesObject = DatabaseQueryService.getDrinkSizes(ds, userIDMA, nightCount, date, previousCycle);
 
                 // { "Time: 23:43:00": "$1.00-$5.00.", "Time: 23:42:32": "$16.00+" }
-                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, nightCount, date);
+                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, nightCount, date, previousCycle);
 
                 if (drinkTypesObject != null && drinkSizesObject != null && costObject != null) {
 
@@ -297,7 +298,8 @@ public class MorningReport extends AppCompatActivity {
             //checks to make sure the location branch is not null
             String usersKey = ds.getKey().toString();
             if (usersKey.equals("Users")) {
-                Object locationObject = DatabaseQueryService.getLocations(ds, userIDMA, getNightCount());
+                int previousCycle = getCurrentCycle() - 1;
+                Object locationObject = DatabaseQueryService.getLocations(ds, userIDMA, getNightCount(), previousCycle);
                 // { "Time: 2019-03-17 22:42:51": "37.4219983&-122.084"
                 if (locationObject != null) {
                     //gets the specific latitude and longitude string from database
@@ -393,4 +395,9 @@ public class MorningReport extends AppCompatActivity {
         return numberDrinks;
     }
 
+    private int getCurrentCycle() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        int cycle = mSharedPreferences.getInt("currentCycle", 0);
+        return cycle;
+    }
 }
