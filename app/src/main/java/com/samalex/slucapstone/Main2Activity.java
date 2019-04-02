@@ -465,7 +465,7 @@ public class Main2Activity extends AppCompatActivity {
                     costButton = (RadioButton) findViewById(selectedId);
                     drinkCost = costButton.getText().toString();
 
-                    writeMorningSurveyAnswersToDatabase();
+                    writeMorningAnswersToDB(drinkCost, typeOfDrink, sizeOfDrink, withWhom, where, plannedDrinksCounter);
 
                     switchToMainActivity(view);
                 }
@@ -521,16 +521,6 @@ public class Main2Activity extends AppCompatActivity {
         Log.e("time:", "" + time);
     }
 
-    private void writeMorningSurveyAnswersToDatabase() {
-//        writeTypeToDB(typeOfDrink);
-//        writeSizeToDB(sizeOfDrink);
-//        writeWhoToDB(withWhom);
-//        writeWhereToDB(where);
-//        writePlannedDrinksToDB(plannedDrinksCounter);
-//        writeCostToDB(drinkCost);
-        writeMorningAnswersToDB(drinkCost, typeOfDrink, sizeOfDrink, withWhom, where, plannedDrinksCounter);
-    }
-
     private void writeMorningAnswersToDB(String drinkCost, String drinkType, String drinkSize, String drinkWithWhom, String where, int numDrinksPlanned) {
         getTime();
         int currentCycle = getCurrentCycle();
@@ -544,44 +534,6 @@ public class Main2Activity extends AppCompatActivity {
         mRef.child("DrinksPlanned").child("Time: " + time).setValue(numDrinksPlanned);
 
     }
-
-//    public void writeCostToDB(String drink_cost) {
-//        getTime();
-//        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Cost").child("Time: " + time);
-//        mRef.setValue(drink_cost);
-//    }
-
-
-    //functions that write all of the answers to questions to the database
-//    public void writeTypeToDB(String type) {
-//        getTime();
-//        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Type").child("Time: " + time);
-//        mRef.setValue(type);
-//    }
-
-//    public void writeSizeToDB(String size) {
-//        getTime();
-//        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Size").child("Time: " + time);
-//        mRef.setValue(size);
-//    }
-
-//    public void writeWhoToDB(String who) {
-//        getTime();
-//        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Who").child("Time: " + time);
-//        mRef.setValue(who);
-//    }
-
-//    public void writeWhereToDB(String where) {
-//        getTime();
-//        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Where").child("Time: " + time);
-//        mRef.setValue(where);
-//    }
-
-//    public void writePlannedDrinksToDB(Integer drinksCounter) {
-//        getTime();
-//        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("DrinksPlanned").child("Time: " + time);
-//        mRef.setValue(drinksCounter);
-//    }
 
     //stores number of drinks as shared preference variable
     private void storeNumDrinks(Integer integer) {
