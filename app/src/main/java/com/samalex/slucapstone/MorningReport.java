@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +29,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,7 +38,7 @@ import java.util.Map;
 
 
 //utilized MPAndroidChart library to create pie chart visual
-public class MorningReport extends AppCompatActivity{
+public class MorningReport extends AppCompatActivity {
 
     //initialize variables
     private String userIDMA;
@@ -56,7 +56,6 @@ public class MorningReport extends AppCompatActivity{
     private Integer numLocation;
     private TextView display_location;
     private TextView display_numDrinks;
-    private Integer numDrinks;
     private PieChart pieChart;
     private float[] data = {30.0f, 30.0f, 40.0f};
     private String[] drinkNames = {"beer", "liquor", "wine"};
@@ -122,7 +121,7 @@ public class MorningReport extends AppCompatActivity{
                 startActivity1 = "start";
                 storeScreen(startActivity1);
                 storeNumDrinks(0);
-                totalCalConsumed =0;
+                totalCalConsumed = 0;
                 Intent goToStart = new Intent(MorningReport.this, StartActivity.class);
                 goToStart.putExtra("Start Activity", startActivity);
                 startActivity(goToStart);
@@ -149,221 +148,157 @@ public class MorningReport extends AppCompatActivity{
     //function to analyze data received from snapshot
     private void getData(DataSnapshot dataSnapshot) {
 
-        int nightCount = getNightCount();
-
         //iterates through the dataSnapshot
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             String usersKey = ds.getKey().toString();
-            if(usersKey.equals("Users")){
-                //gets information from database
-                //makes sure that there is data at the given branch
-                Object typeObject = ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Type").getValue();
-                // Log.e("TypeObject",""+ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Type").getValue());
-                if (typeObject != null){
-                    //gets the specific string needed to analyze
-                    String typeDrink = typeObject.toString();
+            if (usersKey.equals("Users")) {
+                List<PieEntry> yEntries = new ArrayList<>();
+                List<String> xEntries = new ArrayList<>();
+                List<Integer> colors = new ArrayList<>();
 
-                    String typeDrinkSub = typeDrink.substring(1, typeDrink.length()-1);
-                    String[] testType = typeDrinkSub.split(",");
-                    int numDrinksFromDB = testType.length;
-                    typeList = new String[numDrinksFromDB];
-                    for (int i = 0; i< numDrinksFromDB; i++) {
-                        String[] tempList = testType[i].split("=");
-                        typeList[i] = tempList[1];
-                    }
+                int nightCount = getNightCount();
 
-                    Integer numWine = 0;
-                    Integer numLiquor = 0;
-                    Integer numBeer = 0;
-                    float percentWine = 0;
-                    float percentLiquor = 0;
-                    float percentBeer = 0;
+                // { "Time: 23:43:00": "beer", "Time: 23:42:32": "wine" }
+                Object drinkTypesObject = DatabaseQueryService.getDrinkTypes(ds, userIDMA, nightCount, date);
 
-                    for (int i = 0; i < numDrinksFromDB; i++ ) {
+                // { "Time: 23:43:00": "12", "Time: 23:42:32": "14" }
+                Object drinkSizesObject = DatabaseQueryService.getDrinkSizes(ds, userIDMA, nightCount, date);
 
-                        String type = typeList[i];
+                // { "Time: 23:43:00": "$1.00-$5.00.", "Time: 23:42:32": "$16.00+" }
+                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, nightCount, date);
 
-                        if (type.equals("wine")) {
-                            numWine++;
-                        }
+                if (drinkTypesObject != null && drinkSizesObject != null && costObject != null) {
 
-                        else if (type.equals("liquor")) {
-                            numLiquor++;
-                        }
+                    // calculate numbers of and types of drink proportion consumed for rendering a pie chart
+                    Map<String, String> drinkTypeseMap = (Map<String, String>) drinkTypesObject;
+                    int numDrinks = drinkTypeseMap.size();
+                    Map<String, Float> drinkPercentages = CalculationUtil.getDrinkPercentages(drinkTypeseMap);
 
-                        else if (type.equals("beer")) {
-                            numBeer++;
-                        }
-                    }
+                    display_numDrinks.setText("" + numDrinks);
+                    display_calories.setText("" + totalCalConsumed);
 
-                    //gets number of drinks and gets percent of each type
-                    int numberDrinks = numBeer+numWine+numLiquor;
-                    percentBeer = ((float) numBeer/ (float) numberDrinks)*100;
-                    percentLiquor = ((float) numLiquor/ (float) numberDrinks)*100;
-                    percentWine = ((float) numWine/ (float) numberDrinks)*100;
-
-                    //sets the display drinks textview
-                    display_numDrinks.setText(""+numDrinksFromDB);
-
-                    //sets the display calories textview
-                    display_calories.setText(""+totalCalConsumed);
-
-                    //initializes arrays
-                    ArrayList<PieEntry> yEntrys = new ArrayList<>();
-                    ArrayList<String> xEntrys = new ArrayList<>();
-                    ArrayList<Integer> colors = new ArrayList<>();
-
-                    //checks to see if at least one of the type was drank
-                    //adds percent to data list and adds color to color list
-                    if(percentBeer > 0){
-                        yEntrys.add(new PieEntry(percentBeer, 0));
-                        colors.add(ContextCompat.getColor(MorningReport.this, R.color.pink));
-                    }
-                    if(percentLiquor > 0){
-                        yEntrys.add(new PieEntry(percentLiquor, 1));
-                        colors.add(ContextCompat.getColor(MorningReport.this, R.color.orange));
-                    }
-                    if(percentWine > 0){
-                        yEntrys.add(new PieEntry(percentWine, 2));
-                        colors.add(ContextCompat.getColor(MorningReport.this, R.color.green));
-                    }
+                    drawPieChart(yEntries, xEntries, colors, drinkPercentages.get("beer"), drinkPercentages.get("liquor"), drinkPercentages.get("wine"));
 
 
-                    for (int i = 0; i < drinkNames.length; i++){
-                        xEntrys.add(drinkNames[i]);
-                    }
-
-                    //creates pieData set that will populate pie chart
-                    PieDataSet pieDataSet = new PieDataSet(yEntrys, "");
-                    pieDataSet.setSliceSpace(2);
-                    pieDataSet.setValueTextSize(20);
-                    pieDataSet.setValueTextColor(R.color.white);
-                    pieDataSet.setValueFormatter(new PercentFormatter());
-
-                    pieDataSet.setColors(colors);
-
-                    //draws pie chart
-                    PieData pieData = new PieData(pieDataSet);
-                    pieChart.setData(pieData);
-                    pieChart.invalidate();
-
-                }else{
-                    //if no data was entered from user, sets default value
-                    display_numDrinks.setText("0");
-                    //populates an empty pie chart if size of drink is null
-                    ArrayList<PieEntry> yEntrys = new ArrayList<>();
-                    ArrayList<String> xEntrys = new ArrayList<>();
-                    ArrayList<Integer> colors = new ArrayList<>();
-
-                    float percentBeer = 0;
-                    yEntrys.add(new PieEntry(percentBeer, 0));
-                    colors.add(ContextCompat.getColor(MorningReport.this, R.color.pink));
-                    float percentLiquor = 0;
-                    yEntrys.add(new PieEntry(percentLiquor, 1));
-                    colors.add(ContextCompat.getColor(MorningReport.this, R.color.orange));
-                    float percentWine = 0;
-                    yEntrys.add(new PieEntry(percentWine, 2));
-                    colors.add(ContextCompat.getColor(MorningReport.this, R.color.green));
-
-
-                    for (int i = 0; i < drinkNames.length; i++){
-                        xEntrys.add(drinkNames[i]);
-                    }
-                    PieDataSet pieDataSet = new PieDataSet(yEntrys, "");
-                    pieDataSet.setSliceSpace(2);
-                    pieDataSet.setValueTextSize(20);
-                    pieDataSet.setValueTextColor(R.color.white);
-                    pieDataSet.setValueFormatter(new PercentFormatter());
-
-                    pieDataSet.setColors(colors);
-
-                    PieData pieData = new PieData(pieDataSet);
-                    pieChart.setData(pieData);
-                    pieChart.invalidate();
-                }
-
-                //checks to make sure data was actually entered
-                Object sizeObject = ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Size").getValue();
-                if (sizeObject != null){
-                    //splits the string properly to get the necessary data
-                    String sizeDrink = sizeObject.toString();
-                    Log.e("sizeDrink",sizeDrink);
-                    String sizeDrinkSub = sizeDrink.substring(1, sizeDrink.length()-1);
-                    Log.e("sizeDrnkSub", sizeDrinkSub);
-                    String[] test = sizeDrinkSub.split(",");
-                    Log.e("test", ""+test);
-                    sizeList = new String[test.length];
-                    for (int i =0; i<test.length; i++) {
-                        String[] tempList = test[i].split("=");
-                        sizeList[i] = tempList[1];
-                    }
-
-                    //initializes default values
+                    // calculate amount and calories consumed
                     totalCalConsumed = 0;
-                    Integer totalOuncesConsumed = 0;
+                    int totalOuncesConsumed = 0;
+                    Map<String, String> drinkSizeseMap = (Map<String, String>) drinkSizesObject;
+                    for (Map.Entry<String, String> entry : drinkSizeseMap.entrySet()) {
 
-                    for (int i = 0; i < test.length; i++ ) {
+                        String drinkSizeStr = entry.getValue();
+                        String date = entry.getKey();
+                        int sizeOfDrink = Integer.parseInt(drinkSizeStr);
 
-                        String type = typeList[i];
-                        String size = sizeList[i];
+                        totalOuncesConsumed += sizeOfDrink;
 
-                        if (!sizeList[i].equals("Shot")) {
-                            Integer sizeOfDrink = Integer.parseInt(sizeList[i]);
-                            totalOuncesConsumed = totalOuncesConsumed + sizeOfDrink;
-                        }
+                        String drinkType = drinkTypeseMap.get(date);
+                        int oneServingSize = CalculationUtil.DRINK_SERVING_SIZE_MAP.get(drinkType);
 
-                        else {
-                            totalOuncesConsumed = totalOuncesConsumed + 1;
-                        }
-
-                        int oneServingSize = 1;
-                        int caloriePerOneServing = 100;
-
-                        if (type.equals("wine")) {
-                            oneServingSize = 4;
-                        }
-                        else if (type.equals("beer")) {
-                            oneServingSize = 12;
-                        }
-                        else if (type.equals("liquor")) {
-                            oneServingSize = 1;
-                        }
-
-                        totalCalConsumed += Integer.parseInt(size) * caloriePerOneServing / oneServingSize;
+                        totalCalConsumed += sizeOfDrink * CalculationUtil.CALORIES_PER_SERVING / oneServingSize;
                     }
 
                     double totalLitersConsumed = (totalOuncesConsumed * 0.03);
-                    litersDrank.setText (String.format("%.2f", totalLitersConsumed));
+                    litersDrank.setText(String.format("%.2f", totalLitersConsumed));
 
                     //sets the display calories textview
-                    display_calories.setText(""+totalCalConsumed);
+                    display_calories.setText("" + totalCalConsumed);
 
-                }else{
-                    //set values to null if size drink is null
-                    litersDrank.setText("0");
-                    display_calories.setText("0");
-                }
 
-                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, getNightCount(), date);
-                if (costObject != null) {
+
+                    // calculate average cost
                     Map<String, String> costJSON = (Map<String, String>) costObject;
                     double avgCost = CalculationUtil.getAverageCost(costJSON);
                     TextView cost_txt = (TextView) findViewById(R.id.costText);
                     cost_txt.setText(String.format("%.2f", avgCost));
+
+                } else { //if no data was entered from user
+
+                    // sets default value
+                    display_numDrinks.setText("0");
+
+                    //set values to null if size drink is null
+                    litersDrank.setText("0");
+                    display_calories.setText("0");
+
+                    // draw empty pie chart
+                    drawPieChart(yEntries, xEntries, colors);
                 }
             }
         }
     }
 
+    private void drawPieChart(List<PieEntry> yEntries, List<String> xEntries, List<Integer> colors) {
+        float percentBeer = 0;
+        yEntries.add(new PieEntry(percentBeer, 0));
+        colors.add(ContextCompat.getColor(MorningReport.this, R.color.pink));
+        float percentLiquor = 0;
+        yEntries.add(new PieEntry(percentLiquor, 1));
+        colors.add(ContextCompat.getColor(MorningReport.this, R.color.orange));
+        float percentWine = 0;
+        yEntries.add(new PieEntry(percentWine, 2));
+        colors.add(ContextCompat.getColor(MorningReport.this, R.color.green));
+
+
+        for (int i = 0; i < drinkNames.length; i++) {
+            xEntries.add(drinkNames[i]);
+        }
+        PieDataSet pieDataSet = new PieDataSet(yEntries, "");
+        pieDataSet.setSliceSpace(2);
+        pieDataSet.setValueTextSize(20);
+        pieDataSet.setValueTextColor(R.color.white);
+        pieDataSet.setValueFormatter(new PercentFormatter());
+
+        pieDataSet.setColors(colors);
+
+        PieData pieData = new PieData(pieDataSet);
+        pieChart.setData(pieData);
+        pieChart.invalidate();
+    }
+
+    private void drawPieChart(List<PieEntry> yEntries, List<String> xEntries, List<Integer> colors, float percentBeer, float percentLiquor, float percentWine) {
+        if (percentBeer > 0) {
+            yEntries.add(new PieEntry(percentBeer, 0));
+            colors.add(ContextCompat.getColor(MorningReport.this, R.color.pink));
+        }
+        if (percentLiquor > 0) {
+            yEntries.add(new PieEntry(percentLiquor, 1));
+            colors.add(ContextCompat.getColor(MorningReport.this, R.color.orange));
+        }
+        if (percentWine > 0) {
+            yEntries.add(new PieEntry(percentWine, 2));
+            colors.add(ContextCompat.getColor(MorningReport.this, R.color.green));
+        }
+
+
+        for (int i = 0; i < drinkNames.length; i++) {
+            xEntries.add(drinkNames[i]);
+        }
+
+        //creates pieData set that will populate pie chart
+        PieDataSet pieDataSet = new PieDataSet(yEntries, "");
+        pieDataSet.setSliceSpace(2);
+        pieDataSet.setValueTextSize(20);
+        pieDataSet.setValueTextColor(R.color.white);
+        pieDataSet.setValueFormatter(new PercentFormatter());
+
+        pieDataSet.setColors(colors);
+
+        //draws pie chart
+        PieData pieData = new PieData(pieDataSet);
+        pieChart.setData(pieData);
+        pieChart.invalidate();
+    }
+
 
     //function to get number of locations visited
-    private void getDistance(DataSnapshot dataSnapshot){
+    private void getDistance(DataSnapshot dataSnapshot) {
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             //checks to make sure the location branch is not null
             String usersKey = ds.getKey().toString();
-            if(usersKey.equals("Users")){
-                Object locationObject = ds.child("UID: "+userIDMA).child("Night Count: " + getNightCount()).child("Location").getValue();
-                if (locationObject != null){
+            if (usersKey.equals("Users")) {
+                Object locationObject = ds.child("UID: " + userIDMA).child("Night Count: " + getNightCount()).child("Location").getValue();
+                if (locationObject != null) {
                     //gets the specific latitude and longitude string from database
                     String location = locationObject.toString();
                     String locationSub = location.substring(1, location.length() - 1);
@@ -377,7 +312,7 @@ public class MorningReport extends AppCompatActivity{
                         locationList[i] = tempList[1];
                     }
 
-                    for (int i =0; i<testType.length;i++) {
+                    for (int i = 0; i < testType.length; i++) {
                         String[] tempList = locationList[i].split("&");
                         latitudeList[i] = tempList[0];
                         longitudeList[i] = tempList[1];
@@ -387,7 +322,7 @@ public class MorningReport extends AppCompatActivity{
                     numLocation = 1;
 
                     //gets the difference in location between two latitude and longitude points
-                    for (int i =0; i<testType.length-1; i++) {
+                    for (int i = 0; i < testType.length - 1; i++) {
                         float lat1 = Float.parseFloat(latitudeList[i]);
                         float lon1 = Float.parseFloat(longitudeList[i]);
                         float lat2 = Float.parseFloat(latitudeList[i + 1]);
@@ -410,7 +345,7 @@ public class MorningReport extends AppCompatActivity{
                         //sets the display location textview to number of locations visited
                         display_location.setText("" + numLocation);
                     }
-                }else{
+                } else {
                     //if no locations were recorded, sets textview to 0
                     display_location.setText("0");
                 }
@@ -426,6 +361,7 @@ public class MorningReport extends AppCompatActivity{
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         date = dateFormat.format(currentDate);
     }
+
     //function to store the screen
     private void storeScreen(String string) {
         SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
@@ -433,23 +369,26 @@ public class MorningReport extends AppCompatActivity{
         mEditor.putString("currentScreen", string);
         mEditor.apply();
     }
+
     //function to store the number of drinks
-    private void storeNumDrinks (Integer integer) {
+    private void storeNumDrinks(Integer integer) {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.putInt("numDrinks", integer);
         mEditor.apply();
     }
+
     //gets night count from shared preferences
     private Integer getNightCount() {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
         return nightCount;
     }
+
     //gets number of drinks from shared preferences
-    private Integer getNumDrinks () {
+    private Integer getNumDrinks() {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
-        Integer numberDrinks = mSharedPreferences.getInt("numDrinks",0);
+        Integer numberDrinks = mSharedPreferences.getInt("numDrinks", 0);
         return numberDrinks;
     }
 

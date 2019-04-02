@@ -14,4 +14,22 @@ public class DatabaseQueryService {
                 .child("Cost").getValue();
         return costObject;
     }
+
+    public static Object getDrinkTypes(DataSnapshot dataSnapshot, String username, int nightCount, String date) {
+        Object drinkObject = dataSnapshot.child("UID: " + username)
+                .child("Night Count: " + nightCount)
+                .child("Answers")
+                .child("Date: " + date)
+                .child("Type").getValue();
+        return drinkObject;
+    }
+
+    public static Object getDrinkSizes(DataSnapshot ds, String username, Integer nightCount, String date) {
+        Object sizeObject = ds.child("UID: " + username)
+                .child("Night Count: " + nightCount)
+                .child("Answers")
+                .child("Date: " + date)
+                .child("Size").getValue();
+        return sizeObject;
+    }
 }

@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.data.PieEntry;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,8 +30,10 @@ import com.google.gson.Gson;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 
@@ -437,126 +440,79 @@ public class MainActivity extends AppCompatActivity {
         return nightCount;
     }
 
-
     private void getData(DataSnapshot dataSnapshot) {
 
         //iterates through the dataSnapshot
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             String usersKey = ds.getKey().toString();
             if (usersKey.equals("Users")) {
-                //gets information from database
-                //makes sure that there is data at the given branch
-                Object typeObject = ds.child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Type").getValue();
-                // Log.e("TypeObject",""+ds.child("UID: "+userIDMA).child("Night Count: "+nightCount).child("Answers").child("Date: "+date).child("Type").getValue());
-                if (typeObject != null) {
-                    //gets the specific string needed to analyze
-                    String typeDrink = typeObject.toString();
+                List<PieEntry> yEntries = new ArrayList<>();
+                List<String> xEntries = new ArrayList<>();
+                List<Integer> colors = new ArrayList<>();
 
-                    String typeDrinkSub = typeDrink.substring(1, typeDrink.length() - 1);
-                    String[] testType = typeDrinkSub.split(",");
-                    typeList = new String[testType.length];
-                    for (int i = 0; i < testType.length; i++) {
-                        String[] tempList = testType[i].split("=");
-                        typeList[i] = tempList[1];
-                    }
-//                Log.e("testing", ""+typeList);
+                int nightCount = getNightCount();
 
-                    Integer numWine = 0;
-                    Integer numLiquor = 0;
-                    Integer numBeer = 0;
+                // { "Time: 23:43:00": "beer", "Time: 23:42:32": "wine" }
+                Object drinkTypesObject = DatabaseQueryService.getDrinkTypes(ds, userIDMA, nightCount, date);
 
-                    for (int i = 0; i < testType.length; i++) {
+                // { "Time: 23:43:00": "12", "Time: 23:42:32": "14" }
+                Object drinkSizesObject = DatabaseQueryService.getDrinkSizes(ds, userIDMA, nightCount, date);
 
-                        String type = typeList[i];
+                // { "Time: 23:43:00": "$1.00-$5.00.", "Time: 23:42:32": "$16.00+" }
+                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, nightCount, date);
 
-                        if (type.equals("wine")) {
-                            numWine++;
-                        } else if (type.equals("liquor")) {
-                            numLiquor++;
-                        } else if (type.equals("beer")) {
-                            numBeer++;
-                        }
-                    }
+                if (drinkTypesObject != null && drinkSizesObject != null && costObject != null) {
 
-                    //gets number of drinks and gets percent of each type
-                    int numberDrinks = numBeer + numWine + numLiquor;
-                    num_drink_text.setText(numberDrinks + "");
+                    // calculate numbers of and types of drink proportion consumed
+                    Map<String, String> drinkTypeseMap = (Map<String, String>) drinkTypesObject;
+                    int numDrinks = drinkTypeseMap.size();
+                    Map<String, Float> drinkPercentages = CalculationUtil.getDrinkPercentages(drinkTypeseMap);
+
+                    num_drink_text.setText(numDrinks + "");
+                    cal_text.setText("" + totalCalConsumed);
 
 
-                } else {
-                    //if no data was entered from user, sets default value
-                    //populates an empty pie chart if size of drink is null
-                    TextView num_drink_text = (TextView) findViewById(R.id.num_drinks_txt);
-                    num_drink_text.setText("0");
-                }
-
-                //checks to make sure data was actually entered
-                Object sizeObject = ds.child("UID: " + userIDMA).child("Night Count: " + nightCount).child("Answers").child("Date: " + date).child("Size").getValue();
-                if (sizeObject != null) {
-                    //splits the string properly to get the necessary data
-                    String sizeDrink = sizeObject.toString();
-                    //Log.e("sizeDrink",sizeDrink);
-                    String sizeDrinkSub = sizeDrink.substring(1, sizeDrink.length() - 1);
-                    //Log.e("sizeDrnkSub", sizeDrinkSub);
-                    String[] test = sizeDrinkSub.split(",");
-                    //Log.e("test", ""+test);
-                    sizeList = new String[test.length];
-                    for (int i = 0; i < test.length; i++) {
-                        String[] tempList = test[i].split("=");
-                        sizeList[i] = tempList[1];
-                    }
-
-                    //initializes default values
+                    // calculate amount and calories consumed
                     totalCalConsumed = 0;
-                    Integer totalOuncesConsumed = 0;
+                    int totalOuncesConsumed = 0;
+                    Map<String, String> drinkSizeseMap = (Map<String, String>) drinkSizesObject;
+                    for (Map.Entry<String, String> entry : drinkSizeseMap.entrySet()) {
 
-                    //samiksha can you comment this????????
-                    for (int i = 0; i < test.length; i++) {
-                        //totalCalConsumed+= i;
+                        String drinkSizeStr = entry.getValue();
+                        String date = entry.getKey();
+                        int sizeOfDrink = Integer.parseInt(drinkSizeStr);
 
-                        String type = typeList[i];
-                        String size = sizeList[i];
+                        totalOuncesConsumed += sizeOfDrink;
 
-                        if (!sizeList[i].equals("Shot")) {
-                            Integer sizeOfDrink = Integer.parseInt(sizeList[i]);
-                            totalOuncesConsumed = totalOuncesConsumed + sizeOfDrink;
-                        } else {
-                            totalOuncesConsumed = totalOuncesConsumed + 1;
-                        }
+                        String drinkType = drinkTypeseMap.get(date);
+                        int oneServingSize = CalculationUtil.DRINK_SERVING_SIZE_MAP.get(drinkType);
 
-                        int oneServingSize = 1;
-                        int caloriePerOneServing = 100;
-
-                        if (type.equals("wine")) {
-                            oneServingSize = 4;
-                        } else if (type.equals("beer")) {
-                            oneServingSize = 12;
-                        } else if (type.equals("liquor")) {
-                            oneServingSize = 1;
-                        }
-
-                        totalCalConsumed += Integer.parseInt(size) * caloriePerOneServing / oneServingSize;
+                        totalCalConsumed += sizeOfDrink * CalculationUtil.CALORIES_PER_SERVING / oneServingSize;
                     }
 
+                    double totalLitersConsumed = (totalOuncesConsumed * 0.03);
 
                     //sets the display calories textview
                     cal_text.setText("" + totalCalConsumed);
 
-                } else {
-                    //set values to null if size drink is null
-                    cal_text.setText("0");
-                }
 
-                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, getNightCount(), date);
-                if (costObject != null) {
+                    // calculate average cost
                     Map<String, String> costJSON = (Map<String, String>) costObject;
                     double avgCost = CalculationUtil.getAverageCost(costJSON);
                     cost_txt.setText(String.format("%.2f", avgCost));
+
+                } else { //if no data was entered from user
+
+                    // sets default value
+                    num_drink_text.setText("0");
+
+                    //set values to null if size drink is null
+                    cal_text.setText("0");
+
                 }
             }
         }
     }
-
 
     private int getCurrentCycle() {
         SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);

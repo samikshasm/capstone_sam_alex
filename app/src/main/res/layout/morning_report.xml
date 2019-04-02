@@ -337,7 +337,7 @@
                     android:id="@+id/costText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="000.00"
+                    android:text="0.00"
                     android:textSize="75dp"
                     android:includeFontPadding="false"
                     android:textStyle="bold"
