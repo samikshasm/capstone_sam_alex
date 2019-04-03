@@ -1,12 +1,10 @@
 package com.samalex.slucapstone;
 
-import android.provider.ContactsContract;
-
 import com.google.firebase.database.DataSnapshot;
+import com.samalex.slucapstone.dto.DrinkAnswer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static java.nio.file.Paths.get;
 
@@ -50,5 +48,26 @@ public class DatabaseQueryService {
     public static Object getAllEpisodes(DataSnapshot dataSnapshot, String username, Integer nightCount, int cycle) {
         Object allEpisodesObject = dataSnapshot.child("UID: " + username).child("Cycle: " + cycle).child("Episodes").getValue();
         return allEpisodesObject;
+    }
+
+    public static List<DrinkAnswer> getAllDrinksAnswers(DataSnapshot dataSnapshot, String username, Integer nightCount, int cycle) {
+        DataSnapshot allEpisodesDataSnapshot = dataSnapshot.child("UID: " + username).child("Cycle: " + cycle).child("Episodes");
+        List<DrinkAnswer> allDrinkAnswersForEntireCycle = new ArrayList<>();
+        for (DataSnapshot episodeDS : allEpisodesDataSnapshot.getChildren()) {
+            DataSnapshot allAnswersDS = episodeDS.child("Answers");
+            for (DataSnapshot singleDrinkAnswerDS: allAnswersDS.getChildren()) {
+                DrinkAnswer drinkAnswer = new DrinkAnswer();
+                drinkAnswer.setCost(singleDrinkAnswerDS.getValue(DrinkAnswer.class).getCost());
+                drinkAnswer.setDrinksPlanned(singleDrinkAnswerDS.getValue(DrinkAnswer.class).getDrinksPlanned());
+                drinkAnswer.setSize(singleDrinkAnswerDS.getValue(DrinkAnswer.class).getSize());
+                drinkAnswer.setType(singleDrinkAnswerDS.getValue(DrinkAnswer.class).getType());
+                drinkAnswer.setWhere(singleDrinkAnswerDS.getValue(DrinkAnswer.class).getWhere());
+                drinkAnswer.setWho(singleDrinkAnswerDS.getValue(DrinkAnswer.class).getWho());
+
+                allDrinkAnswersForEntireCycle.add(drinkAnswer);
+            }
+        }
+
+        return allDrinkAnswersForEntireCycle;
     }
 }
