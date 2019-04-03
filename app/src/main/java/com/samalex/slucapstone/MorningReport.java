@@ -51,7 +51,7 @@ public class MorningReport extends AppCompatActivity {
     private String[] locationList;
     private String[] longitudeList;
     private String[] latitudeList;
-    private String date;
+    private String reportForDate;
     private Integer totalCalConsumed;
     private TextView display_calories;
     private Integer numLocation;
@@ -80,7 +80,7 @@ public class MorningReport extends AppCompatActivity {
         mReference = FirebaseDatabase.getInstance().getReference();
 
         //gets shared preference variables
-        getTime();
+        reportForDate = getDateOnWhichItReport();
 //        numDrinks = getNumDrinks(); // cannot get from SharedPreferences because it's already reset when submitting morning questionnaire
 
         //initializes pie chart and sets basic features
@@ -113,7 +113,7 @@ public class MorningReport extends AppCompatActivity {
         display_calories = (TextView) findViewById(R.id.display_calories);
         display_location = (TextView) findViewById(R.id.numLocationValue);
         TextView display_day = (TextView) findViewById(R.id.display_day);
-        display_day.setText(date);
+        display_day.setText(reportForDate);
         litersDrank = (TextView) findViewById(R.id.liters_drank);
 
         //creates on Click listener for go to start button
@@ -161,14 +161,12 @@ public class MorningReport extends AppCompatActivity {
 
                 int nightCount = getNightCount();
 
-                // { "Time: 23:43:00": "beer", "Time: 23:42:32": "wine" }
-                Object drinkTypesObject = DatabaseQueryService.getDrinkTypes(ds, userIDMA, nightCount, date, forCycle);
+                Object allEpisodes = DatabaseQueryService.getAllEpisodes(ds, userIDMA, nightCount, forCycle);
 
-                // { "Time: 23:43:00": "12", "Time: 23:42:32": "14" }
-                Object drinkSizesObject = DatabaseQueryService.getDrinkSizes(ds, userIDMA, nightCount, date, forCycle);
 
-                // { "Time: 23:43:00": "$1.00-$5.00.", "Time: 23:42:32": "$16.00+" }
-                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, nightCount, date, forCycle);
+                Object drinkTypesObject = DatabaseQueryService.getDrinkTypes(ds, userIDMA, nightCount, forCycle); // { "Time: 23:43:00": "beer", "Time: 23:42:32": "wine" }
+                Object drinkSizesObject = DatabaseQueryService.getDrinkSizes(ds, userIDMA, nightCount, forCycle); // { "Time: 23:43:00": "12", "Time: 23:42:32": "14" }
+                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, nightCount, forCycle); // { "Time: 23:43:00": "$1.00-$5.00.", "Time: 23:42:32": "$16.00+" }
 
                 if (drinkTypesObject != null && drinkSizesObject != null && costObject != null) {
 
@@ -206,7 +204,6 @@ public class MorningReport extends AppCompatActivity {
 
                     //sets the display calories textview
                     display_calories.setText("" + totalCalConsumed);
-
 
 
                     // calculate average cost
@@ -358,12 +355,12 @@ public class MorningReport extends AppCompatActivity {
         }
     }
 
-    //function to get the current time
-    public void getTime() {
+    public String getDateOnWhichItReport() {
+        // TODO: change logic to get the cycle's date on which it is reporting
         long currentDateTime = System.currentTimeMillis();
         Date currentDate = new Date(currentDateTime);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        date = dateFormat.format(currentDate);
+        return dateFormat.format(currentDate);
     }
 
     //function to store the screen
