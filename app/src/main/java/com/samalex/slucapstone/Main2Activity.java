@@ -38,14 +38,15 @@ public class Main2Activity extends AppCompatActivity {
     //initializes variables
     private Integer numberDrinks = 0;
     private String userIDMA;
-    private String time;
+//    private String time;
     private DatabaseReference mDatabase;
     private String initialTimeStr;
     private String typeOfDrink;
     private String sizeOfDrink;
     private String withWhom;
     private String where;
-    private String date;
+//    private String date;
+    private String dateTime;
     private Integer nightCount;
     private String drinkCost;
     private Integer plannedDrinksCounter = 0;
@@ -465,7 +466,7 @@ public class Main2Activity extends AppCompatActivity {
                     costButton = (RadioButton) findViewById(selectedId);
                     drinkCost = costButton.getText().toString();
 
-                    writeMorningAnswersToDB(drinkCost, typeOfDrink, sizeOfDrink, withWhom, where, plannedDrinksCounter);
+                    writeAnswersToDB(drinkCost, typeOfDrink, sizeOfDrink, withWhom, where, plannedDrinksCounter);
 
                     switchToMainActivity(view);
                 }
@@ -509,31 +510,27 @@ public class Main2Activity extends AppCompatActivity {
     }
 
     //function to get current time
-    public void getTime() {
+    public String getDateTime() {
         long currentDateTime = System.currentTimeMillis();
         Date currentDate = new Date(currentDateTime);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-        date = dateFormat.format(currentDate);
-        time = timeFormat.format(currentDate);
-
-        Log.e("date: ", "" + date);
-        Log.e("time:", "" + time);
+        DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateTime = dateTimeFormat.format(currentDate);
+        return dateTime;
     }
 
-    private void writeMorningAnswersToDB(String drinkCost, String drinkType, String drinkSize, String drinkWithWhom, String where, int numDrinksPlanned) {
-        getTime();
+    private void writeAnswersToDB(String drinkCost, String drinkType, String drinkSize, String drinkWithWhom, String where, int numDrinksPlanned) {
+        dateTime = getDateTime();
         int currentCycle = getCurrentCycle();
         int episodeCount = getNightCount();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + currentCycle)
-                .child("Episodes").child("Episode: " + episodeCount).child("Answers").child("Date: " + date);
+                .child("Episodes").child(episodeCount + "").child("Answers").child("Date: " + dateTime);
 
-        mRef.child("Cost").child("Time: " + time).setValue(drinkCost);
-        mRef.child("Type").child("Time: " + time).setValue(drinkType);
-        mRef.child("Size").child("Time: " + time).setValue(drinkSize);
-        mRef.child("Who").child("Time: " + time).setValue(drinkWithWhom);
-        mRef.child("Where").child("Time: " + time).setValue(where);
-        mRef.child("DrinksPlanned").child("Time: " + time).setValue(numDrinksPlanned);
+        mRef.child("Cost").setValue(drinkCost);
+        mRef.child("Type").setValue(drinkType);
+        mRef.child("Size").setValue(drinkSize);
+        mRef.child("Who").setValue(drinkWithWhom);
+        mRef.child("Where").setValue(where);
+        mRef.child("DrinksPlanned").setValue(numDrinksPlanned);
 
     }
 
