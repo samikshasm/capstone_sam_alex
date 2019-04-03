@@ -25,7 +25,7 @@ public class LocationUpdates extends IntentService {
     private DatabaseReference mDatabase;
     private String userIDMA;
     private String test;
-    private String time;
+    private String dateTime;
     private String text;
     private double latitude;
     private double longitude;
@@ -65,7 +65,7 @@ public class LocationUpdates extends IntentService {
                 long currentDateTime = System.currentTimeMillis();
                 Date currentDate = new Date(currentDateTime);
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                time = dateFormat.format(currentDate);
+                dateTime = dateFormat.format(currentDate);
                 text = latitude + "&" + longitude;
                 String selectedScreen = getCurrentScreen();
 
@@ -96,7 +96,7 @@ public class LocationUpdates extends IntentService {
     public void writeToDB(String text1) {
 //        Log.e("Location Service DB", "Boi");
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + getCurrentCycle())
-                .child("Episodes").child("Episode: " + getNightCount()).child("Location").child("Time: " + time);
+                .child("Episodes").child(getNightCount() + "").child("Location").child("Date: " + dateTime);
         mRef.setValue(text1);
 
     }
