@@ -15,8 +15,12 @@
       },
       "oauth_client": [
         {
-          "client_id": "931206697482-oabh74hvb2pl1lag8e9jc5aasf2e4v45.apps.googleusercontent.com",
-          "client_type": 3
+          "client_id": "931206697482-hl3ln9aamgfg6ndq84thj2t00ef464ie.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.samalex.slucapstone",
+            "certificate_hash": "0825be1f430c4a711a77268eba1d38000b08363b"
+          }
         }
       ],
       "api_key": [
@@ -25,15 +29,13 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "931206697482-oabh74hvb2pl1lag8e9jc5aasf2e4v45.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
