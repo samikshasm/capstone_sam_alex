@@ -194,7 +194,7 @@ public class StartActivity extends AppCompatActivity {
         int oldCurrentCycle = getCurrentCycle();
         if(oldCurrentCycle != cycle) {
             storeCurrentCycle(cycle);
-            storeNight(0); // reset episode count when a new cycle starts
+            storeNight(0); // reset episode count when a new cycle starts // TODO: fix bug
         }
     }
 
