@@ -939,10 +939,10 @@ public class MorningQS extends AppCompatActivity {
         startActivity1 = "morningReport";
         storeScreen(startActivity1);
         storeNumDrinks(0);
-        Intent goToStart = new Intent(MorningQS.this, StartActivity.class);
-        goToStart.putExtra("Start Activity", startActivity);
-        goToStart.putExtra("this survey is for cycle", forCycle);
-        startActivity(goToStart);
+        Intent goToMorningReport = new Intent(MorningQS.this, StartActivity.class);
+        goToMorningReport.putExtra("Start Activity", startActivity);
+        goToMorningReport.putExtra("this survey is for cycle", forCycle);
+        startActivity(goToMorningReport);
         finish();
     }
 
@@ -1039,7 +1039,7 @@ public class MorningQS extends AppCompatActivity {
     public void writeHealthToDB(String health, int nightCount, int cycle) {
         getTime();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + cycle)
-                .child("Episodes").child("Episode: " + nightCount)
+                .child("Episodes").child(nightCount + "")
                 .child("MorningAnswers").child(time).child("Health");
         mRef.setValue(health);
     }
