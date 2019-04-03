@@ -28,7 +28,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -59,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
     private String startActivity1;
     private Integer nightCount;
     private String[] typeList;
-    private String date;
     private String[] sizeList;
     private Integer totalCalConsumed;
 
@@ -104,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
         mReference = FirebaseDatabase.getInstance().getReference();
 
         nightCount = getNightCount();
-        getTime();
 
         mReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -260,7 +257,6 @@ public class MainActivity extends AppCompatActivity {
                                 + "\nLive report: " + liveReportFlag
                                 + "\nMorning report: " + morningReportFlag
                                 + "\n"
-//                                + "\nNumber of drinks: " + getNumDrinks()
                                 + "\nNumber of Episode: " + getNightCount()
                                 + "\n"
                                 + "\nNext morning Survey alarm will go off: " + moringSurveyTime
@@ -315,14 +311,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             liveDataLayout.setVisibility(View.GONE);
         }
-    }
-
-    //function to get the current time
-    public void getTime() {
-        long currentDateTime = System.currentTimeMillis();
-        Date currentDate = new Date(currentDateTime);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        date = dateFormat.format(currentDate);
     }
 
     //starts the location updates service which updates the database at given interval
@@ -454,14 +442,14 @@ public class MainActivity extends AppCompatActivity {
                 int nightCount = getNightCount();
                 int currentCycle = getCurrentCycle();
 
-                // { "Time: 23:43:00": "beer", "Time: 23:42:32": "wine" }
-                Object drinkTypesObject = DatabaseQueryService.getDrinkTypes(ds, userIDMA, nightCount, date, currentCycle);
+                // { "Date: 2019-04-02 23:32:34": "beer", "Date: 2019-04-02 23:42:32": "wine" }
+                Object drinkTypesObject = DatabaseQueryService.getDrinkTypes(ds, userIDMA, nightCount, currentCycle);
 
-                // { "Time: 23:43:00": "12", "Time: 23:42:32": "14" }
-                Object drinkSizesObject = DatabaseQueryService.getDrinkSizes(ds, userIDMA, nightCount, date, currentCycle);
+                // { "Date: 2019-04-02 23:32:34": "12", "Date: 2019-04-02 23:42:32": "14" }
+                Object drinkSizesObject = DatabaseQueryService.getDrinkSizes(ds, userIDMA, nightCount, currentCycle);
 
-                // { "Time: 23:43:00": "$1.00-$5.00.", "Time: 23:42:32": "$16.00+" }
-                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, nightCount, date, currentCycle);
+                // { "Date: 2019-04-02 23:32:34": "$1.00-$5.00.", "Date: 2019-04-02 23:42:32": "$16.00+" }
+                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, nightCount, currentCycle);
 
                 if (drinkTypesObject != null && drinkSizesObject != null && costObject != null) {
 
@@ -471,8 +459,6 @@ public class MainActivity extends AppCompatActivity {
                     Map<String, Float> drinkPercentages = CalculationUtil.getDrinkPercentages(drinkTypeseMap);
 
                     num_drink_text.setText(numDrinks + "");
-                    cal_text.setText("" + totalCalConsumed);
-
 
                     // calculate amount and calories consumed
                     totalCalConsumed = 0;
