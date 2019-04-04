@@ -939,7 +939,7 @@ public class MorningQS extends AppCompatActivity {
         startActivity1 = "morningReport";
         storeScreen(startActivity1);
         storeNumDrinks(0);
-        Intent goToMorningReport = new Intent(MorningQS.this, StartActivity.class);
+        Intent goToMorningReport = new Intent(MorningQS.this, MorningReport.class);
         goToMorningReport.putExtra("Start Activity", startActivity);
         goToMorningReport.putExtra("this survey is for cycle", forCycle);
         startActivity(goToMorningReport);
