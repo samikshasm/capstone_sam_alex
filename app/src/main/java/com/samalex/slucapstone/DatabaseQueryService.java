@@ -15,7 +15,7 @@ public class DatabaseQueryService {
                 .child("Episodes")
                 .child(nightCount + "")
                 .child("Answers")
-                .child("Cost").getValue();
+                .child("cost").getValue();
         return costObject;
     }
 
@@ -25,7 +25,7 @@ public class DatabaseQueryService {
                 .child("Episodes")
                 .child(nightCount + "")
                 .child("Answers")
-                .child("Type").getValue();
+                .child("type").getValue();
         return drinkObject;
     }
 
@@ -35,7 +35,7 @@ public class DatabaseQueryService {
                 .child("Episodes")
                 .child(nightCount + "")
                 .child("Answers")
-                .child("Size").getValue();
+                .child("size").getValue();
         return sizeObject;
     }
 
@@ -50,7 +50,7 @@ public class DatabaseQueryService {
         return allEpisodesObject;
     }
 
-    public static List<DrinkAnswer> getAllDrinksAnswers(DataSnapshot dataSnapshot, String username, Integer nightCount, int cycle) {
+    public static List<DrinkAnswer> getAllDrinksAnswers(DataSnapshot dataSnapshot, String username, int cycle) {
         DataSnapshot allEpisodesDataSnapshot = dataSnapshot.child("UID: " + username).child("Cycle: " + cycle).child("Episodes");
         List<DrinkAnswer> allDrinkAnswersForEntireCycle = new ArrayList<>();
         for (DataSnapshot episodeDS : allEpisodesDataSnapshot.getChildren()) {

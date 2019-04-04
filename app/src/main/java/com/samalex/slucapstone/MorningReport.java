@@ -24,10 +24,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.samalex.slucapstone.dto.DrinkAnswer;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,21 +49,17 @@ public class MorningReport extends AppCompatActivity {
     private String startActivity1;
     public static final String startActivity = "main";
     private DatabaseReference mReference;
-    private String[] typeList;
-    private String[] sizeList;
     private String[] locationList;
     private String[] longitudeList;
     private String[] latitudeList;
-    private String reportForDate;
-    private Integer totalCalConsumed;
     private TextView display_calories;
     private Integer numLocation;
     private TextView display_location;
     private TextView display_numDrinks;
     private PieChart pieChart;
     private float[] data = {30.0f, 30.0f, 40.0f};
-    private String[] drinkNames = {"beer", "liquor", "wine"};
     private TextView litersDrank;
+    TextView cost_txt;
     private String broadcastInt = "none";
     public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
 
@@ -79,24 +78,13 @@ public class MorningReport extends AppCompatActivity {
         //initializes firebase instance
         mReference = FirebaseDatabase.getInstance().getReference();
 
-        //gets shared preference variables
-        reportForDate = getDateOnWhichItReport();
-//        numDrinks = getNumDrinks(); // cannot get from SharedPreferences because it's already reset when submitting morning questionnaire
-
         //initializes pie chart and sets basic features
-        pieChart = (PieChart) findViewById(R.id.pie_chart);
-        pieChart.setHoleRadius(0f);
-        pieChart.setHoleColor(ContextCompat.getColor(MorningReport.this, R.color.app_background));
-        pieChart.setTransparentCircleAlpha(0);
-        pieChart.getDescription().setEnabled(false);
-        pieChart.getLegend().setEnabled(false);
-
+        initializePieChart();
 
         //gets a snapshot of the data at the given instance from firebase
         mReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 getData(dataSnapshot);
                 getDistance(dataSnapshot);
             }
@@ -107,14 +95,15 @@ public class MorningReport extends AppCompatActivity {
             }
         });
 
-
         //initializes ui elements
         display_numDrinks = (TextView) findViewById(R.id.display_numDrinks);
         display_calories = (TextView) findViewById(R.id.display_calories);
         display_location = (TextView) findViewById(R.id.numLocationValue);
-        TextView display_day = (TextView) findViewById(R.id.display_day);
-        display_day.setText(reportForDate);
+        cost_txt = (TextView) findViewById(R.id.costText);
         litersDrank = (TextView) findViewById(R.id.liters_drank);
+
+        TextView display_day = (TextView) findViewById(R.id.display_day);
+        display_day.setText(getDateOnWhichItReport());
 
         //creates on Click listener for go to start button
         //resets variables
@@ -124,7 +113,6 @@ public class MorningReport extends AppCompatActivity {
                 startActivity1 = "start";
                 storeScreen(startActivity1);
                 storeNumDrinks(0);
-                totalCalConsumed = 0;
                 Intent goToStart = new Intent(MorningReport.this, StartActivity.class);
                 goToStart.putExtra("Start Activity", startActivity);
                 startActivity(goToStart);
@@ -134,6 +122,15 @@ public class MorningReport extends AppCompatActivity {
         goToStart.setOnClickListener(handler1);
 
         dismissMorningQuestionnaireNotification();
+    }
+
+    private void initializePieChart() {
+        pieChart = (PieChart) findViewById(R.id.pie_chart);
+        pieChart.setHoleRadius(0f);
+        pieChart.setHoleColor(ContextCompat.getColor(MorningReport.this, R.color.app_background));
+        pieChart.setTransparentCircleAlpha(0);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.getLegend().setEnabled(false);
     }
 
     private void dismissMorningQuestionnaireNotification() {
@@ -148,148 +145,54 @@ public class MorningReport extends AppCompatActivity {
         NotificationService.dismissNotification(this, notificationId);
     }
 
-    //function to analyze data received from snapshot
     private void getData(DataSnapshot dataSnapshot) {
-
-        //iterates through the dataSnapshot
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
-            String usersKey = ds.getKey().toString();
+            String usersKey = ds.getKey();
             if (usersKey.equals("Users")) {
-                List<PieEntry> yEntries = new ArrayList<>();
-                List<String> xEntries = new ArrayList<>();
-                List<Integer> colors = new ArrayList<>();
 
-                int nightCount = getNightCount();
+                List<DrinkAnswer> allDrinkAnswers = DatabaseQueryService.getAllDrinksAnswers(ds, userIDMA, forCycle);
 
-                Object allEpisodes = DatabaseQueryService.getAllEpisodes(ds, userIDMA, nightCount, forCycle);
+                LiveReportData liveReportData = CalculationUtil.getLiveData(allDrinkAnswers);
 
-
-                Object drinkTypesObject = DatabaseQueryService.getDrinkTypes(ds, userIDMA, nightCount, forCycle); // { "Time: 23:43:00": "beer", "Time: 23:42:32": "wine" }
-                Object drinkSizesObject = DatabaseQueryService.getDrinkSizes(ds, userIDMA, nightCount, forCycle); // { "Time: 23:43:00": "12", "Time: 23:42:32": "14" }
-                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, nightCount, forCycle); // { "Time: 23:43:00": "$1.00-$5.00.", "Time: 23:42:32": "$16.00+" }
-
-                if (drinkTypesObject != null && drinkSizesObject != null && costObject != null) {
-
-                    // calculate numbers of and types of drink proportion consumed for rendering a pie chart
-                    Map<String, String> drinkTypeseMap = (Map<String, String>) drinkTypesObject;
-                    int numDrinks = drinkTypeseMap.size();
-                    Map<String, Float> drinkPercentages = CalculationUtil.getDrinkPercentages(drinkTypeseMap);
-
-                    display_numDrinks.setText("" + numDrinks);
-                    display_calories.setText("" + totalCalConsumed);
-
-                    drawPieChart(yEntries, xEntries, colors, drinkPercentages.get("beer"), drinkPercentages.get("liquor"), drinkPercentages.get("wine"));
+                display_numDrinks.setText(liveReportData.getNumDrinks() + "");
+                display_calories.setText("" + liveReportData.getCaloriesConsumed());
+                litersDrank.setText(String.format("%.2f", liveReportData.getLitersConsumed()));
+                cost_txt.setText(String.format("%.2f", liveReportData.getAverageCost()));
 
 
-                    // calculate amount and calories consumed
-                    totalCalConsumed = 0;
-                    int totalOuncesConsumed = 0;
-                    Map<String, String> drinkSizeseMap = (Map<String, String>) drinkSizesObject;
-                    for (Map.Entry<String, String> entry : drinkSizeseMap.entrySet()) {
-
-                        String drinkSizeStr = entry.getValue();
-                        String date = entry.getKey();
-                        int sizeOfDrink = Integer.parseInt(drinkSizeStr);
-
-                        totalOuncesConsumed += sizeOfDrink;
-
-                        String drinkType = drinkTypeseMap.get(date);
-                        int oneServingSize = CalculationUtil.DRINK_SERVING_SIZE_MAP.get(drinkType);
-
-                        totalCalConsumed += sizeOfDrink * CalculationUtil.CALORIES_PER_SERVING / oneServingSize;
-                    }
-
-                    double totalLitersConsumed = (totalOuncesConsumed * 0.03);
-                    litersDrank.setText(String.format("%.2f", totalLitersConsumed));
-
-                    //sets the display calories textview
-                    display_calories.setText("" + totalCalConsumed);
-
-
-                    // calculate average cost
-                    Map<String, String> costJSON = (Map<String, String>) costObject;
-                    double avgCost = CalculationUtil.getAverageCost(costJSON);
-                    TextView cost_txt = (TextView) findViewById(R.id.costText);
-                    cost_txt.setText(String.format("%.2f", avgCost));
-
-                } else { //if no data was entered from user
-
-                    // sets default value
-                    display_numDrinks.setText("0");
-
-                    //set values to null if size drink is null
-                    litersDrank.setText("0");
-                    display_calories.setText("0");
-
-                    // draw empty pie chart
-                    drawPieChart(yEntries, xEntries, colors);
-                }
+                drawPieChart(liveReportData);
             }
         }
     }
 
-    private void drawPieChart(List<PieEntry> yEntries, List<String> xEntries, List<Integer> colors) {
-        float percentBeer = 0;
-        yEntries.add(new PieEntry(percentBeer, 0));
+    private void drawPieChart(LiveReportData liveReportData) {
+        List<Integer> colors = new ArrayList<>();
         colors.add(ContextCompat.getColor(MorningReport.this, R.color.pink));
-        float percentLiquor = 0;
-        yEntries.add(new PieEntry(percentLiquor, 1));
         colors.add(ContextCompat.getColor(MorningReport.this, R.color.orange));
-        float percentWine = 0;
-        yEntries.add(new PieEntry(percentWine, 2));
         colors.add(ContextCompat.getColor(MorningReport.this, R.color.green));
 
-
-        for (int i = 0; i < drinkNames.length; i++) {
-            xEntries.add(drinkNames[i]);
+        List<PieEntry> yEntries = new ArrayList<>();
+        if (liveReportData.getBeerPercentage() > 0) {
+            yEntries.add(new PieEntry(liveReportData.getBeerPercentage(), 0));
         }
+        if (liveReportData.getLiquorPercentage() > 0) {
+            yEntries.add(new PieEntry(liveReportData.getLiquorPercentage(), 1));
+        }
+        if (liveReportData.getWinePercentage() > 0) {
+            yEntries.add(new PieEntry(liveReportData.getWinePercentage(), 2));
+        }
+
         PieDataSet pieDataSet = new PieDataSet(yEntries, "");
         pieDataSet.setSliceSpace(2);
         pieDataSet.setValueTextSize(20);
         pieDataSet.setValueTextColor(R.color.white);
         pieDataSet.setValueFormatter(new PercentFormatter());
-
         pieDataSet.setColors(colors);
 
         PieData pieData = new PieData(pieDataSet);
         pieChart.setData(pieData);
         pieChart.invalidate();
     }
-
-    private void drawPieChart(List<PieEntry> yEntries, List<String> xEntries, List<Integer> colors, float percentBeer, float percentLiquor, float percentWine) {
-        if (percentBeer > 0) {
-            yEntries.add(new PieEntry(percentBeer, 0));
-            colors.add(ContextCompat.getColor(MorningReport.this, R.color.pink));
-        }
-        if (percentLiquor > 0) {
-            yEntries.add(new PieEntry(percentLiquor, 1));
-            colors.add(ContextCompat.getColor(MorningReport.this, R.color.orange));
-        }
-        if (percentWine > 0) {
-            yEntries.add(new PieEntry(percentWine, 2));
-            colors.add(ContextCompat.getColor(MorningReport.this, R.color.green));
-        }
-
-
-        for (int i = 0; i < drinkNames.length; i++) {
-            xEntries.add(drinkNames[i]);
-        }
-
-        //creates pieData set that will populate pie chart
-        PieDataSet pieDataSet = new PieDataSet(yEntries, "");
-        pieDataSet.setSliceSpace(2);
-        pieDataSet.setValueTextSize(20);
-        pieDataSet.setValueTextColor(R.color.white);
-        pieDataSet.setValueFormatter(new PercentFormatter());
-
-        pieDataSet.setColors(colors);
-
-        //draws pie chart
-        PieData pieData = new PieData(pieDataSet);
-        pieChart.setData(pieData);
-        pieChart.invalidate();
-    }
-
 
     //function to get number of locations visited
     private void getDistance(DataSnapshot dataSnapshot) {
@@ -356,9 +259,9 @@ public class MorningReport extends AppCompatActivity {
     }
 
     public String getDateOnWhichItReport() {
-        // TODO: change logic to get the cycle's date on which it is reporting
-        long currentDateTime = System.currentTimeMillis();
-        Date currentDate = new Date(currentDateTime);
+        long userCanonicalStartTimeInMillis = getUserStartTime();
+        long reportDate = userCanonicalStartTimeInMillis + (forCycle * BoozymeterApplication.CYCLE_LENGTH);
+        Date currentDate = new Date(reportDate);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return dateFormat.format(currentDate);
     }
@@ -391,5 +294,11 @@ public class MorningReport extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
         Integer numberDrinks = mSharedPreferences.getInt("numDrinks", 0);
         return numberDrinks;
+    }
+
+    private Long getUserStartTime() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        Long time = mSharedPreferences.getLong("userStartTime", 0);
+        return time;
     }
 }

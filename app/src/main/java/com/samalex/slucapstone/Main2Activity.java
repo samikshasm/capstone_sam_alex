@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.samalex.slucapstone.dto.DrinkAnswer;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -36,13 +37,13 @@ public class Main2Activity extends AppCompatActivity {
 
 
     //initializes variables
-    private Integer numberDrinks = 0;
+    private int numberDrinks = 0;
     private String userIDMA;
 //    private String time;
     private DatabaseReference mDatabase;
     private String initialTimeStr;
     private String typeOfDrink;
-    private String sizeOfDrink;
+    private int sizeOfDrink;
     private String withWhom;
     private String where;
 //    private String date;
@@ -451,13 +452,13 @@ public class Main2Activity extends AppCompatActivity {
                     Log.e("check", "true");
                     switch (typeOfDrink) {
                         case "wine":
-                            sizeOfDrink = wineSize + "";
+                            sizeOfDrink = wineSize;
                             break;
                         case "beer":
-                            sizeOfDrink = beerSize + "";
+                            sizeOfDrink = beerSize;
                             break;
                         case "liquor":
-                            sizeOfDrink = liquorSize + "";
+                            sizeOfDrink = liquorSize;
                             break;
                     }
 
@@ -518,20 +519,14 @@ public class Main2Activity extends AppCompatActivity {
         return dateTime;
     }
 
-    private void writeAnswersToDB(String drinkCost, String drinkType, String drinkSize, String drinkWithWhom, String where, int numDrinksPlanned) {
+    private void writeAnswersToDB(String drinkCost, String drinkType, int drinkSize, String drinkWithWhom, String where, int numDrinksPlanned) {
         dateTime = getDateTime();
         int currentCycle = getCurrentCycle();
         int episodeCount = getNightCount();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + currentCycle)
                 .child("Episodes").child(episodeCount + "").child("Answers").child("Date: " + dateTime);
 
-        mRef.child("Cost").setValue(drinkCost);
-        mRef.child("Type").setValue(drinkType);
-        mRef.child("Size").setValue(drinkSize);
-        mRef.child("Who").setValue(drinkWithWhom);
-        mRef.child("Where").setValue(where);
-        mRef.child("DrinksPlanned").setValue(numDrinksPlanned);
-
+        mRef.setValue(new DrinkAnswer(drinkCost, drinkType, drinkSize, drinkWithWhom, where, numDrinksPlanned));
     }
 
     //stores number of drinks as shared preference variable

@@ -1,21 +1,25 @@
 package com.samalex.slucapstone;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 public class LiveReportData {
     private int numDrinks = 0;
     private int ouncesConsumed = 0;
-    private int caloriesConsumed = 0;
-    private double averageCost = 0;
-    private Map<String, Float> drinkTypePercentage = new LinkedHashMap<>();
+    private long caloriesConsumed = 0;
+    private float averageCost = 0;
+    private float beerPercentage = 0;
+    private float winePercentage = 0;
+    private float liquorPercentage = 0;
 
-    public Map<String, Float> getDrinkTypePercentage() {
-        return drinkTypePercentage;
+    public LiveReportData() {
     }
 
-    public void setDrinkTypePercentage(Map<String, Float> drinkTypePercentage) {
-        this.drinkTypePercentage = drinkTypePercentage;
+    public LiveReportData(int numDrinks, int ouncesConsumed, long caloriesConsumed, float averageCost, float beerPercentage, float winePercentage, float liquorPercentage) {
+        this.numDrinks = numDrinks;
+        this.ouncesConsumed = ouncesConsumed;
+        this.caloriesConsumed = caloriesConsumed;
+        this.averageCost = averageCost;
+        this.beerPercentage = beerPercentage;
+        this.winePercentage = winePercentage;
+        this.liquorPercentage = liquorPercentage;
     }
 
     public void setNumDrinks(int numDrinks) {
@@ -26,12 +30,24 @@ public class LiveReportData {
         this.ouncesConsumed = ouncesConsumed;
     }
 
-    public void setCaloriesConsumed(int caloriesConsumed) {
+    public void setCaloriesConsumed(long caloriesConsumed) {
         this.caloriesConsumed = caloriesConsumed;
     }
 
-    public void setAverageCost(double averageCost) {
+    public void setAverageCost(float averageCost) {
         this.averageCost = averageCost;
+    }
+
+    public void setBeerPercentage(float beerPercentage) {
+        this.beerPercentage = beerPercentage;
+    }
+
+    public void setWinePercentage(float winePercentage) {
+        this.winePercentage = winePercentage;
+    }
+
+    public void setLiquorPercentage(float liquorPercentage) {
+        this.liquorPercentage = liquorPercentage;
     }
 
     public int getNumDrinks() {
@@ -42,15 +58,27 @@ public class LiveReportData {
         return ouncesConsumed;
     }
 
-    public int getCaloriesConsumed() {
+    public long getCaloriesConsumed() {
         return caloriesConsumed;
     }
 
-    public double getAverageCost() {
+    public float getAverageCost() {
         return averageCost;
     }
 
-    public double getLitersConsumed(){
+    public double getLitersConsumed() {
         return ouncesConsumed * 0.03;
+    }
+
+    public float getBeerPercentage() {
+        return beerPercentage;
+    }
+
+    public float getWinePercentage() {
+        return winePercentage;
+    }
+
+    public float getLiquorPercentage() {
+        return liquorPercentage;
     }
 }

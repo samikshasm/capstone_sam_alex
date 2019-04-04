@@ -3,10 +3,22 @@ package com.samalex.slucapstone.dto;
 public class DrinkAnswer {
     private String cost;
     private String type;
-    private String size;
+    private int size;
     private String who;
     private String where;
-    private String drinksPlanned;
+    private int drinksPlanned;
+
+    public DrinkAnswer() {
+    }
+
+    public DrinkAnswer(String cost, String type, int size, String who, String where, int drinksPlanned) {
+        this.cost = cost;
+        this.type = type;
+        this.size = size;
+        this.who = who;
+        this.where = where;
+        this.drinksPlanned = drinksPlanned;
+    }
 
     public String getCost() {
         return cost;
@@ -16,7 +28,7 @@ public class DrinkAnswer {
         return type;
     }
 
-    public String getSize() {
+    public int getSize() {
         return size;
     }
 
@@ -28,7 +40,7 @@ public class DrinkAnswer {
         return where;
     }
 
-    public String getDrinksPlanned() {
+    public int getDrinksPlanned() {
         return drinksPlanned;
     }
 
@@ -40,7 +52,7 @@ public class DrinkAnswer {
         this.type = type;
     }
 
-    public void setSize(String size) {
+    public void setSize(int size) {
         this.size = size;
     }
 
@@ -52,7 +64,7 @@ public class DrinkAnswer {
         this.where = where;
     }
 
-    public void setDrinksPlanned(String drinksPlanned) {
+    public void setDrinksPlanned(int drinksPlanned) {
         this.drinksPlanned = drinksPlanned;
     }
 }

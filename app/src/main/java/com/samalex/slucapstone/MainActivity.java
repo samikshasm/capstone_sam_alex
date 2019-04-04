@@ -19,7 +19,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.data.PieEntry;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,9 +26,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
+import com.samalex.slucapstone.dto.DrinkAnswer;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -431,73 +430,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void getData(DataSnapshot dataSnapshot) {
 
-        //iterates through the dataSnapshot
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
-            String usersKey = ds.getKey().toString();
+            String usersKey = ds.getKey();
             if (usersKey.equals("Users")) {
-                List<PieEntry> yEntries = new ArrayList<>();
-                List<String> xEntries = new ArrayList<>();
-                List<Integer> colors = new ArrayList<>();
-
-                int nightCount = getNightCount();
                 int currentCycle = getCurrentCycle();
 
-                // { "Date: 2019-04-02 23:32:34": "beer", "Date: 2019-04-02 23:42:32": "wine" }
-                Object drinkTypesObject = DatabaseQueryService.getDrinkTypes(ds, userIDMA, nightCount, currentCycle);
+                List<DrinkAnswer> allDrinkAnswers = DatabaseQueryService.getAllDrinksAnswers(ds, userIDMA, currentCycle);
 
-                // { "Date: 2019-04-02 23:32:34": "12", "Date: 2019-04-02 23:42:32": "14" }
-                Object drinkSizesObject = DatabaseQueryService.getDrinkSizes(ds, userIDMA, nightCount, currentCycle);
-
-                // { "Date: 2019-04-02 23:32:34": "$1.00-$5.00.", "Date: 2019-04-02 23:42:32": "$16.00+" }
-                Object costObject = DatabaseQueryService.getCost(ds, userIDMA, nightCount, currentCycle);
-
-                if (drinkTypesObject != null && drinkSizesObject != null && costObject != null) {
-
-                    // calculate numbers of and types of drink proportion consumed
-                    Map<String, String> drinkTypeseMap = (Map<String, String>) drinkTypesObject;
-                    int numDrinks = drinkTypeseMap.size();
-                    Map<String, Float> drinkPercentages = CalculationUtil.getDrinkPercentages(drinkTypeseMap);
-
-                    num_drink_text.setText(numDrinks + "");
-
-                    // calculate amount and calories consumed
-                    totalCalConsumed = 0;
-                    int totalOuncesConsumed = 0;
-                    Map<String, String> drinkSizeseMap = (Map<String, String>) drinkSizesObject;
-                    for (Map.Entry<String, String> entry : drinkSizeseMap.entrySet()) {
-
-                        String drinkSizeStr = entry.getValue();
-                        String date = entry.getKey();
-                        int sizeOfDrink = Integer.parseInt(drinkSizeStr);
-
-                        totalOuncesConsumed += sizeOfDrink;
-
-                        String drinkType = drinkTypeseMap.get(date);
-                        int oneServingSize = CalculationUtil.DRINK_SERVING_SIZE_MAP.get(drinkType);
-
-                        totalCalConsumed += sizeOfDrink * CalculationUtil.CALORIES_PER_SERVING / oneServingSize;
-                    }
-
-                    double totalLitersConsumed = (totalOuncesConsumed * 0.03);
-
-                    //sets the display calories textview
-                    cal_text.setText("" + totalCalConsumed);
-
-
-                    // calculate average cost
-                    Map<String, String> costJSON = (Map<String, String>) costObject;
-                    double avgCost = CalculationUtil.getAverageCost(costJSON);
-                    cost_txt.setText(String.format("%.2f", avgCost));
-
-                } else { //if no data was entered from user
-
-                    // sets default value
-                    num_drink_text.setText("0");
-
-                    //set values to null if size drink is null
-                    cal_text.setText("0");
-
-                }
+                LiveReportData liveReportData = CalculationUtil.getLiveData(allDrinkAnswers);
+                num_drink_text.setText(liveReportData.getNumDrinks() + "");
+                cal_text.setText(liveReportData.getCaloriesConsumed() + "");
+                cost_txt.setText(String.format("%.2f", liveReportData.getAverageCost()));
             }
         }
     }
