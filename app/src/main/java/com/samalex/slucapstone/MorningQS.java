@@ -1127,7 +1127,7 @@ public class MorningQS extends AppCompatActivity {
 
         return reminderTime;
     }
-    
+
     private Long getUserStartTime() {
         SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
         Long time = mSharedPreferences.getLong("userStartTime", 0);

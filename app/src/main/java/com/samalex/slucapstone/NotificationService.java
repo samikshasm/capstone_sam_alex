@@ -42,7 +42,6 @@ public class NotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.e("We are in notification", "yay");
-        String initialTimeStr = intent.getStringExtra("initial time");
         String broadcastId = intent.getStringExtra("broadcast Int");
         int notificationId = Integer.parseInt(broadcastId);
 
@@ -58,15 +57,15 @@ public class NotificationService extends Service {
                 break;
 
             case FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID:
-                notify30minutesPass(notificationId, initialTimeStr, broadcastId);
+                notify30minutesPass(notificationId, broadcastId);
                 break;
             case SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID:
                 dismissNotification(getApplicationContext(), FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID);
-                notify30minutesPass(notificationId, initialTimeStr, broadcastId);
+                notify30minutesPass(notificationId, broadcastId);
                 break;
             case THIRD_IN_EPISODE_REMINDER_NOTIFICATION_ID:
                 dismissNotification(getApplicationContext(), SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID);
-                notify30minutesPass(notificationId, initialTimeStr, broadcastId);
+                notify30minutesPass(notificationId, broadcastId);
                 break;
         }
 
@@ -104,10 +103,9 @@ public class NotificationService extends Service {
     }
 
     //creates a notification for the alarms that occur during the night after 30 minutes has gone by
-    private void notify30minutesPass(int notificationId, String initialTimeStr, String broadcastId) {
+    private void notify30minutesPass(int notificationId, String broadcastId) {
         Intent yesIntent = new Intent(this, Main2Activity.class);
         yesIntent.putExtra("notificationBool", 100);
-        yesIntent.putExtra("initial time", initialTimeStr);
         yesIntent.putExtra("broadcast Int", broadcastId);
         PendingIntent yesIntent1 = PendingIntent.getActivity(this, 0, yesIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         Log.e("yesIntent1", "" + yesIntent1);

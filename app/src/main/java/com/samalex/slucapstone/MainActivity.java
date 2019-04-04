@@ -147,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
                 initialTime = System.currentTimeMillis();
                 initialTimeStr = Long.toString(initialTime);
                 createAlarms(initialTime);
-                createMorningAlarm();
                 //startUIUpdateService(initialTime);
                 if (ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     startLocationUpdates(userIDMA);
@@ -326,24 +325,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //creates the morning alarm manager to go off the following morning
-    //adapted code from Alarm Manager Android Developer page
-    private void createMorningAlarm() {
-        long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), getCurrentCycle());
-        Calendar morningSurveyCalendar = Calendar.getInstance();
-        morningSurveyCalendar.setTimeInMillis(morningSurveyTimeInMillis);
-
-        Log.e("morning survey alarm:", morningSurveyCalendar.getTimeInMillis() + "");
-
-        Intent alertIntent = new Intent(this, TimerReceiver.class);
-        AlarmManager morningAlarmMan = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alertIntent.putExtra("broadcast Int", NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID + "");
-        alertIntent.putExtra("initial time", initialTimeStr);
-        alertIntent.putExtra("this survey is for cycle", getCurrentCycle());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 5, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        morningAlarmMan.set(AlarmManager.RTC_WAKEUP, morningSurveyCalendar.getTimeInMillis(), pendingIntent);
-    }
-
     //function to store the current screen to the shared preference screen variable
     private void storeScreen(String string) {
         SharedPreferences mSharedPreferences = getSharedPreferences("screen", MODE_PRIVATE);
@@ -373,7 +354,6 @@ public class MainActivity extends AppCompatActivity {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         resultIntent = new Intent(MainActivity.this, TimerReceiver.class);
         //resultIntent.putExtra("User ID", userIDMA);
-        resultIntent.putExtra("initial time", initialTimeStr);
         resultIntent.putExtra("broadcast Int", "" + broadcastID);
         pIntent = PendingIntent.getBroadcast(MainActivity.this, broadcastID, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.set(AlarmManager.RTC_WAKEUP, time, pIntent);

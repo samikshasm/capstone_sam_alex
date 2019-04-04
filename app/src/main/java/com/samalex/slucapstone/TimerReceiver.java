@@ -22,14 +22,12 @@ public class TimerReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        initialTimeStr = intent.getStringExtra("initial time");
         broadcastStr = intent.getStringExtra("broadcast Int");
         Log.e("We are in the receiver", broadcastStr);
         broadcastID = Integer.parseInt(broadcastStr);
 
         if (broadcastID < BoozymeterApplication.NUM_EVENING_REMINDER+1) {
             Intent service_intent = new Intent(context, NotificationService.class);
-            service_intent.putExtra("initial time", initialTimeStr);
             service_intent.putExtra("broadcast Int", broadcastStr);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -43,7 +41,6 @@ public class TimerReceiver extends BroadcastReceiver {
             storeScreen("morningQS", context);
 
             Intent service_intent = new Intent(context, NotificationService.class);
-            service_intent.putExtra("initial time", initialTimeStr);
             service_intent.putExtra("broadcast Int", broadcastStr);
             service_intent.putExtra("this survey is for cycle", intent.getIntExtra("this survey is for cycle", 0));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -53,7 +50,6 @@ public class TimerReceiver extends BroadcastReceiver {
             }
         } else if(broadcastID == NotificationService.EVENING_REMINDER_NOTIFICATION_ID) {
             Intent service_intent = new Intent(context, NotificationService.class);
-            service_intent.putExtra("initial time", initialTimeStr);
             service_intent.putExtra("broadcast Int", broadcastStr);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(service_intent);

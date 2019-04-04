@@ -99,19 +99,20 @@ public class StartActivity extends AppCompatActivity {
             storeCurrentCycle(0);
             storeNight(0); // count episodes in 1 cycle
 
+            Calendar calendarInstance = Calendar.getInstance();
+            storeUserRawStartTime(calendarInstance.getTimeInMillis());
+
             // Pre-compute a new table for this user
             long canonicalUserStartTime = calculateUserStartTime(
                     Calendar.getInstance(),
                     BoozymeterApplication.CYCLE_LENGTH,
                     BoozymeterApplication.CYCLE_OFFSET);
 
-            Calendar calendarInstance = Calendar.getInstance();
-            storeUserRawStartTime(calendarInstance.getTimeInMillis());
             storeUserStartTime(canonicalUserStartTime);
             precomputeInterventionLookupTable(canonicalUserStartTime);
 
-            // Create an evening reminder alarm that goes of daily
-            createEveningDailyReminderAlarm();
+            // Create a morning survey and evening reminder alarms for entire study
+            createAllDailyAlarms();
         } else {
             // check if map is null
         }
@@ -166,18 +167,41 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
-
-    private void createEveningDailyReminderAlarm() {
+    private void createAllDailyAlarms() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(calculateEveningReminderTime());
+        int cycle = getCurrentCycle();
 
-        // Set an alarm to go off daily
-        Intent alertIntent = new Intent(this, TimerReceiver.class);
-        alertIntent.putExtra("broadcast Int", NotificationService.EVENING_REMINDER_NOTIFICATION_ID + "");
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, NotificationService.EVENING_REMINDER_NOTIFICATION_ID, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmMgr = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), BoozymeterApplication.CYCLE_LENGTH, pendingIntent);
-        Log.e("evening reminder alarm:", calendar.getTimeInMillis() + "");
+        List<Long> cycleStartTimeList = getCycleStartTimeList();
+
+        for (Long cycleStartTime : cycleStartTimeList) {
+            // evening reminder alarms
+            long cycleEveningReminderTime = cycleStartTime + BoozymeterApplication.EVENING_REMINDER_OFFSET;
+            calendar.setTimeInMillis(cycleEveningReminderTime);
+
+            Intent eveningAlertIntent = new Intent(this, TimerReceiver.class);
+            eveningAlertIntent.putExtra("broadcast Int", NotificationService.EVENING_REMINDER_NOTIFICATION_ID + "");
+
+            PendingIntent eveningPendingIntent = PendingIntent.getBroadcast(this, NotificationService.EVENING_REMINDER_NOTIFICATION_ID, eveningAlertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            AlarmManager alarmMgr = (AlarmManager) getSystemService(ALARM_SERVICE);
+            alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), BoozymeterApplication.CYCLE_LENGTH, eveningPendingIntent);
+            Log.e("evening reminder alarm", dateFormat.format(new Date(cycleEveningReminderTime)));
+
+            // (next) morning survey alarms
+            long cycleMorningSurveyTime = cycleStartTime + BoozymeterApplication.SURVEY_OFFSET;
+            calendar.setTimeInMillis(cycleMorningSurveyTime);
+
+            Intent morningAlertIntent = new Intent(this, TimerReceiver.class);
+            morningAlertIntent.putExtra("broadcast Int", NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID + "");
+            morningAlertIntent.putExtra("this survey is for cycle", cycle);
+
+            PendingIntent morningPendingIntent = PendingIntent.getBroadcast(this, NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID, morningAlertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            AlarmManager morningSurveyAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            morningSurveyAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), morningPendingIntent);
+            Log.e("morning survey alarm", dateFormat.format(new Date(cycleMorningSurveyTime)));
+        }
     }
 
     private void updateCurrentCycle(long currentTimeInMillis) {
@@ -192,7 +216,7 @@ public class StartActivity extends AppCompatActivity {
             }
         }
         int oldCurrentCycle = getCurrentCycle();
-        if(oldCurrentCycle != cycle) {
+        if (oldCurrentCycle != cycle) {
             storeCurrentCycle(cycle);
             storeNight(0); // reset episode count when a new cycle starts // TODO: fix bug
         }
@@ -238,26 +262,26 @@ public class StartActivity extends AppCompatActivity {
                 android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(StartActivity.this, R.style.MyDialogTheme);
                 builder.setTitle("Hidden Logs")
                         .setMessage("Number of cycles: " + BoozymeterApplication.NUM_CYCLES
-                                + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
-                                + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
-                                + "\nMorning survey offset: " + BoozymeterApplication.SURVEY_OFFSET / 1000 / 60 + " minutes"
-                                + "\nEvening reminder offset: " + BoozymeterApplication.EVENING_REMINDER_OFFSET / 1000 / 60 + " minutes"
-                                + "\n"
-                                + "\nUsername: " + userIDMA
-                                + "\nUser group: " + getGroup()
-                                + "\n"
-                                + "\nRaw start time: " + userRawStartDateStr
-                                + "\nCanonical start time (incl. cycle offset): " + userStartDateStr
-                                + "\nCycle (1-based index): " + (currentCycle + 1)
-                                + "\n"
-                                + "\nLive report: " + liveReportFlag
-                                + "\nMorning report: " + morningReportFlag
-                                + "\n"
+                                        + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
+                                        + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
+                                        + "\nMorning survey offset: " + BoozymeterApplication.SURVEY_OFFSET / 1000 / 60 + " minutes"
+                                        + "\nEvening reminder offset: " + BoozymeterApplication.EVENING_REMINDER_OFFSET / 1000 / 60 + " minutes"
+                                        + "\n"
+                                        + "\nUsername: " + userIDMA
+                                        + "\nUser group: " + getGroup()
+                                        + "\n"
+                                        + "\nRaw start time: " + userRawStartDateStr
+                                        + "\nCanonical start time (incl. cycle offset): " + userStartDateStr
+                                        + "\nCycle (1-based index): " + (currentCycle + 1)
+                                        + "\n"
+                                        + "\nLive report: " + liveReportFlag
+                                        + "\nMorning report: " + morningReportFlag
+                                        + "\n"
 //                                + "\nNumber of drinks: " + getNumDrinks()
-                                + "\nNumber of Episode: " + getNightCount()
-                                + "\n"
-                                + "\nNext morning Survey alarm will go off: " + moringSurveyTime
-                                + "\nNext evening reminder will go off: " + eveningReminderTime
+                                        + "\nNumber of Episode: " + getNightCount()
+                                        + "\n"
+                                        + "\nNext morning Survey alarm will go off: " + moringSurveyTime
+                                        + "\nNext evening reminder will go off: " + eveningReminderTime
                         )
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -304,7 +328,7 @@ public class StartActivity extends AppCompatActivity {
 //                        .setTitle("Are you sure to sign out?")
                         .setMessage("Are you sure to sign out?")
                         // .setNegativeButton("Ok",null)
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener(){
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -799,14 +823,16 @@ public class StartActivity extends AppCompatActivity {
         Integer numberDrinks = mSharedPreferences.getInt("numDrinks", 0);
         return numberDrinks;
     }
+
     //function to store the number of drinks
-    private void storeNumDrinks (Integer integer) {
+    private void storeNumDrinks(Integer integer) {
         SharedPreferences mSharedPreferences = getSharedPreferences("numDrinks", MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.putInt("numDrinks", integer);
         mEditor.apply();
     }
-    private void storeUserRawStartTime(long rawStartTime){
+
+    private void storeUserRawStartTime(long rawStartTime) {
         SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.putLong("userRawStartTime", rawStartTime);

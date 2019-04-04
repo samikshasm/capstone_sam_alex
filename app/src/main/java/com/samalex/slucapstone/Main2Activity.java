@@ -505,7 +505,6 @@ public class Main2Activity extends AppCompatActivity {
         Intent switchToMainActivity = new Intent(Main2Activity.this, MainActivity.class);
 
         switchToMainActivity.putExtra("coming from start", "come from qs");
-        switchToMainActivity.putExtra("initial time", initialTimeStr);
         startActivity(switchToMainActivity);
         finish();
     }
