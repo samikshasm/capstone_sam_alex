@@ -78,10 +78,6 @@ public class StartActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         incrementStartAttempts(); // when user go back to the start activity after exiting the app by hitting the home button (which does not trigger onCreate()
-
-
-        Calendar calendar = Calendar.getInstance();
-        updateCurrentCycle(calendar.getTimeInMillis());
     }
 
     @Override
@@ -96,8 +92,8 @@ public class StartActivity extends AppCompatActivity {
 
         if (isFirstLogin()) {
             // reset all count values
-            storeCurrentCycle(0);
-            storeNight(0); // count episodes in 1 cycle
+            CalculationUtil.storeCurrentCycle(getApplicationContext(), 0);
+            CalculationUtil.storeNight(getApplicationContext(), 0); // count episodes in 1 cycle
 
             Calendar calendarInstance = Calendar.getInstance();
             storeUserRawStartTime(calendarInstance.getTimeInMillis());
@@ -116,9 +112,6 @@ public class StartActivity extends AppCompatActivity {
         } else {
             // check if map is null
         }
-
-        Calendar calendar = Calendar.getInstance();
-        updateCurrentCycle(calendar.getTimeInMillis());
 
         userIDMA = getIntent().getStringExtra("User ID");
         SharedPreferences userSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
@@ -170,56 +163,33 @@ public class StartActivity extends AppCompatActivity {
     private void createAllDailyAlarms() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Calendar calendar = Calendar.getInstance();
-        int cycle = getCurrentCycle();
+        int cycle = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext());
 
-        List<Long> cycleStartTimeList = getCycleStartTimeList();
+        // evening reminder alarms
+        long cycleEveningReminderTime = calculateEveningReminderTime();
+        calendar.setTimeInMillis(cycleEveningReminderTime);
 
-        for (Long cycleStartTime : cycleStartTimeList) {
-            // evening reminder alarms
-            long cycleEveningReminderTime = cycleStartTime + BoozymeterApplication.EVENING_REMINDER_OFFSET;
-            calendar.setTimeInMillis(cycleEveningReminderTime);
+        Intent eveningAlertIntent = new Intent(this, TimerReceiver.class);
+        eveningAlertIntent.putExtra("broadcast Int", NotificationService.EVENING_REMINDER_NOTIFICATION_ID + "");
 
-            Intent eveningAlertIntent = new Intent(this, TimerReceiver.class);
-            eveningAlertIntent.putExtra("broadcast Int", NotificationService.EVENING_REMINDER_NOTIFICATION_ID + "");
+        PendingIntent eveningPendingIntent = PendingIntent.getBroadcast(this, NotificationService.EVENING_REMINDER_NOTIFICATION_ID, eveningAlertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            PendingIntent eveningPendingIntent = PendingIntent.getBroadcast(this, NotificationService.EVENING_REMINDER_NOTIFICATION_ID, eveningAlertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmMgr = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), BoozymeterApplication.CYCLE_LENGTH, eveningPendingIntent);
+        Log.e("evening reminder alarm", dateFormat.format(new Date(cycleEveningReminderTime)));
 
-            AlarmManager alarmMgr = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), BoozymeterApplication.CYCLE_LENGTH, eveningPendingIntent);
-            Log.e("evening reminder alarm", dateFormat.format(new Date(cycleEveningReminderTime)));
+//         (next) morning survey alarms
+        long cycleMorningSurveyTime = calculateMorningSurveyTime();
+        calendar.setTimeInMillis(cycleMorningSurveyTime);
 
-            // (next) morning survey alarms
-            long cycleMorningSurveyTime = cycleStartTime + BoozymeterApplication.SURVEY_OFFSET;
-            calendar.setTimeInMillis(cycleMorningSurveyTime);
+        Intent morningAlertIntent = new Intent(this, TimerReceiver.class);
+        morningAlertIntent.putExtra("broadcast Int", NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID + "");
 
-            Intent morningAlertIntent = new Intent(this, TimerReceiver.class);
-            morningAlertIntent.putExtra("broadcast Int", NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID + "");
-            morningAlertIntent.putExtra("this survey is for cycle", cycle);
+        PendingIntent morningPendingIntent = PendingIntent.getBroadcast(this, NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID, morningAlertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            PendingIntent morningPendingIntent = PendingIntent.getBroadcast(this, NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID, morningAlertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            AlarmManager morningSurveyAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-            morningSurveyAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), morningPendingIntent);
-            Log.e("morning survey alarm", dateFormat.format(new Date(cycleMorningSurveyTime)));
-        }
-    }
-
-    private void updateCurrentCycle(long currentTimeInMillis) {
-        List<Long> cycleStartTimeList = getCycleStartTimeList();
-
-        int cycle = 0;
-        for (int i = 0, len = cycleStartTimeList.size(); i < len; i++) {
-            if (currentTimeInMillis >= cycleStartTimeList.get(i)) {
-                cycle = i;
-            } else {
-                break;
-            }
-        }
-        int oldCurrentCycle = getCurrentCycle();
-        if (oldCurrentCycle != cycle) {
-            storeCurrentCycle(cycle);
-            storeNight(0); // reset episode count when a new cycle starts // TODO: fix bug
-        }
+        AlarmManager morningSurveyAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        morningSurveyAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), BoozymeterApplication.CYCLE_LENGTH, morningPendingIntent);
+        Log.e("morning survey alarm", dateFormat.format(new Date(cycleMorningSurveyTime)));
     }
 
     private void initializeLocationServiceClient() {
@@ -239,14 +209,14 @@ public class StartActivity extends AppCompatActivity {
             long userStartTime = getUserStartTime();
             String userStartDateStr = dateFormat.format(new Date(userStartTime));
 
-            long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), getCurrentCycle());
+            long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), CalculationUtil.updateAndGetCurrentCycle(getApplicationContext()));
             String moringSurveyTime = dateFormat.format(new Date(morningSurveyTimeInMillis));
             String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
 
             @Override
             public void onClick(View view) {
-                int currentCycle = getCurrentCycle();
-                InterventionDisplayData ui = getInterventionMap().get(currentCycle);
+                int currentCycle = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext());
+                InterventionDisplayData ui = CalculationUtil.getInterventionMap(getApplicationContext()).get(currentCycle);
                 String liveReportFlag;
                 String morningReportFlag;
 
@@ -261,18 +231,13 @@ public class StartActivity extends AppCompatActivity {
 
                 android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(StartActivity.this, R.style.MyDialogTheme);
                 builder.setTitle("Hidden Logs")
-                        .setMessage("Number of cycles: " + BoozymeterApplication.NUM_CYCLES
-                                        + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
-                                        + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
-                                        + "\nMorning survey offset: " + BoozymeterApplication.SURVEY_OFFSET / 1000 / 60 + " minutes"
-                                        + "\nEvening reminder offset: " + BoozymeterApplication.EVENING_REMINDER_OFFSET / 1000 / 60 + " minutes"
-                                        + "\n"
-                                        + "\nUsername: " + userIDMA
+                        .setMessage("Username: " + userIDMA
                                         + "\nUser group: " + getGroup()
                                         + "\n"
                                         + "\nRaw start time: " + userRawStartDateStr
                                         + "\nCanonical start time (incl. cycle offset): " + userStartDateStr
-                                        + "\nCycle (1-based index): " + (currentCycle + 1)
+                                        + "\n"
+                                        + "\nCurrent Cycle: " + (currentCycle + 1)
                                         + "\n"
                                         + "\nLive report: " + liveReportFlag
                                         + "\nMorning report: " + morningReportFlag
@@ -282,6 +247,14 @@ public class StartActivity extends AppCompatActivity {
                                         + "\n"
                                         + "\nNext morning Survey alarm will go off: " + moringSurveyTime
                                         + "\nNext evening reminder will go off: " + eveningReminderTime
+                                        + "\n\n--------- Settings ---------"
+                                        + "\nNumber of cycles: " + BoozymeterApplication.NUM_CYCLES
+                                        + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
+                                        + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
+                                        + "\nEvening reminder offset: " + BoozymeterApplication.EVENING_REMINDER_OFFSET / 1000 / 60 + " minutes"
+                                        + "\nMorning survey offset: " + BoozymeterApplication.SURVEY_OFFSET / 1000 / 60 + " minutes"
+                                        + "\nIn-episode reminder offset: " + BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL / 1000 / 60 + " minutes"
+                                        + "\n"
                         )
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -300,7 +273,7 @@ public class StartActivity extends AppCompatActivity {
 
                 int nightCount = getNightCount();
                 nightCount++;
-                storeNight(nightCount);
+                CalculationUtil.storeNight(getApplicationContext(), nightCount);
                 id = 2;
                 startActivity = "start";
                 Intent switchToMainActivity = new Intent(StartActivity.this, MainActivity.class);
@@ -347,19 +320,29 @@ public class StartActivity extends AppCompatActivity {
         storeStartAttempts(0);
         Intent switchToLogin = new Intent(StartActivity.this, LoginActivity.class);
         switchToLogin.putExtra("sign out", currentUserFromLA);
+        storeScreen("login");
         startActivity(switchToLogin);
         storeGroup("none");
         storeNumDrinks(0);
         storeUserRawStartTime(0);
         cancelEveningReminder();
+        cancelMorningSurveyAlarm();
         finish();
     }
 
     private void cancelEveningReminder() {
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Intent alertIntent = new Intent(this, TimerReceiver.class);
+        Intent alertIntent = new Intent(StartActivity.this, TimerReceiver.class);
         alertIntent.putExtra("broadcast Int", NotificationService.EVENING_REMINDER_NOTIFICATION_ID + "");
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, NotificationService.EVENING_REMINDER_NOTIFICATION_ID, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(StartActivity.this, NotificationService.EVENING_REMINDER_NOTIFICATION_ID, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.cancel(pendingIntent);
+    }
+
+    private void cancelMorningSurveyAlarm() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent alertIntent = new Intent(StartActivity.this, TimerReceiver.class);
+        alertIntent.putExtra("broadcast Int", NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID + "");
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(StartActivity.this, NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.cancel(pendingIntent);
     }
 
@@ -370,6 +353,20 @@ public class StartActivity extends AppCompatActivity {
 
 
         long reminderTime = userStartTime + BoozymeterApplication.EVENING_REMINDER_OFFSET;
+        if (reminderTime < now) {
+            reminderTime += BoozymeterApplication.CYCLE_LENGTH;
+        }
+
+        return reminderTime;
+    }
+
+    private long calculateMorningSurveyTime() {
+        Calendar calendar = Calendar.getInstance();
+        long now = calendar.getTimeInMillis();
+        long userStartTime = getUserStartTime();
+
+
+        long reminderTime = userStartTime + BoozymeterApplication.SURVEY_OFFSET;
         if (reminderTime < now) {
             reminderTime += BoozymeterApplication.CYCLE_LENGTH;
         }
@@ -424,61 +421,9 @@ public class StartActivity extends AppCompatActivity {
         mEditor.apply();
     }
 
-    private int getCurrentCycle() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        int cycle = mSharedPreferences.getInt("currentCycle", 0);
-        return cycle;
-    }
-
-    private void storeCurrentCycle(int cycle) {
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-        mEditor.putInt("currentCycle", cycle);
-        mEditor.apply();
-    }
-
-    private InterventionMap getInterventionMap() {
-        Gson gson = new Gson();
-
-        // prevent NullPointerException
-        InterventionMap emptyInterventionMap = new InterventionMap();
-        String emptyInterventionMapStr = gson.toJson(emptyInterventionMap);
-
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        String json = mSharedPreferences.getString("intervention_map", emptyInterventionMapStr);
-        InterventionMap map = gson.fromJson(json, InterventionMap.class);
-        return map;
-    }
-
-    private void storeInterventionMap(InterventionMap map) {
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(map); // myObject - instance of MyObject
-        mEditor.putString("intervention_map", json);
-        mEditor.apply();
-    }
-
-    private LongList getCycleStartTimeList() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = mSharedPreferences.getString("cycle_start_time_list", "[]");
-        LongList list = gson.fromJson(json, LongList.class);
-        return list;
-    }
-
-    private void storeCycleStartTimeList(LongList list) {
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(list); // myObject - instance of MyObject
-        mEditor.putString("cycle_start_time_list", json);
-        mEditor.apply();
-    }
-
     private void precomputeInterventionLookupTable(long userStartTime) {
         // clear old intervention map in shared preferences
-        storeInterventionMap(new InterventionMap());
+        CalculationUtil.storeInterventionMap(getApplicationContext(), new InterventionMap());
 
         List<InterventionDisplayData> interventionOrder = getInterventionOrder();
         int eachInterventionLength = BoozymeterApplication.NUM_CYCLES / 3;
@@ -498,9 +443,13 @@ public class StartActivity extends AppCompatActivity {
             interventionLookupTable.put(day, interventionOrder.get(phase));
         }
 
+        // compute one more cycle  to support morning surbey of the last cycle
+        cycleStartTimeList.add(BoozymeterApplication.NUM_CYCLES, userStartTime + (BoozymeterApplication.NUM_CYCLES * BoozymeterApplication.CYCLE_LENGTH));
+        interventionLookupTable.put(BoozymeterApplication.NUM_CYCLES, interventionOrder.get(interventionOrder.size() - 1));
+
         // store the a new map in shared preferences
-        storeInterventionMap(interventionLookupTable);
-        storeCycleStartTimeList(cycleStartTimeList);
+        CalculationUtil.storeInterventionMap(getApplicationContext(), interventionLookupTable);
+        CalculationUtil.storeCycleStartTimeList(getApplicationContext(), cycleStartTimeList);
     }
 
     private List<InterventionDisplayData> getInterventionOrder() {
@@ -516,59 +465,6 @@ public class StartActivity extends AppCompatActivity {
     private boolean isFirstLogin() {
         return getLoginAttempts() == 1 && getStartAttempts() == 1;
     }
-
-//    private List<String> getUserListByGroup(DataSnapshot dataSnapshot, String s) {
-//        List<String> userList = new ArrayList<>();
-//        //iterates through the dataSnapshot
-//        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-//            String usersKey = ds.getKey().toString();
-//            if (usersKey.equals("Users")) {
-//                //gets information from database
-//                //makes sure that there is data at the given branch
-//                Map<String, Map<String, String>> controlJSON = (Map<String, Map<String, String>>) ds.child(s).getValue();
-//                if (controlJSON != null) {
-//                    userList = new ArrayList<>(controlJSON.keySet());
-//                }
-//            }
-//        }
-//        return userList;
-//    }
-//
-//    // check user's group from database and store in SharedPreferences
-//    private void storeUserGroupFromDBToSharedPref() {
-//        mReference = FirebaseDatabase.getInstance().getReference();
-//        mReference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//                String group = "";
-//                List<String> controlUserList = getUserListByGroup(dataSnapshot, "Control Group");
-//                List<String> experimentalUserList = getUserListByGroup(dataSnapshot, "Experimental Group");
-//
-//                for (int i = 0; i < experimentalUserList.size(); i++) {
-//                    if (experimentalUserList.get(i).equals(userIDMA)) {
-//                        group = "experimental";
-//                        break;
-//                    }
-//                }
-//
-//                for (int i = 0; i < controlUserList.size(); i++) {
-//                    if (controlUserList.get(i).equals(userIDMA)) {
-//                        group = "control";
-//                        break;
-//                    }
-//                }
-//                storeGroup(group);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//
-//        Log.e("group after ", getGroup() + "");
-//    }
 
     private String getGroup() {
         SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
@@ -587,13 +483,6 @@ public class StartActivity extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("UserID", MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.putString("user ID", string);
-        mEditor.apply();
-    }
-
-    private void storeNight(Integer nightCount) {
-        SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
-        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-        mEditor.putInt("night counter", nightCount);
         mEditor.apply();
     }
 

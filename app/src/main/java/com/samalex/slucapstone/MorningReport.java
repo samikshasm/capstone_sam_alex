@@ -24,16 +24,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 import com.samalex.slucapstone.dto.DrinkAnswer;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by AlexL on 7/29/2017.
@@ -44,7 +41,7 @@ import java.util.Map;
 public class MorningReport extends AppCompatActivity {
 
     //initialize variables
-    private int forCycle = 0;
+    private int cycleWhichThisReportIsAbout = 0;
     private String userIDMA;
     private String startActivity1;
     public static final String startActivity = "main";
@@ -69,8 +66,6 @@ public class MorningReport extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.morning_report);
 
-        forCycle = getIntent().getIntExtra("this survey is for cycle", 0);
-
         //gets shared preference variables
         SharedPreferences userIDSharedPref = getSharedPreferences("UserID", MODE_PRIVATE);
         userIDMA = userIDSharedPref.getString("user ID", "none");
@@ -85,6 +80,7 @@ public class MorningReport extends AppCompatActivity {
         mReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                cycleWhichThisReportIsAbout = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext())- 1; // we are reporting the previous cycle's drinks
                 getData(dataSnapshot);
                 getDistance(dataSnapshot);
             }
@@ -103,7 +99,7 @@ public class MorningReport extends AppCompatActivity {
         litersDrank = (TextView) findViewById(R.id.liters_drank);
 
         TextView display_day = (TextView) findViewById(R.id.display_day);
-        display_day.setText(getDateOnWhichItReport());
+        display_day.setText(getDateOnWhichItReport() + " (" + (cycleWhichThisReportIsAbout + 1) + ")"); // + 1 for display as one-based number
 
         //creates on Click listener for go to start button
         //resets variables
@@ -150,7 +146,7 @@ public class MorningReport extends AppCompatActivity {
             String usersKey = ds.getKey();
             if (usersKey.equals("Users")) {
 
-                List<DrinkAnswer> allDrinkAnswers = DatabaseQueryService.getAllDrinksAnswers(ds, userIDMA, forCycle);
+                List<DrinkAnswer> allDrinkAnswers = DatabaseQueryService.getAllDrinksAnswers(ds, userIDMA, cycleWhichThisReportIsAbout);
 
                 LiveReportData liveReportData = CalculationUtil.getLiveData(allDrinkAnswers);
 
@@ -200,7 +196,7 @@ public class MorningReport extends AppCompatActivity {
             //checks to make sure the location branch is not null
             String usersKey = ds.getKey().toString();
             if (usersKey.equals("Users")) {
-                Object locationObject = DatabaseQueryService.getLocations(ds, userIDMA, getNightCount(), forCycle);
+                Object locationObject = DatabaseQueryService.getLocations(ds, userIDMA, getNightCount(), cycleWhichThisReportIsAbout);
                 // { "Time: 2019-03-17 22:42:51": "37.4219983&-122.084"
                 if (locationObject != null) {
                     //gets the specific latitude and longitude string from database
@@ -260,7 +256,7 @@ public class MorningReport extends AppCompatActivity {
 
     public String getDateOnWhichItReport() {
         long userCanonicalStartTimeInMillis = getUserStartTime();
-        long reportDate = userCanonicalStartTimeInMillis + (forCycle * BoozymeterApplication.CYCLE_LENGTH);
+        long reportDate = userCanonicalStartTimeInMillis + (cycleWhichThisReportIsAbout * BoozymeterApplication.CYCLE_LENGTH);
         Date currentDate = new Date(reportDate);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return dateFormat.format(currentDate);

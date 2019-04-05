@@ -42,7 +42,6 @@ public class TimerReceiver extends BroadcastReceiver {
 
             Intent service_intent = new Intent(context, NotificationService.class);
             service_intent.putExtra("broadcast Int", broadcastStr);
-            service_intent.putExtra("this survey is for cycle", intent.getIntExtra("this survey is for cycle", 0));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(service_intent);
             } else {

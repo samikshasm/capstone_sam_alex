@@ -52,8 +52,7 @@ public class NotificationService extends Service {
                 }
                 break;
             case MORNING_QUESTIONNAIRE_NOTIFICATION_ID:
-                int forCycle = intent.getIntExtra("this survey is for cycle", 0);
-                notifyTimeForMorningQuestionnaire(notificationId, broadcastId, forCycle);
+                notifyTimeForMorningQuestionnaire(notificationId, broadcastId);
                 break;
 
             case FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID:
@@ -81,10 +80,9 @@ public class NotificationService extends Service {
     }
 
     //creates notification that appears when the morning alarm goes off
-    private void notifyTimeForMorningQuestionnaire(int notificationId, String broadcastId, int forCycle) {
+    private void notifyTimeForMorningQuestionnaire(int notificationId, String broadcastId) {
         Intent morningIntent = new Intent(this, MorningQS.class);
         morningIntent.putExtra("broadcast Int", broadcastId);
-        morningIntent.putExtra("this survey is for cycle", forCycle);
 
         PendingIntent morningIntent1 = PendingIntent.getActivity(this, 0, morningIntent, PendingIntent.FLAG_ONE_SHOT);
 

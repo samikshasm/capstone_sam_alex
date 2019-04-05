@@ -1,7 +1,12 @@
 package com.samalex.slucapstone;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import com.google.gson.Gson;
 import com.samalex.slucapstone.dto.DrinkAnswer;
 
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -252,5 +257,85 @@ public class CalculationUtil {
                 liquorPercentage);
 
         return liveReportData;
+    }
+
+    public static int updateAndGetCurrentCycle(Context context) {
+        Calendar calendar = Calendar.getInstance();
+        long currentTimeInMillis = calendar.getTimeInMillis();
+
+        // get stored cycle no.
+        SharedPreferences mSharedPreferences = context.getSharedPreferences("boozymeter", context.MODE_PRIVATE);
+        int storedCycle = mSharedPreferences.getInt("currentCycle", 0);
+
+        // get up-to-date cycle
+        List<Long> cycleStartTimeList = CalculationUtil.getCycleStartTimeList(context);
+        int currentCycle = 0;
+        for (int i = 0, len = cycleStartTimeList.size(); i < len; i++) {
+            if (currentTimeInMillis >= cycleStartTimeList.get(i)) {
+                currentCycle = i;
+            } else {
+                break;
+            }
+        }
+        if (storedCycle != currentCycle) {
+            CalculationUtil.storeCurrentCycle(context, currentCycle);
+            CalculationUtil.storeNight(context, 0); // reset episode count when a new cycle starts
+            return currentCycle;
+        } else {
+            return storedCycle;
+        }
+    }
+
+    public static LongList getCycleStartTimeList(Context context) {
+        SharedPreferences mSharedPreferences = context.getSharedPreferences("boozymeter", context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = mSharedPreferences.getString("cycle_start_time_list", "[]");
+        LongList list = gson.fromJson(json, LongList.class);
+        return list;
+    }
+
+    public static void storeCycleStartTimeList(Context context, LongList list) {
+        SharedPreferences mSharedPreferences = context.getSharedPreferences("boozymeter", context.MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(list); // myObject - instance of MyObject
+        mEditor.putString("cycle_start_time_list", json);
+        mEditor.apply();
+    }
+
+    public static void storeCurrentCycle(Context context, int cycle) {
+        SharedPreferences mSharedPreferences = context.getSharedPreferences("boozymeter", context.MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putInt("currentCycle", cycle);
+        mEditor.apply();
+    }
+
+    public static void storeNight(Context context, Integer nightCount) {
+        SharedPreferences mSharedPreferences = context.getSharedPreferences("Night Count", context.MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putInt("night counter", nightCount);
+        mEditor.apply();
+    }
+
+    public static InterventionMap getInterventionMap(Context context) {
+        Gson gson = new Gson();
+
+        // prevent NullPointerException
+        InterventionMap emptyInterventionMap = new InterventionMap();
+        String emptyInterventionMapStr = gson.toJson(emptyInterventionMap);
+
+        SharedPreferences mSharedPreferences = context.getSharedPreferences("boozymeter", context.MODE_PRIVATE);
+        String json = mSharedPreferences.getString("intervention_map", emptyInterventionMapStr);
+        InterventionMap map = gson.fromJson(json, InterventionMap.class);
+        return map;
+    }
+
+    public static void storeInterventionMap(Context context, InterventionMap map) {
+        SharedPreferences mSharedPreferences = context.getSharedPreferences("boozymeter", context.MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(map); // myObject - instance of MyObject
+        mEditor.putString("intervention_map", json);
+        mEditor.apply();
     }
 }

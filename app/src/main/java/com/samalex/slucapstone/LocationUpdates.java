@@ -95,7 +95,7 @@ public class LocationUpdates extends IntentService {
     //function to write to the database
     public void writeToDB(String text1) {
 //        Log.e("Location Service DB", "Boi");
-        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + getCurrentCycle())
+        DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + CalculationUtil.updateAndGetCurrentCycle(getApplicationContext()))
                 .child("Episodes").child(getNightCount() + "").child("Location").child("Date: " + dateTime);
         mRef.setValue(text1);
 
@@ -106,11 +106,5 @@ public class LocationUpdates extends IntentService {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
         return nightCount;
-    }
-
-    private int getCurrentCycle() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        int cycle = mSharedPreferences.getInt("currentCycle", 0);
-        return cycle;
     }
 }

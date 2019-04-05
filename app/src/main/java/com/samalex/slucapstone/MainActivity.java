@@ -32,7 +32,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -217,14 +216,14 @@ public class MainActivity extends AppCompatActivity {
             long userStartTime = getUserStartTime();
             String userStartDateStr = dateFormat.format(new Date(userStartTime));
 
-            long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), getCurrentCycle());
+            long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), CalculationUtil.updateAndGetCurrentCycle(getApplicationContext()));
             String moringSurveyTime = dateFormat.format(new Date(morningSurveyTimeInMillis));
             String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
 
             @Override
             public void onClick(View view) {
-                int currentCycle = getCurrentCycle();
-                InterventionDisplayData ui = getInterventionMap().get(currentCycle);
+                int currentCycle = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext());
+                InterventionDisplayData ui = CalculationUtil.getInterventionMap(getApplicationContext()).get(currentCycle);
                 String liveReportFlag;
                 String morningReportFlag;
 
@@ -239,26 +238,29 @@ public class MainActivity extends AppCompatActivity {
 
                 android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(MainActivity.this, R.style.MyDialogTheme);
                 builder.setTitle("Hidden Logs")
-                        .setMessage("Number of cycles: " + BoozymeterApplication.NUM_CYCLES
-                                + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
-                                + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
-                                + "\nMorning survey offset: " + BoozymeterApplication.SURVEY_OFFSET / 1000 / 60 + " minutes"
-                                + "\nEvening reminder offset: " + BoozymeterApplication.EVENING_REMINDER_OFFSET / 1000 / 60 + " minutes"
-                                + "\n"
-                                + "\nUsername: " + userIDMA
+                        .setMessage("Username: " + userIDMA
                                 + "\nUser group: " + getGroup()
                                 + "\n"
                                 + "\nRaw start time: " + userRawStartDateStr
                                 + "\nCanonical start time (incl. cycle offset): " + userStartDateStr
-                                + "\nCycle (1-based index): " + (currentCycle + 1)
+                                + "\n"
+                                + "\nCurrent Cycle: " + (currentCycle + 1)
                                 + "\n"
                                 + "\nLive report: " + liveReportFlag
                                 + "\nMorning report: " + morningReportFlag
                                 + "\n"
-                                + "\nNumber of Episode: " + getNightCount()
+                                + "\nNumber of Episodes: " + getNightCount()
                                 + "\n"
                                 + "\nNext morning Survey alarm will go off: " + moringSurveyTime
                                 + "\nNext evening reminder will go off: " + eveningReminderTime
+                                + "\n\n--------- Settings ---------"
+                                + "\nNumber of cycles: " + BoozymeterApplication.NUM_CYCLES
+                                + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
+                                + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
+                                + "\nEvening reminder offset: " + BoozymeterApplication.EVENING_REMINDER_OFFSET / 1000 / 60 + " minutes"
+                                + "\nMorning survey offset: " + BoozymeterApplication.SURVEY_OFFSET / 1000 / 60 + " minutes"
+                                + "\nIn-episode reminder offset: " + BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL / 1000 / 60 + " minutes"
+                                + "\n"
                         )
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -299,8 +301,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showHideLiveReportData() {
-        InterventionMap interventionMap = getInterventionMap();
-        InterventionDisplayData display = interventionMap.get(getCurrentCycle());
+        InterventionMap interventionMap = CalculationUtil.getInterventionMap(getApplicationContext());
+        InterventionDisplayData display = interventionMap.get(CalculationUtil.updateAndGetCurrentCycle(getApplicationContext()));
 
         LinearLayout liveDataLayout = (LinearLayout) findViewById(R.id.live_report_layout);
 
@@ -413,7 +415,7 @@ public class MainActivity extends AppCompatActivity {
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             String usersKey = ds.getKey();
             if (usersKey.equals("Users")) {
-                int currentCycle = getCurrentCycle();
+                int currentCycle = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext());
 
                 List<DrinkAnswer> allDrinkAnswers = DatabaseQueryService.getAllDrinksAnswers(ds, userIDMA, currentCycle);
 
@@ -423,20 +425,6 @@ public class MainActivity extends AppCompatActivity {
                 cost_txt.setText(String.format("%.2f", liveReportData.getAverageCost()));
             }
         }
-    }
-
-    private int getCurrentCycle() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        int cycle = mSharedPreferences.getInt("currentCycle", 0);
-        return cycle;
-    }
-
-    private InterventionMap getInterventionMap() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = mSharedPreferences.getString("intervention_map", "");
-        InterventionMap map = gson.fromJson(json, InterventionMap.class);
-        return map;
     }
 
     private Long getUserStartTime() {

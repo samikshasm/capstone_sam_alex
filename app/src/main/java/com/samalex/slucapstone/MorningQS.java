@@ -39,7 +39,7 @@ import java.util.List;
  */
 
 public class MorningQS extends AppCompatActivity {
-    private int forCycle = 0;
+    private int cycleWhichThisSurveyIsAbout = 0;
     private String userIDMA;
     private String startActivity1;
     public static final String startActivity = "main";
@@ -287,15 +287,14 @@ public class MorningQS extends AppCompatActivity {
             long userStartTime = getUserStartTime();
             String userStartDateStr = dateFormat.format(new Date(userStartTime));
 
-            long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), getCurrentCycle());
+            long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), cycleWhichThisSurveyIsAbout);
             String moringSurveyTime = dateFormat.format(new Date(morningSurveyTimeInMillis));
             String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
 
             @Override
             public void onClick(View view) {
-                int currentCycle = getCurrentCycle();
-
-                InterventionDisplayData ui = getInterventionMap().get(forCycle);
+                int currentCycle = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext());
+                InterventionDisplayData ui = CalculationUtil.getInterventionMap(getApplicationContext()).get(cycleWhichThisSurveyIsAbout);
                 String liveReportFlag;
                 String morningReportFlag;
 
@@ -310,28 +309,30 @@ public class MorningQS extends AppCompatActivity {
 
                 android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(MorningQS.this, R.style.MyDialogTheme);
                 builder.setTitle("Hidden Logs")
-                        .setMessage("**** This is a morning survey for cycle " + (forCycle + 1) + " ****"
-                                + "\nNumber of cycles: " + BoozymeterApplication.NUM_CYCLES
-                                + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
-                                + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
-                                + "\nMorning survey offset: " + BoozymeterApplication.SURVEY_OFFSET / 1000 / 60 + " minutes"
-                                + "\nEvening reminder offset: " + BoozymeterApplication.EVENING_REMINDER_OFFSET / 1000 / 60 + " minutes"
-                                + "\n"
-                                + "\nUsername: " + userIDMA
-                                + "\nUser group: " + getGroup()
-                                + "\n"
-                                + "\nRaw start time: " + userRawStartDateStr
-                                + "\nCanonical start time (incl. cycle offset): " + userStartDateStr
-                                + "\nCycle (1-based index): " + (currentCycle + 1)
-                                + "\n"
-                                + "\nLive report: " + liveReportFlag
-                                + "\nMorning report: " + morningReportFlag
-                                + "\n"
-//                                + "\nNumber of drinks: " + getNumDrinks()
-                                + "\nNumber of Episode: " + getNightCount()
-                                + "\n"
-                                + "\nNext morning Survey alarm will go off: " + moringSurveyTime
-                                + "\nNext evening reminder will go off: " + eveningReminderTime
+                        .setMessage("Username: " + userIDMA
+                                        + "\nUser group: " + getGroup()
+                                        + "\n"
+                                        + "\nRaw start time: " + userRawStartDateStr
+                                        + "\nCanonical start time (incl. cycle offset): " + userStartDateStr
+                                        + "\n"
+                                        + "\nThis is a morning survey for cycle " + (cycleWhichThisSurveyIsAbout + 1) + " **" // +1 to display as a one-based number
+                                        + "\nCurrent Cycle: " + (currentCycle + 1) // +1 to display as a one-based number
+                                        + "\n"
+                                        + "\nLive report: " + liveReportFlag
+                                        + "\nMorning report: " + morningReportFlag
+//                                        + "\n"
+//                                        + "\nNumber of Episodes: " + getNightCount()
+//                                        + "\n"
+//                                        + "\nNext morning Survey alarm will go off: " + moringSurveyTime
+//                                        + "\nNext evening reminder will go off: " + eveningReminderTime
+                                        + "\n\n--------- Settings ---------"
+                                        + "\nNumber of cycles: " + BoozymeterApplication.NUM_CYCLES
+                                        + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
+                                        + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
+                                        + "\nEvening reminder offset: " + BoozymeterApplication.EVENING_REMINDER_OFFSET / 1000 / 60 + " minutes"
+                                        + "\nMorning survey offset: " + BoozymeterApplication.SURVEY_OFFSET / 1000 / 60 + " minutes"
+                                        + "\nIn-episode reminder offset: " + BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL / 1000 / 60 + " minutes"
+                                        + "\n"
                         )
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -367,23 +368,24 @@ public class MorningQS extends AppCompatActivity {
                 } else {
 
                     int nightCount = getNightCount();
+                    cycleWhichThisSurveyIsAbout = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext()) - 1; // we are reporting the previous cycle's drinks
 
-                    writeOralToDB(oral, nightCount, forCycle);
-                    writeLastNightDrink(drinklastNight, nightCount, forCycle);
-                    writeNumDrinksToDB(drinksCounter, nightCount, forCycle);
-                    writeTypesDrinksToDB(TextUtils.join(",", typesOfDrinks), nightCount, forCycle);
-                    writeHangoverToDB(hangover, nightCount, forCycle);
-                    writeDrugsToDB(drugs, nightCount, forCycle);
-                    writeTypeDrugsToDB(TextUtils.join(",", typeDrugs), nightCount, forCycle);
-                    writeAnalVaginalToDB(analVaginalSex, nightCount, forCycle);
-                    writeCondomToDB(condom, nightCount, forCycle);
+                    writeOralToDB(oral, nightCount, cycleWhichThisSurveyIsAbout);
+                    writeLastNightDrink(drinklastNight, nightCount, cycleWhichThisSurveyIsAbout);
+                    writeNumDrinksToDB(drinksCounter, nightCount, cycleWhichThisSurveyIsAbout);
+                    writeTypesDrinksToDB(TextUtils.join(",", typesOfDrinks), nightCount, cycleWhichThisSurveyIsAbout);
+                    writeHangoverToDB(hangover, nightCount, cycleWhichThisSurveyIsAbout);
+                    writeDrugsToDB(drugs, nightCount, cycleWhichThisSurveyIsAbout);
+                    writeTypeDrugsToDB(TextUtils.join(",", typeDrugs), nightCount, cycleWhichThisSurveyIsAbout);
+                    writeAnalVaginalToDB(analVaginalSex, nightCount, cycleWhichThisSurveyIsAbout);
+                    writeCondomToDB(condom, nightCount, cycleWhichThisSurveyIsAbout);
 
                     if (analVaginalSex.equals("Yes")) {
                         int partnerSelectedId = partnerGroup.getCheckedRadioButtonId();
                         RadioButton partnerButton;
                         partnerButton = (RadioButton) findViewById(partnerSelectedId);
                         partner = partnerButton.getText().toString();
-                        writePartnerToDB(partner, nightCount, forCycle);
+                        writePartnerToDB(partner, nightCount, cycleWhichThisSurveyIsAbout);
 
                     }
                     if (stress_event.equals("Yes")) {
@@ -391,12 +393,12 @@ public class MorningQS extends AppCompatActivity {
                         RadioButton stressButton;
                         stressButton = (RadioButton) findViewById(stressSelectedID);
                         whenStressOccurred = stressButton.getText().toString();
-                        writeStressOccurranceToDB(whenStressOccurred, nightCount, forCycle);
+                        writeStressOccurranceToDB(whenStressOccurred, nightCount, cycleWhichThisSurveyIsAbout);
                     }
 
-                    writeStressEventToDB(stress_event, nightCount, forCycle);
-                    writeTypeStressToDB(TextUtils.join(",", typeStress), nightCount, forCycle);
-                    writeStressValueToDB(stress_value, nightCount, forCycle);
+                    writeStressEventToDB(stress_event, nightCount, cycleWhichThisSurveyIsAbout);
+                    writeTypeStressToDB(TextUtils.join(",", typeStress), nightCount, cycleWhichThisSurveyIsAbout);
+                    writeStressValueToDB(stress_value, nightCount, cycleWhichThisSurveyIsAbout);
                     finish();
 
 
@@ -875,7 +877,7 @@ public class MorningQS extends AppCompatActivity {
         if (broadcastID != null) {
             int notificationId = Integer.parseInt(broadcastID);
             NotificationService.dismissNotification(this, notificationId);
-            forCycle = getIntent().getIntExtra("this survey is for cycle", 0);
+            cycleWhichThisSurveyIsAbout = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext()) - 1; // we are reporting the previous cycle's drinks
         }
 
         // set a change listener on the SeekBar
@@ -915,8 +917,8 @@ public class MorningQS extends AppCompatActivity {
     }
 
     private void startNextActivity() {
-        InterventionMap interventionMap = getInterventionMap();
-        InterventionDisplayData display = interventionMap.get(forCycle);
+        InterventionMap interventionMap = CalculationUtil.getInterventionMap(getApplicationContext());
+        InterventionDisplayData display = interventionMap.get(cycleWhichThisSurveyIsAbout);
 
         if (display.isShowMorningReport()) {
             goToMorningReportScreen();
@@ -941,7 +943,6 @@ public class MorningQS extends AppCompatActivity {
         storeNumDrinks(0);
         Intent goToMorningReport = new Intent(MorningQS.this, MorningReport.class);
         goToMorningReport.putExtra("Start Activity", startActivity);
-        goToMorningReport.putExtra("this survey is for cycle", forCycle);
         startActivity(goToMorningReport);
         finish();
     }
@@ -1092,20 +1093,6 @@ public class MorningQS extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
         return nightCount;
-    }
-
-    private int getCurrentCycle() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        int cycle = mSharedPreferences.getInt("currentCycle", 0);
-        return cycle;
-    }
-
-    private InterventionMap getInterventionMap() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = mSharedPreferences.getString("intervention_map", "{}");
-        InterventionMap map = gson.fromJson(json, InterventionMap.class);
-        return map;
     }
 
     private String getGroup() {

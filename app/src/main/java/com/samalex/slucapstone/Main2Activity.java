@@ -520,7 +520,7 @@ public class Main2Activity extends AppCompatActivity {
 
     private void writeAnswersToDB(String drinkCost, String drinkType, int drinkSize, String drinkWithWhom, String where, int numDrinksPlanned) {
         dateTime = getDateTime();
-        int currentCycle = getCurrentCycle();
+        int currentCycle = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext());
         int episodeCount = getNightCount();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + currentCycle)
                 .child("Episodes").child(episodeCount + "").child("Answers").child("Date: " + dateTime);
@@ -548,11 +548,5 @@ public class Main2Activity extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
         return nightCount;
-    }
-
-    private int getCurrentCycle() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        int cycle = mSharedPreferences.getInt("currentCycle", 0);
-        return cycle;
     }
 }
