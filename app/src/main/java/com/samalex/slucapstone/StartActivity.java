@@ -249,11 +249,16 @@ public class StartActivity extends AppCompatActivity {
                                         + "\nNext evening reminder will go off: " + eveningReminderTime
                                         + "\n\n--------- Settings ---------"
                                         + "\nNumber of cycles: " + BoozymeterApplication.NUM_CYCLES
-                                        + "\nCycle length: " + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " minutes"
-                                        + "\nCycle offset: " + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " minutes"
-                                        + "\nEvening reminder offset: " + BoozymeterApplication.EVENING_REMINDER_OFFSET / 1000 / 60 + " minutes"
-                                        + "\nMorning survey offset: " + BoozymeterApplication.SURVEY_OFFSET / 1000 / 60 + " minutes"
-                                        + "\nIn-episode reminder offset: " + BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL / 1000 / 60 + " minutes"
+                                        + "\nCycle length: " + (BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 / 60) + " hr." + " ("
+                                        + BoozymeterApplication.CYCLE_LENGTH / 1000 / 60 + " min)"
+                                        + "\nCycle offset: " + (BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 / 60) + " hr." + " ("
+                                        + BoozymeterApplication.CYCLE_OFFSET / 1000 / 60 + " min)"
+                                        + "\nEvening reminder offset: " + (BoozymeterApplication.EVENING_REMINDER_OFFSET / 1000 / 60 / 60) + " hr." + " ("
+                                        + BoozymeterApplication.EVENING_REMINDER_OFFSET / 1000 / 60 + " min)"
+                                        + "\nMorning survey offset: " + ((float) BoozymeterApplication.SURVEY_OFFSET / 1000 / 60 / 60) + " hr." + " ("
+                                        + BoozymeterApplication.SURVEY_OFFSET / 1000 / 60 + " min)"
+                                        + "\nIn-episode reminder offset: " + (BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL / 1000 / 60 / 60) + " hr." + " ("
+                                        + BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL / 1000 / 60 + " min)"
                                         + "\n"
                         )
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
