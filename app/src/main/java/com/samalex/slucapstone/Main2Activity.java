@@ -162,6 +162,7 @@ public class Main2Activity extends AppCompatActivity {
         final Button drinks_subtract_button = (Button) findViewById(R.id.drinks_subtract_button);
         final TextView drinks_counter = (TextView) findViewById(R.id.drinks_counter);
 
+        // dismiss the notification when there's an intent sent from yes button of an interval reminder notification
         broadcastInt = getIntent().getStringExtra("broadcast Int");
         if (broadcastInt != null) {
             int notificationId = Integer.parseInt(broadcastInt);

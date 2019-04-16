@@ -28,6 +28,9 @@ public class NotificationService extends Service {
     final public static int MORNING_QUESTIONNAIRE_NOTIFICATION_ID = 5;
     final public static int EVENING_REMINDER_NOTIFICATION_ID = 6;
 
+    public static final int NOTIFICATION_YES_BUTTON_ID = 100;
+    public static final int NOTIFICATION_NO_BUTTON_ID = 200;
+
     private Integer counterInt = 0;
     public static final String CHANNEL_ID = "com.samalex.slucapstone.ANDROID";
     private NotificationCompat.Builder builder;
@@ -52,6 +55,7 @@ public class NotificationService extends Service {
                 }
                 break;
             case MORNING_QUESTIONNAIRE_NOTIFICATION_ID:
+//                dismissNotification(getApplicationContext(), MORNING_QUESTIONNAIRE_NOTIFICATION_ID);// TODO: try adding this line and test
                 notifyTimeForMorningQuestionnaire(notificationId, broadcastId);
                 break;
 
@@ -103,13 +107,13 @@ public class NotificationService extends Service {
     //creates a notification for the alarms that occur during the night after 30 minutes has gone by
     private void notify30minutesPass(int notificationId, String broadcastId) {
         Intent yesIntent = new Intent(this, Main2Activity.class);
-        yesIntent.putExtra("notificationBool", 100);
+        yesIntent.putExtra("notification action button id", NotificationService.NOTIFICATION_YES_BUTTON_ID);
         yesIntent.putExtra("broadcast Int", broadcastId);
         PendingIntent yesIntent1 = PendingIntent.getActivity(this, 0, yesIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         Log.e("yesIntent1", "" + yesIntent1);
 
         Intent noIntent = new Intent(this, ButtonReceiver.class);
-        noIntent.putExtra("notificationBool", 200);
+        noIntent.putExtra("notification action button id", NotificationService.NOTIFICATION_NO_BUTTON_ID);
         noIntent.putExtra("broadcast Int", broadcastId);
         PendingIntent noIntent1 = PendingIntent.getBroadcast(this, 0, noIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -119,6 +123,7 @@ public class NotificationService extends Service {
                         notificationId == THIRD_IN_EPISODE_REMINDER_NOTIFICATION_ID ? "..." : "";
 
         long timelapseInMinutes = BoozymeterApplication.IN_EPISODE_REMINDER_INTERVAL / 60 / 1000;
+
         if (isAndroid8OrLater()) {
             NotificationChannel channel = getNotificationChannel();
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -129,7 +134,8 @@ public class NotificationService extends Service {
             startForeground(notificationId, builder.build());
         } else {
             NotificationCompat.Builder builder = createNotificationBuilder(yesIntent1, noIntent1, "It's been " + timelapseInMinutes + " minutes! Have you had a drink" + hiddenCountSymbols + "?");
-            NotificationManagerCompat nManager = NotificationManagerCompat.from(this);
+//            NotificationManagerCompat nManager = NotificationManagerCompat.from(this);
+            NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             nManager.notify(notificationId, builder.build());
         }
     }
@@ -139,19 +145,26 @@ public class NotificationService extends Service {
     }
 
     private void notifyEveningReminder(int notificationId, String broadcastId) {
-        Intent eveningReminderIntent = new Intent(this, StartActivity.class);
-        eveningReminderIntent.putExtra("broadcast Int", broadcastId);
-        PendingIntent eveningReminderPendingIntent = PendingIntent.getActivity(this, 0, eveningReminderIntent, PendingIntent.FLAG_ONE_SHOT);
+        Intent yesIntent = new Intent(this, StartActivity.class);
+        yesIntent.putExtra("notification action button id", NotificationService.NOTIFICATION_YES_BUTTON_ID);
+        yesIntent.putExtra("broadcast Int", broadcastId);
+        PendingIntent yesPendingIntent = PendingIntent.getActivity(this, 0, yesIntent, PendingIntent.FLAG_ONE_SHOT);
+
+        Intent noIntent = new Intent(this, ButtonReceiver.class);
+        noIntent.putExtra("notification action button id", NotificationService.NOTIFICATION_NO_BUTTON_ID);
+        noIntent.putExtra("broadcast Int", broadcastId);
+        PendingIntent noPendingIntent = PendingIntent.getBroadcast(this, 0, noIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         if (isAndroid8OrLater()) {
             NotificationChannel channel = getNotificationChannel();
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
 
-            NotificationCompat.Builder builder = createNotificationBuilder(eveningReminderPendingIntent, "Are you going to have a drink today?");
+            NotificationCompat.Builder builder = createNotificationBuilder(yesPendingIntent, noPendingIntent, "Are you going to have a drink today?");
             startForeground(notificationId, builder.build());
         } else {
-            NotificationCompat.Builder builder = createNotificationBuilder(eveningReminderPendingIntent, "Are you going to have a drink today?");
+            NotificationCompat.Builder builder = createNotificationBuilder(yesPendingIntent, noPendingIntent, "Are you going to have a drink today?");
+//            NotificationManagerCompat nManager = NotificationManagerCompat.from(this);
             NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             nManager.notify(notificationId, builder.build());
         }

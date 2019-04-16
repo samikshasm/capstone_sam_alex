@@ -158,6 +158,15 @@ public class StartActivity extends AppCompatActivity {
             startActivity(switchToLogin);
             finish();
         }
+
+        // dismiss the notification when there's an intent sent from yes button of an evening reminder
+        String broadcastInt = getIntent().getStringExtra("broadcast Int");
+        if (broadcastInt != null) {
+            int notificationId = Integer.parseInt(broadcastInt);
+            if(notificationId == NotificationService.EVENING_REMINDER_NOTIFICATION_ID) {
+                NotificationService.dismissNotification(this, notificationId);
+            }
+        }
     }
 
     private void createAllDailyAlarms() {

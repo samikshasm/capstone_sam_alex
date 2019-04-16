@@ -21,20 +21,20 @@ public class BoozymeterApplication extends Application {
 //    public static final long IN_EPISODE_REMINDER_INTERVAL = 30 * 60 * 1000; // 30 minutes
 
     // Testing settings
-//    public static final long CYCLE_OFFSET = 0 * 60 * 1000;    // 1 mins
-//    public static final long CYCLE_LENGTH = 3 * 60 * 1000;    //  20 mins
-//    public static final int NUM_CYCLES = 3;
-//    public static final long SURVEY_OFFSET = 4 * 60 * 1000;  //  25 mins after cycle start
-//    public static final long EVENING_REMINDER_OFFSET = 2 * 60 * 1000;    // 12 mins from cycle time which is 3 hours from cycle offset start
-//    public static final long IN_EPISODE_REMINDER_INTERVAL = 10 * 1000;   // 2 mins
+    public static final long CYCLE_OFFSET = 0 * 60 * 1000;    // 0 mins
+    public static final long CYCLE_LENGTH = 3 * 60 * 1000;    //  3 mins
+    public static final int NUM_CYCLES = 3;
+    public static final long SURVEY_OFFSET = 4 * 60 * 1000;  //  4 mins after cycle start
+    public static final long EVENING_REMINDER_OFFSET = 2 * 60 * 1000;    // 2 mins from cycle time which is 3 hours from cycle offset start
+    public static final long IN_EPISODE_REMINDER_INTERVAL = 10 * 1000;   // 10 secconds
 
     //  Research team's test settings (04/05/2019)
-    public static final long CYCLE_OFFSET = 4 * 60 * 60 * 1000;        //  4-hour offset to force 12pm (noon) start of cycle #1
-    public static final long CYCLE_LENGTH = 8 * 60 * 60 * 1000;        //  8-hour cycles
-    public static final int NUM_CYCLES = 9;                             //  9-hour test overall, thus 3 cycles in each "week" of intervention styles
-    public static final long SURVEY_OFFSET = 510 * 60 * 1000;  //  8 hours and 30 minutes beyond offset start
-    public static final long EVENING_REMINDER_OFFSET = 3 * 60 * 60 * 1000;    // 3 hours after offset start
-    public static final long IN_EPISODE_REMINDER_INTERVAL = 30 * 60 * 1000;   // 30 minutes
+//    public static final long CYCLE_OFFSET = 4 * 60 * 60 * 1000;        //  4-hour offset to force 12pm (noon) start of cycle #1
+//    public static final long CYCLE_LENGTH = 8 * 60 * 60 * 1000;        //  8-hour cycles
+//    public static final int NUM_CYCLES = 9;                             //  9-hour test overall, thus 3 cycles in each "week" of intervention styles
+//    public static final long SURVEY_OFFSET = 510 * 60 * 1000;  //  8 hours and 30 minutes beyond offset start
+//    public static final long EVENING_REMINDER_OFFSET = 3 * 60 * 60 * 1000;    // 3 hours after offset start
+//    public static final long IN_EPISODE_REMINDER_INTERVAL = 30 * 60 * 1000;   // 30 minutes
 
     // Global settings
     private boolean isDebug = false;
