@@ -488,11 +488,8 @@ public class Main2Activity extends AppCompatActivity {
         String broadcastID = getIntent().getStringExtra("broadcast Int");
         if (broadcastID != null) {
             int notificationId = Integer.parseInt(broadcastID);
-
-            NotificationManager manager = (NotificationManager) Main2Activity.this.getSystemService(Context.NOTIFICATION_SERVICE);
-            manager.cancel(notificationId);
+            NotificationService.dismissNotification(this, notificationId);
         }
-
     }
 
     //function for switching back to the main activity after questions are answered
