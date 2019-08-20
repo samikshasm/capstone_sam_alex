@@ -168,15 +168,9 @@ public class MorningReport extends AppCompatActivity {
         colors.add(ContextCompat.getColor(MorningReport.this, R.color.green));
 
         List<PieEntry> yEntries = new ArrayList<>();
-        if (liveReportData.getBeerPercentage() > 0) {
-            yEntries.add(new PieEntry(liveReportData.getBeerPercentage(), 0));
-        }
-        if (liveReportData.getLiquorPercentage() > 0) {
-            yEntries.add(new PieEntry(liveReportData.getLiquorPercentage(), 1));
-        }
-        if (liveReportData.getWinePercentage() > 0) {
-            yEntries.add(new PieEntry(liveReportData.getWinePercentage(), 2));
-        }
+        yEntries.add(new PieEntry(liveReportData.getBeerPercentage(), 0));
+        yEntries.add(new PieEntry(liveReportData.getLiquorPercentage(), 1));
+        yEntries.add(new PieEntry(liveReportData.getWinePercentage(), 2));
 
         PieDataSet pieDataSet = new PieDataSet(yEntries, "");
         pieDataSet.setSliceSpace(2);
