@@ -31,7 +31,6 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.firebase.database.DatabaseReference;
-import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -52,10 +51,10 @@ public class StartActivity extends AppCompatActivity {
 
     private final InterventionDisplayData NO_INTERVENTION = new InterventionDisplayData(false, false);
     private final InterventionDisplayData INTERVENTION_A = new InterventionDisplayData(false, true);
-    private final InterventionDisplayData INTERVENTION_B = new InterventionDisplayData(true, false);
+    private final InterventionDisplayData INTERVENTION_B = new InterventionDisplayData(true, true);
 
-    private final List<InterventionDisplayData> CONTROL_GROUP_INTERVENTIONS = Arrays.asList(NO_INTERVENTION, INTERVENTION_A, INTERVENTION_B);
-    private final List<InterventionDisplayData> EXPERIMENTAL_GROUP_INTERVENTIONS = Arrays.asList(NO_INTERVENTION, INTERVENTION_B, INTERVENTION_A);
+    private final List<InterventionDisplayData> GROUP_1 = Arrays.asList(NO_INTERVENTION, INTERVENTION_A, INTERVENTION_B);
+    private final List<InterventionDisplayData> GROUP_2 = Arrays.asList(NO_INTERVENTION, INTERVENTION_B, INTERVENTION_A);
     private final List<InterventionDisplayData> NONE_GROUP_INTERVENTIONS = Arrays.asList(NO_INTERVENTION, NO_INTERVENTION, NO_INTERVENTION);
 
     private String userIDMA;
@@ -144,12 +143,10 @@ public class StartActivity extends AppCompatActivity {
             startActivity(switchToMain);
             finish();
         } else if (selectedScreen.equals("morningReport")) {
-            Log.e("is it experimental?", "hi it is");
             Intent switchToMorning = new Intent(StartActivity.this, MorningReport.class);
             startActivity(switchToMorning);
             finish();
         } else if (selectedScreen.equals("morningQS")) {
-            Log.e("is it control?", "hi it is");
             Intent switchToMorning = new Intent(StartActivity.this, MorningQS.class);
             startActivity(switchToMorning);
             finish();
@@ -469,9 +466,9 @@ public class StartActivity extends AppCompatActivity {
     private List<InterventionDisplayData> getInterventionOrder() {
         switch (getGroup()) {
             case "control":
-                return CONTROL_GROUP_INTERVENTIONS;
+                return GROUP_1;
             case "experimental":
-                return EXPERIMENTAL_GROUP_INTERVENTIONS;
+                return GROUP_2;
         }
         return NONE_GROUP_INTERVENTIONS;
     }

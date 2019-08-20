@@ -24,17 +24,17 @@ public class CalculationUtil {
     private static final double AVG_COST_OPTION_4 = 13.00;
     private static final double AVG_COST_OPTION_5 = 16.00;
 
-    public static final int BEER_SERVING_SIZE = 12;
-    public static final int WINE_SERVING_SIZE = 4;
-    public static final int LIQUOR_SERVING_SIZE = 1;
-    public static final Map<String, Integer> DRINK_SERVING_SIZE_MAP = new LinkedHashMap<>();
+    public static final double BEER_SERVING_SIZE = 12.0;
+    public static final double WINE_SERVING_SIZE = 4.0;
+    public static final double LIQUOR_SERVING_SIZE = 1.0;
+//    public static final Map<String, Integer> DRINK_SERVING_SIZE_MAP = new LinkedHashMap<>();
     public static final Integer CALORIES_PER_SERVING = 100;
 
-    static {
-        DRINK_SERVING_SIZE_MAP.put("wine", 4);
-        DRINK_SERVING_SIZE_MAP.put("beer", 12);
-        DRINK_SERVING_SIZE_MAP.put("liquor", 1);
-    }
+//    static {
+//        DRINK_SERVING_SIZE_MAP.put("wine", 4);
+//        DRINK_SERVING_SIZE_MAP.put("beer", 12);
+//        DRINK_SERVING_SIZE_MAP.put("liquor", 1);
+//    }
 
     public static double getAverageCost(Map<String, String> costObject) {
         Map<String, String> costJSON = costObject;
@@ -195,7 +195,7 @@ public class CalculationUtil {
 
         int totalNumWine = 0, totalNumLiquor = 0, totalNumBeer = 0;
         int totalOuncesConsumed = 0;
-        long totalCaloriesConsumed = 0;
+        int totalCaloriesConsumed = 0;
         int totalAverageCost = 0;
 
         for (int i = 0; i < allDrinkAnswers.size(); i++) {

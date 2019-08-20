@@ -3,7 +3,7 @@ package com.samalex.slucapstone;
 public class LiveReportData {
     private int numDrinks = 0;
     private int ouncesConsumed = 0;
-    private long caloriesConsumed = 0;
+    private int caloriesConsumed = 0;
     private float averageCost = 0;
     private float beerPercentage = 0;
     private float winePercentage = 0;
@@ -12,7 +12,7 @@ public class LiveReportData {
     public LiveReportData() {
     }
 
-    public LiveReportData(int numDrinks, int ouncesConsumed, long caloriesConsumed, float averageCost, float beerPercentage, float winePercentage, float liquorPercentage) {
+    public LiveReportData(int numDrinks, int ouncesConsumed, int caloriesConsumed, float averageCost, float beerPercentage, float winePercentage, float liquorPercentage) {
         this.numDrinks = numDrinks;
         this.ouncesConsumed = ouncesConsumed;
         this.caloriesConsumed = caloriesConsumed;
@@ -30,7 +30,7 @@ public class LiveReportData {
         this.ouncesConsumed = ouncesConsumed;
     }
 
-    public void setCaloriesConsumed(long caloriesConsumed) {
+    public void setCaloriesConsumed(int caloriesConsumed) {
         this.caloriesConsumed = caloriesConsumed;
     }
 
