@@ -409,13 +409,11 @@ public class StartActivity extends AppCompatActivity {
         naturalCycleStartTimeCalendar.set(Calendar.SECOND, 0);
         naturalCycleStartTimeCalendar.set(Calendar.MILLISECOND, 0);
 
-        long naturalCycleStartTime = naturalCycleStartTimeCalendar.getTimeInMillis();
+        long actualCycleStartTime = naturalCycleStartTimeCalendar.getTimeInMillis() + cycleOffset;
 
-        long startTime = (((now - naturalCycleStartTime) / cycleLength) * cycleLength) + cycleOffset + naturalCycleStartTime;
+        long numCycles = (cycleLength + now - actualCycleStartTime) / cycleLength - 1;
+        long startTime = numCycles * cycleLength + actualCycleStartTime;
 
-        if (now - naturalCycleStartTime < cycleOffset) {
-            startTime -= cycleLength; // support when the user login time is between midnight and CYCLE_OFFSET
-        }
         return startTime;
     }
 
