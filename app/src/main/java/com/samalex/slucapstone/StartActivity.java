@@ -3,6 +3,7 @@ package com.samalex.slucapstone;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -175,10 +176,12 @@ public class StartActivity extends AppCompatActivity {
         long cycleEveningReminderTime = calculateEveningReminderTime();
         calendar.setTimeInMillis(cycleEveningReminderTime);
 
-        Intent eveningAlertIntent = new Intent(this, TimerReceiver.class);
+        Context context = getApplicationContext();
+
+        Intent eveningAlertIntent = new Intent(context, TimerReceiver.class);
         eveningAlertIntent.putExtra("broadcast Int", NotificationService.EVENING_REMINDER_NOTIFICATION_ID + "");
 
-        PendingIntent eveningPendingIntent = PendingIntent.getBroadcast(this, NotificationService.EVENING_REMINDER_NOTIFICATION_ID, eveningAlertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent eveningPendingIntent = PendingIntent.getBroadcast(context, NotificationService.EVENING_REMINDER_NOTIFICATION_ID, eveningAlertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager alarmMgr = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), BoozymeterApplication.CYCLE_LENGTH, eveningPendingIntent);
@@ -188,10 +191,10 @@ public class StartActivity extends AppCompatActivity {
         long cycleMorningSurveyTime = calculateMorningSurveyTime();
         calendar.setTimeInMillis(cycleMorningSurveyTime);
 
-        Intent morningAlertIntent = new Intent(this, TimerReceiver.class);
+        Intent morningAlertIntent = new Intent(context, TimerReceiver.class);
         morningAlertIntent.putExtra("broadcast Int", NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID + "");
 
-        PendingIntent morningPendingIntent = PendingIntent.getBroadcast(this, NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID, morningAlertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent morningPendingIntent = PendingIntent.getBroadcast(context, NotificationService.MORNING_QUESTIONNAIRE_NOTIFICATION_ID, morningAlertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager morningSurveyAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         morningSurveyAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), BoozymeterApplication.CYCLE_LENGTH, morningPendingIntent);
