@@ -160,10 +160,10 @@ public class NotificationService extends Service {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
 
-            NotificationCompat.Builder builder = createNotificationBuilder(yesPendingIntent, noPendingIntent, "Are you going to have a drink today?");
+            NotificationCompat.Builder builder = createNotificationBuilder(yesPendingIntent, noPendingIntent, "Don't forget to log any drinks tonight");
             startForeground(notificationId, builder.build());
         } else {
-            NotificationCompat.Builder builder = createNotificationBuilder(yesPendingIntent, noPendingIntent, "Are you going to have a drink today?");
+            NotificationCompat.Builder builder = createNotificationBuilder(yesPendingIntent, noPendingIntent, "Don't forget to log any drinks tonight");
 //            NotificationManagerCompat nManager = NotificationManagerCompat.from(this);
             NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             nManager.notify(notificationId, builder.build());
