@@ -18,8 +18,10 @@ public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-            // Set the alarm here.
-            createAllDailyAlarms(context);
+            if(!(getCurrentScreen(context).equals("login"))) {
+                // Set the alarm here.
+                createAllDailyAlarms(context);
+            }
         }
     }
 
@@ -86,5 +88,10 @@ public class BootReceiver extends BroadcastReceiver {
         SharedPreferences mSharedPreferences = context.getSharedPreferences("boozymeter", MODE_PRIVATE);
         Long time = mSharedPreferences.getLong("userStartTime", 0);
         return time;
+    }
+
+    private String getCurrentScreen(Context context) {
+        SharedPreferences mSharedPreferences = context.getSharedPreferences("screen", MODE_PRIVATE);
+        return mSharedPreferences.getString("currentScreen", "none");
     }
 }
