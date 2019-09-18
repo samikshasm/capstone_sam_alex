@@ -81,6 +81,7 @@ public class MorningReport extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 cycleWhichThisReportIsAbout = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext())- 1; // we are reporting the previous cycle's drinks
+                Log.d("MorningReport: onDataChange", "cycleWhichThisReportIsAbout = " + cycleWhichThisReportIsAbout);
                 getData(dataSnapshot);
                 getDistance(dataSnapshot);
             }
@@ -99,7 +100,9 @@ public class MorningReport extends AppCompatActivity {
         litersDrank = (TextView) findViewById(R.id.liters_drank);
 
         TextView display_day = (TextView) findViewById(R.id.display_day);
+        cycleWhichThisReportIsAbout = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext())- 1; // we are reporting the previous cycle's drinks
         display_day.setText(getDateOnWhichItReport() + " (" + (cycleWhichThisReportIsAbout + 1) + ")"); // + 1 for display as one-based number
+        Log.d("MorningReport: onCreate", "cycleWhichThisReportIsAbout = " + cycleWhichThisReportIsAbout);
 
         //creates on Click listener for go to start button
         //resets variables

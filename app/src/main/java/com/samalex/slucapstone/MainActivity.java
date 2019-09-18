@@ -216,9 +216,11 @@ public class MainActivity extends AppCompatActivity {
             long userStartTime = getUserStartTime();
             String userStartDateStr = dateFormat.format(new Date(userStartTime));
 
-            long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), CalculationUtil.updateAndGetCurrentCycle(getApplicationContext()));
+            int currentCycle = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext());
+            long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), currentCycle);
             String moringSurveyTime = dateFormat.format(new Date(morningSurveyTimeInMillis));
-            String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
+            long eveningSurveyTimeInMillis = BoozymeterApplication.getNextEveningRemonderTimeInMillis(getUserStartTime(), currentCycle);
+            String eveningReminderTime = dateFormat.format(new Date(eveningSurveyTimeInMillis));
 
             @Override
             public void onClick(View view) {

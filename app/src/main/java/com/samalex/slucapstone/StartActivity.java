@@ -123,6 +123,7 @@ public class StartActivity extends AppCompatActivity {
             storeScreen("login");
         }
 
+        // when pressing "Done Drinking" button from MainActivity
         cancelButMain = getIntent().getStringExtra("Cancel main activity");
         if (cancelButMain == null) {
             Log.e("null String", "null");
@@ -218,9 +219,11 @@ public class StartActivity extends AppCompatActivity {
             long userStartTime = getUserStartTime();
             String userStartDateStr = dateFormat.format(new Date(userStartTime));
 
-            long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), CalculationUtil.updateAndGetCurrentCycle(getApplicationContext()));
+            int currentCycle = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext());
+            long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), currentCycle);
             String moringSurveyTime = dateFormat.format(new Date(morningSurveyTimeInMillis));
-            String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
+            long eveningSurveyTimeInMillis = BoozymeterApplication.getNextEveningRemonderTimeInMillis(getUserStartTime(), currentCycle);
+            String eveningReminderTime = dateFormat.format(new Date(eveningSurveyTimeInMillis));
 
             @Override
             public void onClick(View view) {

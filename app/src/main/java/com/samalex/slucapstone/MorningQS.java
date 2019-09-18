@@ -287,9 +287,11 @@ public class MorningQS extends AppCompatActivity {
             long userStartTime = getUserStartTime();
             String userStartDateStr = dateFormat.format(new Date(userStartTime));
 
+            int currentCycle = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext());
             long morningSurveyTimeInMillis = BoozymeterApplication.getNextMorningSurveyTimeInMillis(getUserStartTime(), cycleWhichThisSurveyIsAbout);
             String moringSurveyTime = dateFormat.format(new Date(morningSurveyTimeInMillis));
-            String eveningReminderTime = dateFormat.format(new Date(calculateEveningReminderTime()));
+            long eveningSurveyTimeInMillis = BoozymeterApplication.getNextEveningRemonderTimeInMillis(getUserStartTime(), currentCycle);
+            String eveningReminderTime = dateFormat.format(new Date(eveningSurveyTimeInMillis));
 
             @Override
             public void onClick(View view) {
