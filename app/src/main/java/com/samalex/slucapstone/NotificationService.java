@@ -145,25 +145,20 @@ public class NotificationService extends Service {
     }
 
     private void notifyEveningReminder(int notificationId, String broadcastId) {
-        Intent yesIntent = new Intent(this, StartActivity.class);
-        yesIntent.putExtra("notification action button id", NotificationService.NOTIFICATION_YES_BUTTON_ID);
-        yesIntent.putExtra("broadcast Int", broadcastId);
-        PendingIntent yesPendingIntent = PendingIntent.getActivity(this, 0, yesIntent, PendingIntent.FLAG_ONE_SHOT);
-
-        Intent noIntent = new Intent(this, ButtonReceiver.class);
-        noIntent.putExtra("notification action button id", NotificationService.NOTIFICATION_NO_BUTTON_ID);
-        noIntent.putExtra("broadcast Int", broadcastId);
-        PendingIntent noPendingIntent = PendingIntent.getBroadcast(this, 0, noIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        Intent okIntent = new Intent(this, StartActivity.class);
+        okIntent.putExtra("notification action button id", NotificationService.NOTIFICATION_YES_BUTTON_ID);
+        okIntent.putExtra("broadcast Int", broadcastId);
+        PendingIntent yesPendingIntent = PendingIntent.getActivity(this, 0, okIntent, PendingIntent.FLAG_ONE_SHOT);
 
         if (isAndroid8OrLater()) {
             NotificationChannel channel = getNotificationChannel();
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
 
-            NotificationCompat.Builder builder = createNotificationBuilder(yesPendingIntent, noPendingIntent, "Don't forget to log any drinks tonight");
+            NotificationCompat.Builder builder = createOkayNotificationBuilder(yesPendingIntent, "Don't forget to log any drinks tonight");
             startForeground(notificationId, builder.build());
         } else {
-            NotificationCompat.Builder builder = createNotificationBuilder(yesPendingIntent, noPendingIntent, "Don't forget to log any drinks tonight");
+            NotificationCompat.Builder builder = createOkayNotificationBuilder(yesPendingIntent, "Don't forget to log any drinks tonight");
 //            NotificationManagerCompat nManager = NotificationManagerCompat.from(this);
             NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             nManager.notify(notificationId, builder.build());
@@ -201,6 +196,20 @@ public class NotificationService extends Service {
                 .setContentText(contentText)
                 .addAction(R.drawable.check_small, "Yes", yesIntent1)
                 .addAction(R.drawable.cancel_small, "No", noIntent1)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true);
+
+        builder.setVibrate(new long[]{1000, 1000, 1000, 1000, 1000});
+        builder.setDefaults(Notification.DEFAULT_SOUND);
+        return builder;
+    }
+
+    private NotificationCompat.Builder createOkayNotificationBuilder(PendingIntent okIntent1, String contentText) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.small_statusbar_icon)
+                .setContentTitle("Boozymeter")
+                .setContentText(contentText)
+                .addAction(R.drawable.check_small, "OK", okIntent1)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true);
 
