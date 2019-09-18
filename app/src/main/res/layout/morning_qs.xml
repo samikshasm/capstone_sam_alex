@@ -513,7 +513,7 @@
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:gravity="center_horizontal"
-                    android:text="Did you have anal or vaginal sex yesterday?"/>
+                    android:text="Did you have sex in the last 24 hours?"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
