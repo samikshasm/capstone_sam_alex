@@ -61,8 +61,8 @@ public class BootReceiver extends BroadcastReceiver {
         long now = calendar.getTimeInMillis();
         long userStartTime = getUserStartTime(context);
 
-
-        long reminderTime = userStartTime + BoozymeterApplication.EVENING_REMINDER_OFFSET;
+        int currentCycle = CalculationUtil.updateAndGetCurrentCycle(context);
+        long reminderTime = userStartTime + (currentCycle * BoozymeterApplication.CYCLE_LENGTH) + BoozymeterApplication.EVENING_REMINDER_OFFSET;
         if (reminderTime < now) {
             reminderTime += BoozymeterApplication.CYCLE_LENGTH;
         }
@@ -75,8 +75,8 @@ public class BootReceiver extends BroadcastReceiver {
         long now = calendar.getTimeInMillis();
         long userStartTime = getUserStartTime(context);
 
-
-        long reminderTime = userStartTime + BoozymeterApplication.SURVEY_OFFSET;
+        int currentCycle = CalculationUtil.updateAndGetCurrentCycle(context);
+        long reminderTime = userStartTime + (currentCycle * BoozymeterApplication.CYCLE_LENGTH) +  + BoozymeterApplication.SURVEY_OFFSET;
         if (reminderTime < now) {
             reminderTime += BoozymeterApplication.CYCLE_LENGTH;
         }
