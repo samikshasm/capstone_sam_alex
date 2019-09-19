@@ -44,34 +44,39 @@ public class NotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e("We are in notification", "yay");
-        String broadcastId = intent.getStringExtra("broadcast Int");
-        int notificationId = Integer.parseInt(broadcastId);
+        int currentCycle = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext()); // zero-indexed number
+        if(currentCycle >= BoozymeterApplication.NUM_CYCLES) {
+            // we don't want any notification to be pushed after all cycles are done
+        } else {
+            Log.e("We are in notification", "yay");
+            String broadcastId = intent.getStringExtra("broadcast Int");
+            int notificationId = Integer.parseInt(broadcastId);
 
-        switch (notificationId) {
-            case EVENING_REMINDER_NOTIFICATION_ID:
-                if (getNightCount() == 0) { // remind only the user did not input any episode.
-                    notifyEveningReminder(notificationId, broadcastId);
-                }
-                break;
-            case MORNING_QUESTIONNAIRE_NOTIFICATION_ID:
+            switch (notificationId) {
+                case EVENING_REMINDER_NOTIFICATION_ID:
+                    if (getNightCount() == 0) { // remind only the user did not input any episode.
+                        notifyEveningReminder(notificationId, broadcastId);
+                    }
+                    break;
+                case MORNING_QUESTIONNAIRE_NOTIFICATION_ID:
 //                dismissNotification(getApplicationContext(), MORNING_QUESTIONNAIRE_NOTIFICATION_ID);// TODO: try adding this line and test
-                notifyTimeForMorningQuestionnaire(notificationId, broadcastId);
-                break;
+                    notifyTimeForMorningQuestionnaire(notificationId, broadcastId);
+                    break;
 
-            case FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID:
-                notify30minutesPass(notificationId, broadcastId);
-                break;
-            case SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID:
-                dismissNotification(getApplicationContext(), FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID);
-                notify30minutesPass(notificationId, broadcastId);
-                break;
-            case THIRD_IN_EPISODE_REMINDER_NOTIFICATION_ID:
-                dismissNotification(getApplicationContext(), SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID);
-                notify30minutesPass(notificationId, broadcastId);
-                break;
+                case FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID:
+                    notify30minutesPass(notificationId, broadcastId);
+                    break;
+                case SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID:
+                    dismissNotification(getApplicationContext(), FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID);
+                    notify30minutesPass(notificationId, broadcastId);
+                    break;
+                case THIRD_IN_EPISODE_REMINDER_NOTIFICATION_ID:
+                    dismissNotification(getApplicationContext(), SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID);
+                    notify30minutesPass(notificationId, broadcastId);
+                    break;
+            }
+
         }
-
         return START_NOT_STICKY; //START_REDELIVER_INTENT
     }
 
