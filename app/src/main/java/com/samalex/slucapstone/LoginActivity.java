@@ -258,7 +258,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEditor.apply();
     }
 
-    private void storeStartCycleNum(int startCycleNum) {
+    private void storeStartCycleNum(int startCycleNum) { // one-indexed number; starts from 1
         SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.putInt("startCycleNum", startCycleNum);
