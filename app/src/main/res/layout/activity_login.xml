@@ -46,6 +46,45 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <RadioButton android:id="@+id/radio_new_session"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/new_session"
+                    android:onClick="onRadioButtonClicked"
+                    android:checked="true"/>
+
+                <RadioButton
+                    android:id="@+id/radio_old_session"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="@string/continue_old_session" />
+            </RadioGroup>
+            <LinearLayout
+                android:id="@+id/start_cycle_spinner_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="From day:"/>
+                <Spinner
+                    android:id="@+id/start_cycle_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dialog"
+                    android:entries="@array/cycle_num_arrays"
+                    android:prompt="@string/cycle_num_prompt"/>
+            </LinearLayout>
+
+
+
             <Button
                 android:id="@+id/email_sign_in_button"
                 style="?android:textAppearanceSmall"
@@ -55,6 +94,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
+
 
         </LinearLayout>
     </ScrollView>

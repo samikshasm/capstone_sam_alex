@@ -24,6 +24,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -79,7 +82,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private FirebaseUser currentUser;
     private String username;
     private Integer loginAttempts;
-
+    private LinearLayout startCycleSpinnerLayoutView;
+    private Spinner startCycleSpinnerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +98,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        startCycleSpinnerLayoutView = findViewById(R.id.start_cycle_spinner_layout);
+        startCycleSpinnerView = findViewById(R.id.start_cycle_spinner);
 
         currentUserBool = getIntent().getStringExtra("sign out");
         //Toast.makeText(LoginActivity.this, "this is the login activity",
@@ -210,6 +216,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                             storeUserGroupFromDBToSharedPref();
 
+                            // Option to login to a specific cycle
+                            String cycleStartNumStr = String.valueOf(startCycleSpinnerView.getSelectedItem());
+                            int cycleStartNum = Integer.parseInt(cycleStartNumStr);
+                            storeStartCycleNum(cycleStartNum);
+
                             startActivity(intent);
                             finish();
                         } else {
@@ -244,6 +255,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         SharedPreferences mSharedPreferences = getSharedPreferences("Group", MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         mEditor.putString("Group", group);
+        mEditor.apply();
+    }
+
+    private void storeStartCycleNum(int startCycleNum) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putInt("startCycleNum", startCycleNum);
         mEditor.apply();
     }
 
@@ -359,6 +377,26 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
 
     }
+
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radio_new_session:
+                if (checked) {
+                    startCycleSpinnerLayoutView.setVisibility(View.GONE);
+                }
+                break;
+            case R.id.radio_old_session:
+                if (checked) {
+                    startCycleSpinnerLayoutView.setVisibility(View.VISIBLE);
+                }
+                break;
+        }
+    }
+
 
     /*private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.

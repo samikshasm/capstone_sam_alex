@@ -423,6 +423,12 @@ public class StartActivity extends AppCompatActivity {
         return startTime;
     }
 
+    private int getStartCycleNum() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        int time = mSharedPreferences.getInt("startCycleNum", 0);
+        return time;
+    }
+
     private Long getUserStartTime() {
         SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
         Long time = mSharedPreferences.getLong("userStartTime", 0);
