@@ -92,7 +92,8 @@ public class StartActivity extends AppCompatActivity {
 
         if (isFirstLogin()) {
             // reset all count values
-            CalculationUtil.storeCurrentCycle(getApplicationContext(), 0);
+            int startCycleNum = getStartCycleNum();
+            CalculationUtil.storeCurrentCycle(getApplicationContext(), startCycleNum - 1);
             CalculationUtil.storeNight(getApplicationContext(), 0); // count episodes in 1 cycle
 
             Calendar calendarInstance = Calendar.getInstance();
@@ -102,7 +103,8 @@ public class StartActivity extends AppCompatActivity {
             long canonicalUserStartTime = calculateUserStartTime(
                     Calendar.getInstance(),
                     BoozymeterApplication.CYCLE_LENGTH,
-                    BoozymeterApplication.CYCLE_OFFSET);
+                    BoozymeterApplication.CYCLE_OFFSET,
+                    startCycleNum);
 
             storeUserStartTime(canonicalUserStartTime);
             precomputeInterventionLookupTable(canonicalUserStartTime);
@@ -402,9 +404,10 @@ public class StartActivity extends AppCompatActivity {
         storeStartAttempts(startAttempts);
     }
 
-    public long calculateUserStartTime(Calendar currentDateTime, long cycleLength, long cycleOffset) {
+    public long calculateUserStartTime(Calendar currentDateTime, long cycleLength, long cycleOffset, int fromCycle) {
         long now = currentDateTime.getTimeInMillis();
 
+        // floored login time to midnight
         Calendar naturalCycleStartTimeCalendar = (Calendar) currentDateTime.clone();
         naturalCycleStartTimeCalendar.set(
                 currentDateTime.get(Calendar.YEAR),
@@ -415,18 +418,22 @@ public class StartActivity extends AppCompatActivity {
         naturalCycleStartTimeCalendar.set(Calendar.SECOND, 0);
         naturalCycleStartTimeCalendar.set(Calendar.MILLISECOND, 0);
 
+        // shift from midnight by cycleOffset
         long actualCycleStartTime = naturalCycleStartTimeCalendar.getTimeInMillis() + cycleOffset;
 
         long numCycles = (cycleLength + now - actualCycleStartTime) / cycleLength - 1;
         long startTime = numCycles * cycleLength + actualCycleStartTime;
+
+        // shift cycle with selected start cycle number
+        startTime -= (BoozymeterApplication.CYCLE_LENGTH * (fromCycle - 1));
 
         return startTime;
     }
 
     private int getStartCycleNum() {
         SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        int time = mSharedPreferences.getInt("startCycleNum", 0);
-        return time;
+        int time = mSharedPreferences.getInt("startCycleNum", 1);
+        return time; // one-indexed number; starts from 1
     }
 
     private Long getUserStartTime() {
