@@ -372,7 +372,7 @@ public class StartActivity extends AppCompatActivity {
 
 
         long reminderTime = userStartTime + BoozymeterApplication.EVENING_REMINDER_OFFSET;
-        if (reminderTime < now) {
+        while (reminderTime < now) {
             reminderTime += BoozymeterApplication.CYCLE_LENGTH;
         }
 
@@ -386,7 +386,7 @@ public class StartActivity extends AppCompatActivity {
 
 
         long reminderTime = userStartTime + BoozymeterApplication.SURVEY_OFFSET;
-        if (reminderTime < now) {
+        while (reminderTime < now) {
             reminderTime += BoozymeterApplication.CYCLE_LENGTH;
         }
 
