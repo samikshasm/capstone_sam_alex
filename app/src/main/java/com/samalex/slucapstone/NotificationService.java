@@ -45,7 +45,7 @@ public class NotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         int currentCycle = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext()); // zero-indexed number
-        if(currentCycle >= BoozymeterApplication.NUM_CYCLES) {
+        if(currentCycle > BoozymeterApplication.NUM_CYCLES) {
             // we don't want any notification to be pushed after all cycles are done
         } else {
             Log.e("We are in notification", "yay");
