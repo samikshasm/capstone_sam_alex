@@ -50,7 +50,7 @@ public class MorningReport extends AppCompatActivity {
     private String[] longitudeList;
     private String[] latitudeList;
     private TextView display_calories;
-    private Integer numLocation;
+    private Integer calibratedLocationNum;
     private TextView display_location;
     private TextView display_numDrinks;
     private PieChart pieChart;
@@ -80,7 +80,7 @@ public class MorningReport extends AppCompatActivity {
         mReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                cycleWhichThisReportIsAbout = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext())- 1; // we are reporting the previous cycle's drinks
+                cycleWhichThisReportIsAbout = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext()) - 1; // we are reporting the previous cycle's drinks
                 Log.d("MorningReport: onDataChange", "cycleWhichThisReportIsAbout = " + cycleWhichThisReportIsAbout);
                 getData(dataSnapshot);
                 getDistance(dataSnapshot);
@@ -193,61 +193,86 @@ public class MorningReport extends AppCompatActivity {
             //checks to make sure the location branch is not null
             String usersKey = ds.getKey().toString();
             if (usersKey.equals("Users")) {
-                Object locationObject = DatabaseQueryService.getLocations(ds, userIDMA, getNightCount(), cycleWhichThisReportIsAbout);
-                // { "Time: 2019-03-17 22:42:51": "37.4219983&-122.084"
-                if (locationObject != null) {
-                    //gets the specific latitude and longitude string from database
-                    String location = locationObject.toString();
-                    String locationSub = location.substring(1, location.length() - 1);
-                    String[] testType = locationSub.split(",");
-                    locationList = new String[testType.length];
-                    longitudeList = new String[testType.length];
-                    latitudeList = new String[testType.length];
+//                List<com.samalex.slucapstone.dto.Location> locationObject = DatabaseQueryService.getLocations(ds, userIDMA, getNightCount(), cycleWhichThisReportIsAbout);
+//                // { "Time: 2019-03-17 22:42:51": "37.4219983&-122.084"
+//                if (locationObject != null) {
+//                    //gets the specific latitude and longitude string from database
+//                    String location = locationObject.toString();
+//                    String locationSub = location.substring(1, location.length() - 1);
+//                    String[] testType = locationSub.split(",");
+//                    locationList = new String[testType.length];
+//                    longitudeList = new String[testType.length];
+//                    latitudeList = new String[testType.length];
+//
+//                    for (int i = 0; i < testType.length; i++) {
+//                        String[] tempList = testType[i].split("=");
+//                        locationList[i] = tempList[1];
+//                    }
+//
+//                    for (int i = 0; i < testType.length; i++) {
+//                        String[] tempList = locationList[i].split("&");
+//                        latitudeList[i] = tempList[0];
+//                        longitudeList[i] = tempList[1];
+//                    }
+//
+//                    float distance = 0;
+//                    numLocation = 1;
+//
+//                    //gets the difference in location between two latitude and longitude points
+//                    for (int i = 0; i < testType.length - 1; i++) {
+//                        float lat1 = Float.parseFloat(latitudeList[i]);
+//                        float lon1 = Float.parseFloat(longitudeList[i]);
+//                        float lat2 = Float.parseFloat(latitudeList[i + 1]);
+//                        float lon2 = Float.parseFloat(longitudeList[i + 1]);
+//
+//                        Location locationA = new Location("pointA");
+//                        Location locationB = new Location("pointB");
+//                        locationA.setLatitude(lat1);
+//                        locationA.setLongitude(lon1);
+//                        locationB.setLatitude(lat2);
+//                        locationB.setLongitude(lon2);
+//                        distance = locationA.distanceTo(locationB);
+//                        Log.e("distance", "" + distance);
+//
+//                        //if the distance is greater than a mile, then they traveled to a new location
+//                        if (distance > 1610) {
+//                            numLocation++;
+//                        }
+//
+//                        //sets the display location textview to number of locations visited
+//                        display_location.setText("" + numLocation);
+//                    }
+//                } else {
+//                    //if no locations were recorded, sets textview to 0
+//                    display_location.setText("0");
+//                }
 
-                    for (int i = 0; i < testType.length; i++) {
-                        String[] tempList = testType[i].split("=");
-                        locationList[i] = tempList[1];
-                    }
-
-                    for (int i = 0; i < testType.length; i++) {
-                        String[] tempList = locationList[i].split("&");
-                        latitudeList[i] = tempList[0];
-                        longitudeList[i] = tempList[1];
-                    }
-
+                List<Location> locationList = DatabaseQueryService.getLocations(ds, userIDMA, cycleWhichThisReportIsAbout);
+                int locationNum = locationList.size();
+                if (locationNum > 1) {
                     float distance = 0;
-                    numLocation = 1;
+                    calibratedLocationNum = 1;
 
-                    //gets the difference in location between two latitude and longitude points
-                    for (int i = 0; i < testType.length - 1; i++) {
-                        float lat1 = Float.parseFloat(latitudeList[i]);
-                        float lon1 = Float.parseFloat(longitudeList[i]);
-                        float lat2 = Float.parseFloat(latitudeList[i + 1]);
-                        float lon2 = Float.parseFloat(longitudeList[i + 1]);
-
-                        Location locationA = new Location("pointA");
-                        Location locationB = new Location("pointB");
-                        locationA.setLatitude(lat1);
-                        locationA.setLongitude(lon1);
-                        locationB.setLatitude(lat2);
-                        locationB.setLongitude(lon2);
-                        distance = locationA.distanceTo(locationB);
+                    for (int i = 0; i < locationNum - 1; i++) {
+                        //gets the difference in location between two latitude and longitude points
+                        distance = locationList.get(i).distanceTo(locationList.get(i + 1));
                         Log.e("distance", "" + distance);
 
                         //if the distance is greater than a mile, then they traveled to a new location
                         if (distance > 1610) {
-                            numLocation++;
+                            calibratedLocationNum++;
                         }
-
-                        //sets the display location textview to number of locations visited
-                        display_location.setText("" + numLocation);
                     }
+                } else if (locationNum == 1) {
+                    calibratedLocationNum = 1;
                 } else {
                     //if no locations were recorded, sets textview to 0
-                    display_location.setText("0");
+                    calibratedLocationNum = 0;
                 }
-            }
 
+                //sets the display location textview to number of locations visited
+                display_location.setText("" + calibratedLocationNum);
+            }
         }
     }
 

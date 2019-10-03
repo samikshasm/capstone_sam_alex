@@ -1,10 +1,13 @@
 package com.samalex.slucapstone;
 
+import android.location.Location;
+
 import com.google.firebase.database.DataSnapshot;
 import com.samalex.slucapstone.dto.DrinkAnswer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static java.nio.file.Paths.get;
 
@@ -39,10 +42,29 @@ public class DatabaseQueryService {
         return sizeObject;
     }
 
-    public static Object getLocations(DataSnapshot dataSnapshot, String username, Integer nightCount, int cycle) {
-        Object locationObject = dataSnapshot.child("UID: " + username).child("Cycle: " + cycle)
-                .child("Episodes").child(nightCount + "").child("Location").getValue();
-        return locationObject;
+    public static List<Location> getLocations(DataSnapshot dataSnapshot, String username, int cycle) {
+//        Object locationObject = dataSnapshot.child("UID: " + username).child("Cycle: " + cycle)
+//                .child("Episodes").child(nightCount + "").child("Location").getValue();
+//        return locationObject;
+        List episodeList = (List) dataSnapshot.child("UID: " + username).child("Cycle: " + cycle).child("Episodes").getValue();
+        List<Location> locationList = new ArrayList<>();
+        for(int j=0; j< episodeList.size(); j++) {
+            Map <String, Object> episode = (Map<String, Object>) episodeList.get(j);
+            Map<String, String> locationMap = (Map<String, String>) episode.get("Location");
+            long locationNum = locationMap.size();
+
+            Object[] strLocationList = locationMap.values().toArray();
+            for (int i = 0; i < locationNum; i++) {
+                String strLocation = strLocationList[i].toString();
+                String[] latlong = strLocation.split("&");
+
+                Location l = new Location("location" + i);
+                l.setLatitude(Float.parseFloat(latlong[0]));
+                l.setLongitude(Float.parseFloat(latlong[1]));
+                locationList.add(l);
+            }
+        }
+        return locationList;
     }
 
     public static Object getAllEpisodes(DataSnapshot dataSnapshot, String username, Integer nightCount, int cycle) {
@@ -55,7 +77,7 @@ public class DatabaseQueryService {
         List<DrinkAnswer> allDrinkAnswersForEntireCycle = new ArrayList<>();
         for (DataSnapshot episodeDS : allEpisodesDataSnapshot.getChildren()) {
             DataSnapshot allAnswersDS = episodeDS.child("Answers");
-            for (DataSnapshot singleDrinkAnswerDS: allAnswersDS.getChildren()) {
+            for (DataSnapshot singleDrinkAnswerDS : allAnswersDS.getChildren()) {
                 DrinkAnswer drinkAnswer = new DrinkAnswer();
                 drinkAnswer.setCost(singleDrinkAnswerDS.getValue(DrinkAnswer.class).getCost());
                 drinkAnswer.setDrinksPlanned(singleDrinkAnswerDS.getValue(DrinkAnswer.class).getDrinksPlanned());
