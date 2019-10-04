@@ -46,22 +46,25 @@ public class DatabaseQueryService {
 //        Object locationObject = dataSnapshot.child("UID: " + username).child("Cycle: " + cycle)
 //                .child("Episodes").child(nightCount + "").child("Location").getValue();
 //        return locationObject;
-        List episodeList = (List) dataSnapshot.child("UID: " + username).child("Cycle: " + cycle).child("Episodes").getValue();
         List<Location> locationList = new ArrayList<>();
-        for(int j=0; j< episodeList.size(); j++) {
-            Map <String, Object> episode = (Map<String, Object>) episodeList.get(j);
-            Map<String, String> locationMap = (Map<String, String>) episode.get("Location");
-            long locationNum = locationMap.size();
+        List episodeList = (List) dataSnapshot.child("UID: " + username).child("Cycle: " + cycle).child("Episodes").getValue();
+        if(episodeList != null) {
+            for (int j = 1; j < episodeList.size()+1; j++) { // Episodes running number start from 1
+                Map<String, Object> episode = (Map<String, Object>) episodeList.get(j);
+                if (episode == null) continue;
+                Map<String, String> locationMap = (Map<String, String>) episode.get("Location");
+                long locationNum = locationMap.size();
 
-            Object[] strLocationList = locationMap.values().toArray();
-            for (int i = 0; i < locationNum; i++) {
-                String strLocation = strLocationList[i].toString();
-                String[] latlong = strLocation.split("&");
+                Object[] strLocationList = locationMap.values().toArray();
+                for (int i = 0; i < locationNum; i++) {
+                    String strLocation = strLocationList[i].toString();
+                    String[] latlong = strLocation.split("&");
 
-                Location l = new Location("location" + i);
-                l.setLatitude(Float.parseFloat(latlong[0]));
-                l.setLongitude(Float.parseFloat(latlong[1]));
-                locationList.add(l);
+                    Location l = new Location("location" + i);
+                    l.setLatitude(Float.parseFloat(latlong[0]));
+                    l.setLongitude(Float.parseFloat(latlong[1]));
+                    locationList.add(l);
+                }
             }
         }
         return locationList;
