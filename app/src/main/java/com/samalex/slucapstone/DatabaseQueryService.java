@@ -53,17 +53,20 @@ public class DatabaseQueryService {
                 Map<String, Object> episode = (Map<String, Object>) episodeList.get(j);
                 if (episode == null) continue;
                 Map<String, String> locationMap = (Map<String, String>) episode.get("Location");
-                long locationNum = locationMap.size();
 
-                Object[] strLocationList = locationMap.values().toArray();
-                for (int i = 0; i < locationNum; i++) {
-                    String strLocation = strLocationList[i].toString();
-                    String[] latlong = strLocation.split("&");
+                if(locationMap != null) {
+                    long locationNum = locationMap.size();
 
-                    Location l = new Location("location" + i);
-                    l.setLatitude(Float.parseFloat(latlong[0]));
-                    l.setLongitude(Float.parseFloat(latlong[1]));
-                    locationList.add(l);
+                    Object[] strLocationList = locationMap.values().toArray();
+                    for (int i = 0; i < locationNum; i++) {
+                        String strLocation = strLocationList[i].toString();
+                        String[] latlong = strLocation.split("&");
+
+                        Location l = new Location("location" + i);
+                        l.setLatitude(Float.parseFloat(latlong[0]));
+                        l.setLongitude(Float.parseFloat(latlong[1]));
+                        locationList.add(l);
+                    }
                 }
             }
         }
