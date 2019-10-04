@@ -44,41 +44,34 @@ public class NotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        int currentCycle = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext()); // zero-indexed number
-        if (!this.getIsDoneAllCycle()) { // we don't want any notification to be pushed if all cycles are done
 
-            Log.e("We are in notification", "yay");
-            String broadcastId = intent.getStringExtra("broadcast Int");
-            int notificationId = Integer.parseInt(broadcastId);
+        Log.e("We are in notification", "yay");
+        String broadcastId = intent.getStringExtra("broadcast Int");
+        int notificationId = Integer.parseInt(broadcastId);
 
-            switch (notificationId) {
-                case EVENING_REMINDER_NOTIFICATION_ID:
-                    if (getNightCount() == 0) { // remind only the user did not input any episode.
-                        notifyEveningReminder(notificationId, broadcastId);
-                    }
-                    break;
-                case MORNING_QUESTIONNAIRE_NOTIFICATION_ID:
+        switch (notificationId) {
+            case EVENING_REMINDER_NOTIFICATION_ID:
+                if (getNightCount() == 0) { // remind only the user did not input any episode.
+                    notifyEveningReminder(notificationId, broadcastId);
+                }
+                break;
+            case MORNING_QUESTIONNAIRE_NOTIFICATION_ID:
 //                dismissNotification(getApplicationContext(), MORNING_QUESTIONNAIRE_NOTIFICATION_ID);// TODO: try adding this line and test
-                    notifyTimeForMorningQuestionnaire(notificationId, broadcastId);
-                    break;
+                notifyTimeForMorningQuestionnaire(notificationId, broadcastId);
+                break;
 
-                case FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID:
-                    notify30minutesPass(notificationId, broadcastId);
-                    break;
-                case SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID:
-                    dismissNotification(getApplicationContext(), FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID);
-                    notify30minutesPass(notificationId, broadcastId);
-                    break;
-                case THIRD_IN_EPISODE_REMINDER_NOTIFICATION_ID:
-                    dismissNotification(getApplicationContext(), SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID);
-                    notify30minutesPass(notificationId, broadcastId);
-                    break;
-            }
+            case FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID:
+                notify30minutesPass(notificationId, broadcastId);
+                break;
+            case SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID:
+                dismissNotification(getApplicationContext(), FIRST_IN_EPISODE_REMINDER_NOTIFICATION_ID);
+                notify30minutesPass(notificationId, broadcastId);
+                break;
+            case THIRD_IN_EPISODE_REMINDER_NOTIFICATION_ID:
+                dismissNotification(getApplicationContext(), SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID);
+                notify30minutesPass(notificationId, broadcastId);
+                break;
 
-            if(currentCycle == BoozymeterApplication.NUM_CYCLES) {
-                // we don't want any notification to be pushed after all cycles are done
-                this.storeIsDoneAllCycle(true);
-            }
 
         }
         return START_NOT_STICKY; //START_REDELIVER_INTENT
@@ -231,18 +224,5 @@ public class NotificationService extends Service {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
         return nightCount;
-    }
-
-    private void storeIsDoneAllCycle(Boolean isDone) {
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-        mEditor.putBoolean("isDone", isDone);
-        mEditor.apply();
-    }
-
-    private Boolean getIsDoneAllCycle() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
-        Boolean isDone = mSharedPreferences.getBoolean("isDone", false);
-        return isDone;
     }
 }
