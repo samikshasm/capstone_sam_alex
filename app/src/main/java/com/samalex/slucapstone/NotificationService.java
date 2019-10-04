@@ -45,9 +45,8 @@ public class NotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         int currentCycle = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext()); // zero-indexed number
-        if(currentCycle > BoozymeterApplication.NUM_CYCLES) {
-            // we don't want any notification to be pushed after all cycles are done
-        } else {
+        if (!this.getIsDoneAllCycle()) { // we don't want any notification to be pushed if all cycles are done
+
             Log.e("We are in notification", "yay");
             String broadcastId = intent.getStringExtra("broadcast Int");
             int notificationId = Integer.parseInt(broadcastId);
@@ -74,6 +73,11 @@ public class NotificationService extends Service {
                     dismissNotification(getApplicationContext(), SECOND_IN_EPISODE_REMINDER_NOTIFICATION_ID);
                     notify30minutesPass(notificationId, broadcastId);
                     break;
+            }
+
+            if(currentCycle == BoozymeterApplication.NUM_CYCLES) {
+                // we don't want any notification to be pushed after all cycles are done
+                this.storeIsDoneAllCycle(true);
             }
 
         }
@@ -227,5 +231,18 @@ public class NotificationService extends Service {
         SharedPreferences mSharedPreferences = getSharedPreferences("Night Count", MODE_PRIVATE);
         Integer nightCount = mSharedPreferences.getInt("night counter", 0);
         return nightCount;
+    }
+
+    private void storeIsDoneAllCycle(Boolean isDone) {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putBoolean("isDone", isDone);
+        mEditor.apply();
+    }
+
+    private Boolean getIsDoneAllCycle() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        Boolean isDone = mSharedPreferences.getBoolean("isDone", false);
+        return isDone;
     }
 }
