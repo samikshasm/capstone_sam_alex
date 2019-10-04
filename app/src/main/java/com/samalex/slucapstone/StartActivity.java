@@ -164,7 +164,7 @@ public class StartActivity extends AppCompatActivity {
         String broadcastInt = getIntent().getStringExtra("broadcast Int");
         if (broadcastInt != null) {
             int notificationId = Integer.parseInt(broadcastInt);
-            if(notificationId == NotificationService.EVENING_REMINDER_NOTIFICATION_ID) {
+            if (notificationId == NotificationService.EVENING_REMINDER_NOTIFICATION_ID) {
                 NotificationService.dismissNotification(this, notificationId);
             }
         }
@@ -308,7 +308,7 @@ public class StartActivity extends AppCompatActivity {
             public void onClick(View view) {
                 new AlertDialog.Builder(StartActivity.this, R.style.MyAlertDialogStyle)
                         //.setTitle("Contact Dr. Shacham")
-                        .setMessage("Contact: eshacham@slu.edu\nYour logged in username: " + getUserID())
+                        .setMessage("Contact: slu.cns.lab@slu.edu\nYour logged in username: " + getUserID())
                         // .setNegativeButton("Ok",null)
                         .setPositiveButton("Ok", null).create().show();
             }
@@ -346,7 +346,39 @@ public class StartActivity extends AppCompatActivity {
         storeUserRawStartTime(0);
         cancelEveningReminder();
         cancelMorningSurveyAlarm();
+        clearSharedPreferences();
         finish();
+        finishAffinity();
+    }
+
+    private void clearSharedPreferences() {
+        SharedPreferences prefs = getSharedPreferences("boozymeter", MODE_PRIVATE);
+        prefs.edit().clear().commit();
+
+        prefs = getSharedPreferences("UserID", MODE_PRIVATE);
+        prefs.edit().clear().commit();
+
+        prefs = getSharedPreferences("NumberSwitchesToMain2Activity", MODE_PRIVATE);
+        prefs.edit().clear().commit();
+
+        prefs = getSharedPreferences("screen", MODE_PRIVATE);
+        prefs.edit().clear().commit();
+
+        prefs = getSharedPreferences("Group", MODE_PRIVATE);
+        prefs.edit().clear().commit();
+
+        prefs = getSharedPreferences("Night Count", MODE_PRIVATE);
+        prefs.edit().clear().commit();
+
+        prefs = getSharedPreferences("LoginAttempts", MODE_PRIVATE);
+        prefs.edit().clear().commit();
+
+        prefs = getSharedPreferences("numDrinks", MODE_PRIVATE);
+        prefs.edit().clear().commit();
+
+        prefs = getSharedPreferences("StartAttempts", MODE_PRIVATE);
+        prefs.edit().clear().commit();
+
     }
 
     private void cancelEveningReminder() {
@@ -539,30 +571,6 @@ public class StartActivity extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getSharedPreferences("LoginAttempts", MODE_PRIVATE);
         Integer loginAttempts = mSharedPreferences.getInt("login attempts", 0);
         return loginAttempts;
-    }
-
-    private void storeOneWeek(long integer) {
-        SharedPreferences mSharedPreferences = getSharedPreferences("OneWeek", MODE_PRIVATE);
-        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-        mEditor.putLong("one week", integer);
-        mEditor.apply();
-    }
-
-    private long getOneWeek() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("OneWeek", MODE_PRIVATE);
-        return mSharedPreferences.getLong("one week", 0);
-    }
-
-    private void storeTwoWeeks(long integer) {
-        SharedPreferences mSharedPreferences = getSharedPreferences("TwoWeeks", MODE_PRIVATE);
-        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-        mEditor.putLong("two weeks", integer);
-        mEditor.apply();
-    }
-
-    private long getTwoWeeks() {
-        SharedPreferences mSharedPreferences = getSharedPreferences("TwoWeeks", MODE_PRIVATE);
-        return mSharedPreferences.getLong("two weeks", 0);
     }
 
     private void storeStartAttempts(Integer integer) {

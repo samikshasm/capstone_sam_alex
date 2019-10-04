@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -84,6 +85,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private Integer loginAttempts;
     private LinearLayout startCycleSpinnerLayoutView;
     private Spinner startCycleSpinnerView;
+    private RadioGroup loginModeRadioGroupView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,20 +100,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
         startCycleSpinnerLayoutView = findViewById(R.id.start_cycle_spinner_layout);
         startCycleSpinnerView = findViewById(R.id.start_cycle_spinner);
 
         currentUserBool = getIntent().getStringExtra("sign out");
         //Toast.makeText(LoginActivity.this, "this is the login activity",
         //Toast.LENGTH_SHORT).show();
-        if (currentUserBool != null){
-            if (currentUserBool.equals("signed out" )){
+        if (currentUserBool != null) {
+            if (currentUserBool.equals("signed out")) {
                 setContentView(R.layout.activity_login);
                 mAuth.signOut();
                 currentUserBool = "signed in";
                 //Toast.makeText(LoginActivity.this, "testing", Toast.LENGTH_SHORT).show();
-            }
-            else {
+            } else {
                 onStart();
             }
         }
@@ -149,7 +151,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private Integer getLoginAttempts() {
         SharedPreferences mSharedPreferences = getSharedPreferences("LoginAttempts", MODE_PRIVATE);
-        Integer loginAttempts = mSharedPreferences.getInt("login attempts",0);
+        Integer loginAttempts = mSharedPreferences.getInt("login attempts", 0);
         return loginAttempts;
     }
 
@@ -167,7 +169,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         String email = mEmailView.getText().toString() + "@gmail.com";
         username = mEmailView.getText().toString();
         storeUserID(username);
-        Log.e("username",username);
+        Log.e("username", username);
         //Toast.makeText(LoginActivity.this, email, Toast.LENGTH_SHORT).show();
         //String password = mPasswordView.getText().toString();
         String password = "hello123";
@@ -205,11 +207,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             currentUserBool = "signed in";
                             UserID = task.getResult().getUser().getUid();
                             storeUserID(username);
-                            loginAttempts=getLoginAttempts();
+                            loginAttempts = getLoginAttempts();
 //                            loginAttempts++;
-                            loginAttempts=1;
+                            loginAttempts = 1;
                             storeLoginAttempts(loginAttempts);
-                            Log.e("Login Attempts", loginAttempts+"");
+                            Log.e("Login Attempts", loginAttempts + "");
                             Log.e("User ID Login", username);
                             intent.putExtra("User ID", username);
                             intent.putExtra("Sign in Boolean", currentUserBool);
@@ -308,6 +310,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         return password.length() > 4;
     }
 */
+
     /**
      * Shows the progress UI and hides the login form.
      */
@@ -376,25 +379,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
 
-    }
-
-    public void onRadioButtonClicked(View view) {
-        // Is the button now checked?
-        boolean checked = ((RadioButton) view).isChecked();
-
-        // Check which radio button was clicked
-        switch(view.getId()) {
-            case R.id.radio_new_session:
-                if (checked) {
-                    startCycleSpinnerLayoutView.setVisibility(View.GONE);
-                }
-                break;
-            case R.id.radio_old_session:
-                if (checked) {
-                    startCycleSpinnerLayoutView.setVisibility(View.VISIBLE);
-                }
-                break;
-        }
     }
 
 
@@ -475,14 +459,46 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        this.registerLoginModeRadioButtonsUIEvent();
+    }
+
+    // the code below supports the case that the user sign out and is brought to login activity again
+    // without the following code or just calling it in onCreate() function,
+    // switching between sign in as a new session and existing session will not work
+    // (dropdown box won't show up) -- need to be called in onResume() or onStart()
+    private void registerLoginModeRadioButtonsUIEvent(){
+        loginModeRadioGroupView = findViewById(R.id.radio_group_login_modes);
+        startCycleSpinnerLayoutView = findViewById(R.id.start_cycle_spinner_layout);
+        startCycleSpinnerView = findViewById(R.id.start_cycle_spinner);
+
+        RadioGroup.OnCheckedChangeListener onSignInModeChange = new RadioGroup.OnCheckedChangeListener() {
+
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton rb = (RadioButton) group.findViewById(checkedId);
+                if (checkedId == R.id.radio_new_session) {
+                    startCycleSpinnerLayoutView.setVisibility(View.GONE);
+                } else if (checkedId == R.id.radio_old_session) {
+                    startCycleSpinnerLayoutView.setVisibility(View.VISIBLE);
+                }
+            }
+        };
+
+        loginModeRadioGroupView.setOnCheckedChangeListener(onSignInModeChange);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
+
         // Check if user is signed in (non-null) and update UI accordingly.
 
         //Toast.makeText(LoginActivity.this, "testing onStart", Toast.LENGTH_SHORT).show();
         currentUser = mAuth.getInstance().getCurrentUser();
 
-        if (currentUser != null){
+        if (currentUser != null) {
             //currentUserBool = "signed in";
             UserID = currentUser.getUid();
             username = getScreen();
@@ -490,19 +506,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             //        Toast.LENGTH_SHORT).show();
             intent.putExtra("User ID", username);
             //intent.putExtra("Sign in Boolean", currentUser);
-            Log.e("username2",username);
+            Log.e("username2", username);
             storeUserID(username);
             startActivity(intent);
             finish();
 
-        }
-        else {
+        } else {
             //currentUserBool = "signed out";
             //Toast.makeText(getApplicationContext(), "User is signed out.",
             //        Toast.LENGTH_SHORT).show();
         }
     }
-
 
 
 }

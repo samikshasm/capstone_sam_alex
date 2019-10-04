@@ -47,6 +47,7 @@
             </android.support.design.widget.TextInputLayout>
 
             <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/radio_group_login_modes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -54,7 +55,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/new_session"
-                    android:onClick="onRadioButtonClicked"
                     android:checked="true"/>
 
                 <RadioButton
@@ -62,7 +62,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="false"
-                    android:onClick="onRadioButtonClicked"
                     android:text="@string/continue_old_session" />
             </RadioGroup>
             <LinearLayout
