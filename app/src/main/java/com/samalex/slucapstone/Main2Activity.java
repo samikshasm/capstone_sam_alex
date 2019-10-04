@@ -521,7 +521,7 @@ public class Main2Activity extends AppCompatActivity {
         int currentCycle = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext());
         int episodeCount = getNightCount();
         DatabaseReference mRef = mDatabase.child("Users").child("UID: " + userIDMA).child("Cycle: " + currentCycle)
-                .child("Episodes").child(episodeCount + "").child("Answers").child("Date: " + dateTime);
+                .child("Episodes").child((episodeCount-1) + "").child("Answers").child("Date: " + dateTime);
 
         mRef.setValue(new DrinkAnswer(drinkCost, drinkType, drinkSize, drinkWithWhom, where, numDrinksPlanned));
     }
