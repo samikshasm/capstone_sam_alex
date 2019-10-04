@@ -62,6 +62,7 @@ public class TimerReceiver extends BroadcastReceiver {
 
             if (currentCycle == BoozymeterApplication.NUM_CYCLES) {
                 // we don't want any notification to be pushed after all cycles are done
+                // this will be executed after the last cycle's morning survey notification.
                 this.storeIsDoneAllCycle(true, context);
             }
         }
