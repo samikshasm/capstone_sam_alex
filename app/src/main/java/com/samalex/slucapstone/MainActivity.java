@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         ImageView appHeaderBar = findViewById(R.id.main_app_header_bar);
-        appHeaderBar.setOnClickListener(new View.OnClickListener() {
+        appHeaderBar.setOnLongClickListener(new View.OnLongClickListener() {
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             long userRawStartTime = getUserRawStartTime();
@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
             String eveningReminderTime = dateFormat.format(new Date(eveningSurveyTimeInMillis));
 
             @Override
-            public void onClick(View view) {
+            public boolean onLongClick(View view) {
                 int currentCycle = CalculationUtil.updateAndGetCurrentCycle(getApplicationContext());
                 InterventionDisplayData ui = CalculationUtil.getInterventionMap(getApplicationContext()).get(currentCycle);
                 String liveReportFlag;
@@ -276,6 +276,7 @@ public class MainActivity extends AppCompatActivity {
                         })
                         .setIcon(R.drawable.white_small_icon)
                         .show();
+                return false;
             }
         });
     }
